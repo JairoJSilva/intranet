@@ -18,6 +18,39 @@ const ThemeManager = {
             accent: '#8129A9'
         },
         {
+            id: 'safira-dark',
+            name: 'Safira Night',
+            tag: 'Azul Safira & Âmbar',
+            desc: 'Fundo Slate Dark (#0A0E1A) com acentos em Azul Safira (#0178C8) e Laranja Solar (#F67F1D)',
+            icon: 'ri-contrast-2-line',
+            bg: '#0a0e1a',
+            card: '#1a1f2e',
+            primary: '#0178c8',
+            accent: '#f67f1d'
+        },
+        {
+            id: 'safira-light',
+            name: 'Safira Clean Light',
+            tag: 'Executivo Azul & Âmbar',
+            desc: 'Superfície clara corporativa (#EFF3F8) com azul institucional (#0165AA) e detalhes âmbar (#F67F1D)',
+            icon: 'ri-sun-foggy-line',
+            bg: '#eff3f8',
+            card: '#ffffff',
+            primary: '#0165aa',
+            accent: '#f67f1d'
+        },
+        {
+            id: 'terracotta-sunset',
+            name: 'Terracota Solar',
+            tag: 'Coral & Âmbar',
+            desc: 'Gradiente quente de terracota coral (#E75B32) e laranja solar (#F67F1D) com base escura (#0F0E12)',
+            icon: 'ri-fire-line',
+            bg: '#0f0e12',
+            card: '#1f1b26',
+            primary: '#e75b32',
+            accent: '#f67f1d'
+        },
+        {
             id: 'flowti-dark',
             name: 'Flowti Observability',
             tag: 'Flowti NOC',
@@ -93,6 +126,9 @@ const ThemeManager = {
         if (saved === 'ocean') return 'mv-petrol';
         if (saved === 'sunset') return 'mv-teal';
         if (saved === 'midnight') return 'flowti-midnight';
+        if (saved === 'cobalt-dark') return 'safira-dark';
+        if (saved === 'cobalt-light') return 'safira-light';
+        if (saved === 'solar-terracotta') return 'terracotta-sunset';
         return saved;
     },
 

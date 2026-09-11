@@ -105,4 +105,120 @@ final class LinkService
     {
         return $this->repo->countByStatus();
     }
+
+    /**
+     * Importa links em lote a partir de conteúdo CSV para um painel específico.
+     * Suporta delimitadores por vírgula (,) e ponto-e-vírgula (;).
+     * Cabeçalhos suportados: title/titulo/nome, url/link/endereco, description/descricao, icon/icone
+     */
+    public function importFromCsv(int $panelId, string $csvContent, int $currentUserId): array
+    {
+        $panelRepo = new \App\Repositories\PanelRepository();
+        $panel = $panelRepo->findById($panelId);
+        if (!$panel) {
+            throw new \RuntimeException('Painel de destino não encontrado.');
+        }
+
+        // Limpa BOM UTF-8 se houver
+        $csvContent = preg_replace('/^\xEF\xBB\xBF/', '', trim($csvContent));
+        if (empty($csvContent)) {
+            throw new \InvalidArgumentException('O arquivo CSV está vazio.');
+        }
+
+        // Detecta quebra de linha
+        $lines = preg_split('/\r\n|\r|\n/', $csvContent);
+        if (empty($lines)) {
+            throw new \InvalidArgumentException('Nenhuma linha encontrada no CSV.');
+        }
+
+        // Detecta delimitador (, ou ;)
+        $firstLine = $lines[0];
+        $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
+
+        $handle = fopen('php://temp', 'r+');
+        fwrite($handle, $csvContent);
+        rewind($handle);
+
+        $headers = fgetcsv($handle, 0, $delimiter);
+        if (!$headers) {
+            fclose($handle);
+            throw new \InvalidArgumentException('Não foi possível ler os cabeçalhos do CSV.');
+        }
+
+        // Mapeia colunas normalizadas (minúsculas sem acentos)
+        $headerMap = [];
+        foreach ($headers as $idx => $header) {
+            $normalized = strtolower(trim((string)$header));
+            $normalized = str_replace(['á','à','ã','â'], 'a', $normalized);
+            $normalized = str_replace(['é','ê'], 'e', $normalized);
+            $normalized = str_replace(['í'], 'i', $normalized);
+            $normalized = str_replace(['ó','ô','õ'], 'o', $normalized);
+            $normalized = str_replace(['ú'], 'u', $normalized);
+            $normalized = str_replace(['ç'], 'c', $normalized);
+
+            if (in_array($normalized, ['title', 'titulo', 'nome', 'sistema', 'aplicacao', 'name'])) {
+                $headerMap['title'] = $idx;
+            } elseif (in_array($normalized, ['url', 'link', 'endereco', 'uri', 'endpoint'])) {
+                $headerMap['url'] = $idx;
+            } elseif (in_array($normalized, ['description', 'descricao', 'desc', 'observacao'])) {
+                $headerMap['description'] = $idx;
+            } elseif (in_array($normalized, ['icon', 'icone', 'icon_class'])) {
+                $headerMap['icon'] = $idx;
+            }
+        }
+
+        if (!isset($headerMap['title']) || !isset($headerMap['url'])) {
+            fclose($handle);
+            throw new \InvalidArgumentException("O CSV deve conter as colunas 'title' (ou 'titulo') e 'url' (ou 'link').");
+        }
+
+        $imported = [];
+        $errors = [];
+        $rowNumber = 1;
+
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+            $rowNumber++;
+            // Pula linhas vazias
+            if (empty(array_filter($row, fn($v) => trim((string)$v) !== ''))) {
+                continue;
+            }
+
+            $title = trim($row[$headerMap['title']] ?? '');
+            $url = trim($row[$headerMap['url']] ?? '');
+            $desc = isset($headerMap['description']) ? trim($row[$headerMap['description']] ?? '') : '';
+            $icon = isset($headerMap['icon']) ? trim($row[$headerMap['icon']] ?? '') : '';
+
+            if (empty($title) || empty($url)) {
+                $errors[] = "Linha {$rowNumber}: Título e URL são obrigatórios.";
+                continue;
+            }
+
+            if (!preg_match('#^[a-zA-Z][a-zA-Z0-9+\-.]*://#', $url)) {
+                $url = 'https://' . $url;
+            }
+
+            try {
+                $linkData = [
+                    'panel_id'    => $panelId,
+                    'title'       => $title,
+                    'url'         => $url,
+                    'description' => $desc,
+                    'icon'        => !empty($icon) ? $icon : 'ri-global-line',
+                ];
+                $created = $this->create($linkData, $currentUserId);
+                $imported[] = $created;
+            } catch (\Throwable $e) {
+                $errors[] = "Linha {$rowNumber} ('{$title}'): " . $e->getMessage();
+            }
+        }
+
+        fclose($handle);
+
+        return [
+            'total_imported' => count($imported),
+            'total_errors'   => count($errors),
+            'imported'       => $imported,
+            'errors'         => $errors,
+        ];
+    }
 }

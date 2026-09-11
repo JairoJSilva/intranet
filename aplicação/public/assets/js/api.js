@@ -95,6 +95,7 @@ const API = {
     createLink(data)          { return this.post('/links', data); },
     updateLink(id, data)      { return this.put(`/links/${id}`, data); },
     deleteLink(id)            { return this.delete(`/links/${id}`); },
+    importLinksCsv(panelId, csvContent) { return this.post('/links/import-csv', { panel_id: panelId, csv_content: csvContent }); },
 
     // --- Health & Dashboard ---
     healthCheck()             { return this.post('/health/check'); },

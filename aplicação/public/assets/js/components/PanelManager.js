@@ -48,7 +48,10 @@ const PanelManager = {
                 <p class="page-subtitle">Selecione um painel para visualizar e acessar suas aplicações dedicadas</p>
             </div>
             ${canManage ? `
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-secondary btn-sm" id="btn-import-csv-catalog" title="Importar links em massa via arquivo .CSV">
+                    <i class="ri-file-upload-line"></i> Importar CSV
+                </button>
                 <button class="btn btn-secondary btn-sm" id="btn-new-link" title="Cadastrar nova aplicação">
                     <i class="ri-link"></i> Novo Link
                 </button>
@@ -130,6 +133,9 @@ const PanelManager = {
                 <button class="btn btn-primary btn-sm" onclick="PanelManager.openLinkForm(null, ${panel.id})" title="Adicionar link neste painel" style="gap: 6px;">
                     <i class="ri-add-line"></i> Adicionar Link
                 </button>
+                <button class="btn btn-secondary btn-sm" onclick="PanelManager.openCsvImportModal(${panel.id})" title="Subir links em massa via .CSV neste painel" style="gap: 6px;">
+                    <i class="ri-file-upload-line"></i> Importar CSV
+                </button>
                 <button class="btn btn-secondary btn-sm" onclick="PanelManager.openPanelForm(${panel.id})" title="Editar Informações do Painel" style="gap: 6px;">
                     <i class="ri-edit-line"></i> Editar Painel
                 </button>
@@ -210,6 +216,7 @@ const PanelManager = {
 
         document.getElementById('btn-new-panel')?.addEventListener('click', () => this.openPanelForm());
         document.getElementById('btn-new-link')?.addEventListener('click', () => this.openLinkForm(null, this.activePanelId));
+        document.getElementById('btn-import-csv-catalog')?.addEventListener('click', () => this.openCsvImportModal());
 
         // Eventos da tela de painel específico (#/panels/:id)
         const singleSearch = document.getElementById('single-panel-search-input');
@@ -814,6 +821,323 @@ const PanelManager = {
                 Toast.error(e.message || 'Erro ao excluir aplicação.');
             }
         }
+    },
+
+    /**
+     * Modal de Importação de Links em Massa via Arquivo CSV
+     */
+    openCsvImportModal(targetPanelId = null) {
+        let currentPanelId = targetPanelId || this.activePanelId;
+        if (!currentPanelId && this.allPanels.length > 0) {
+            currentPanelId = this.allPanels[0].id;
+        }
+
+        let parsedCsvData = [];
+        let rawCsvContent = '';
+
+        Modal.open({
+            title: '<i class="ri-file-excel-2-line" style="color: #10b981; vertical-align: middle; margin-right: 6px;"></i> Importar Links em Massa (.CSV)',
+            size: 'lg',
+            content: `
+                <div style="margin-bottom: 16px;">
+                    <label class="form-label" style="font-weight: 600;">Painel de Destino <span style="color: var(--status-offline);">*</span></label>
+                    <select class="form-input form-select" id="csv-target-panel" style="font-size: 0.92rem;">
+                        ${this.allPanels.map(p => `
+                            <option value="${p.id}" ${p.id == currentPanelId ? 'selected' : ''}>
+                                ${p.title}
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+
+                <!-- Banner Informativo e Botão Baixar Modelo -->
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                    <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45;">
+                        <strong style="color: var(--text-primary);">Colunas aceitas:</strong> <code>titulo;url;descricao;icone</code> ou <code>title,url,description,icon</code><br>
+                        <span style="color: var(--text-muted); font-size: 0.77rem;">
+                            Suporta delimitador vírgula <code>,</code> ou ponto e vírgula <code>;</code>. URLs sem <code>https://</code> são completadas automaticamente.
+                        </span>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-download-csv-template" style="gap: 6px; font-weight: 500;">
+                        <i class="ri-download-2-line"></i> Baixar Modelo .CSV
+                    </button>
+                </div>
+
+                <!-- Dropzone de Arquivo CSV -->
+                <div id="csv-dropzone" style="border: 2px dashed var(--border-color); border-radius: var(--radius); padding: 26px 20px; text-align: center; background: var(--bg-body); cursor: pointer; transition: all 0.2s ease; margin-bottom: 16px;">
+                    <i class="ri-upload-cloud-2-line" style="font-size: 2.4rem; color: var(--theme-primary); display: block; margin-bottom: 8px;"></i>
+                    <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary); margin-bottom: 4px;">Arraste e solte o arquivo .CSV aqui</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">ou clique no botão para selecionar do seu dispositivo</div>
+                    <input type="file" id="csv-file-input" accept=".csv,text/csv,text/plain" style="display: none;" />
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-csv-file" style="gap: 6px;">
+                        <i class="ri-folder-open-line"></i> Procurar Arquivo .CSV
+                    </button>
+                    <div id="csv-selected-badge" style="display: none; margin-top: 12px;">
+                        <span class="badge" style="background: var(--theme-primary)22; color: var(--theme-primary); border: 1px solid var(--theme-primary)44; font-size: 0.82rem; padding: 4px 10px;">
+                            <i class="ri-file-text-line"></i> <span id="csv-selected-filename">arquivo.csv</span> (<span id="csv-selected-filesize">0 KB</span>)
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Ou Colar Texto Diretamente -->
+                <details id="csv-details-paste" style="margin-bottom: 16px;">
+                    <summary style="font-size: 0.82rem; color: var(--text-muted); cursor: pointer; user-select: none; font-weight: 500; padding: 4px 0;">
+                        <i class="ri-edit-line"></i> Ou cole o conteúdo do CSV em texto
+                    </summary>
+                    <div style="margin-top: 8px;">
+                        <textarea id="csv-raw-textarea" class="form-input" rows="5" placeholder="titulo;url;descricao;icone&#10;Portal ERP;https://erp.empresa.com.br;Sistema de Gestão Principal;ri-server-line&#10;Grafana;grafana.empresa.com.br;Métricas de Infraestrutura;ri-dashboard-line" style="font-family: monospace; font-size: 0.8rem; resize: vertical;"></textarea>
+                    </div>
+                </details>
+
+                <!-- Feedback / Erros -->
+                <div id="csv-feedback-box" style="display: none; margin-bottom: 14px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.82rem;"></div>
+
+                <!-- Preview em Tabela -->
+                <div id="csv-preview-container" style="display: none; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">
+                            <i class="ri-eye-line"></i> Pré-visualização (<span id="csv-preview-count">0</span> links prontos)
+                        </span>
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.74rem;">
+                            <i class="ri-check-line"></i> CSV Válido
+                        </span>
+                    </div>
+                    <div style="max-height: 180px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                        <table class="table" style="width: 100%; font-size: 0.78rem; margin: 0;">
+                            <thead>
+                                <tr style="background: var(--bg-body);">
+                                    <th style="padding: 6px 10px;">#</th>
+                                    <th style="padding: 6px 10px;">Nome / Título</th>
+                                    <th style="padding: 6px 10px;">URL</th>
+                                    <th style="padding: 6px 10px;">Descrição</th>
+                                    <th style="padding: 6px 10px;">Ícone</th>
+                                </tr>
+                            </thead>
+                            <tbody id="csv-preview-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            `,
+            footer: `
+                <button class="btn btn-secondary" onclick="Modal.close()">Cancelar</button>
+                <button class="btn btn-primary" id="btn-submit-csv-import" disabled style="gap: 6px;">
+                    <i class="ri-upload-cloud-line"></i> Subir Links (.CSV)
+                </button>
+            `
+        });
+
+        const fileInput = document.getElementById('csv-file-input');
+        const dropzone = document.getElementById('csv-dropzone');
+        const browseBtn = document.getElementById('btn-browse-csv-file');
+        const rawTextarea = document.getElementById('csv-raw-textarea');
+        const templateBtn = document.getElementById('btn-download-csv-template');
+        const submitBtn = document.getElementById('btn-submit-csv-import');
+        const previewContainer = document.getElementById('csv-preview-container');
+        const previewCount = document.getElementById('csv-preview-count');
+        const previewTbody = document.getElementById('csv-preview-tbody');
+        const feedbackBox = document.getElementById('csv-feedback-box');
+        const selectedBadge = document.getElementById('csv-selected-badge');
+        const selectedFilename = document.getElementById('csv-selected-filename');
+        const selectedFilesize = document.getElementById('csv-selected-filesize');
+
+        // 1. Download de Modelo CSV
+        templateBtn?.addEventListener('click', () => {
+            const templateContent = [
+                'titulo;url;descricao;icone',
+                'Portal ERP;https://erp.suaempresa.com.br;Sistema ERP e Financeiro;ri-server-line',
+                'Monitoramento Grafana;https://grafana.suaempresa.com.br;Dashboards de infra e métricas;ri-dashboard-line',
+                'GitLab Corporativo;https://gitlab.suaempresa.com.br;Repositórios e pipelines CI/CD;ri-git-branch-line',
+                'Central de Atendimento;https://suporte.suaempresa.com.br;Abertura de chamados internos;ri-customer-service-2-line'
+            ].join('\r\n');
+
+            const blob = new Blob([templateContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'modelo_links_flowti.csv';
+            link.click();
+            URL.revokeObjectURL(link.href);
+        });
+
+        // 2. Parser rápido do lado cliente para Preview
+        const parseAndPreviewCsv = (text) => {
+            rawCsvContent = text || '';
+            feedbackBox.style.display = 'none';
+
+            if (!rawCsvContent.trim()) {
+                previewContainer.style.display = 'none';
+                submitBtn.disabled = true;
+                return;
+            }
+
+            const lines = rawCsvContent.split(/\r\n|\n|\r/).map(l => l.trim()).filter(l => l.length > 0);
+            if (lines.length <= 1) {
+                previewContainer.style.display = 'none';
+                submitBtn.disabled = true;
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.background = 'rgba(239, 68, 68, 0.1)';
+                feedbackBox.style.color = 'var(--status-offline)';
+                feedbackBox.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+                feedbackBox.innerHTML = '<i class="ri-error-warning-line"></i> O arquivo precisa ter um cabeçalho e pelo menos 1 linha de dados.';
+                return;
+            }
+
+            const headerLine = lines[0];
+            const delimiter = (headerLine.match(/;/g) || []).length >= (headerLine.match(/,/g) || []).length ? ';' : ',';
+            const headers = headerLine.split(delimiter).map(h => h.trim().toLowerCase().replace(/^["']|["']$/g, ''));
+
+            let colTitle = headers.findIndex(h => ['title', 'titulo', 'título', 'nome', 'name'].includes(h));
+            let colUrl = headers.findIndex(h => ['url', 'link', 'uri', 'endereco', 'endereço'].includes(h));
+            let colDesc = headers.findIndex(h => ['description', 'descricao', 'descrição', 'desc'].includes(h));
+            let colIcon = headers.findIndex(h => ['icon', 'icone', 'ícone'].includes(h));
+
+            if (colTitle === -1) colTitle = 0;
+            if (colUrl === -1) colUrl = 1;
+            if (colDesc === -1) colDesc = 2;
+            if (colIcon === -1) colIcon = 3;
+
+            parsedCsvData = [];
+            for (let i = 1; i < lines.length; i++) {
+                const parts = lines[i].split(delimiter).map(p => p.trim().replace(/^["']|["']$/g, ''));
+                const title = parts[colTitle] || '';
+                const url = parts[colUrl] || '';
+                const desc = parts[colDesc] || '';
+                const icon = parts[colIcon] || 'ri-global-line';
+
+                if (title && url) {
+                    parsedCsvData.push({ title, url, desc, icon });
+                }
+            }
+
+            if (parsedCsvData.length === 0) {
+                previewContainer.style.display = 'none';
+                submitBtn.disabled = true;
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.background = 'rgba(239, 68, 68, 0.1)';
+                feedbackBox.style.color = 'var(--status-offline)';
+                feedbackBox.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+                feedbackBox.innerHTML = '<i class="ri-error-warning-line"></i> Nenhuma linha válida com Título e URL foi encontrada no CSV.';
+                return;
+            }
+
+            // Exibe Preview
+            previewCount.textContent = parsedCsvData.length;
+            previewTbody.innerHTML = parsedCsvData.slice(0, 8).map((row, idx) => `
+                <tr>
+                    <td style="padding: 6px 10px; color: var(--text-muted);">${idx + 1}</td>
+                    <td style="padding: 6px 10px; font-weight: 500; color: var(--text-primary);">${row.title}</td>
+                    <td style="padding: 6px 10px; color: var(--theme-primary); font-family: monospace;">${row.url}</td>
+                    <td style="padding: 6px 10px; color: var(--text-secondary); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.desc || '-'}</td>
+                    <td style="padding: 6px 10px;"><i class="${row.icon}"></i> <span style="font-size: 0.72rem; color: var(--text-muted);">${row.icon}</span></td>
+                </tr>
+            `).join('') + (parsedCsvData.length > 8 ? `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 6px; font-style: italic;">... e mais ${parsedCsvData.length - 8} links</td></tr>` : '');
+
+            previewContainer.style.display = 'block';
+            submitBtn.disabled = false;
+        };
+
+        // 3. Leitura de arquivo selecionado
+        const handleFileSelected = (file) => {
+            if (!file) return;
+            if (!file.name.toLowerCase().endsWith('.csv') && file.type !== 'text/csv' && file.type !== 'text/plain') {
+                Toast.warning('Por favor selecione um arquivo com extensão .csv');
+                return;
+            }
+
+            selectedFilename.textContent = file.name;
+            selectedFilesize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+            selectedBadge.style.display = 'inline-block';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                rawTextarea.value = text;
+                parseAndPreviewCsv(text);
+            };
+            reader.onerror = () => {
+                Toast.error('Erro ao ler o arquivo CSV selecionado.');
+            };
+            reader.readAsText(file, 'UTF-8');
+        };
+
+        browseBtn?.addEventListener('click', () => fileInput.click());
+        fileInput?.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                handleFileSelected(e.target.files[0]);
+            }
+        });
+
+        // 4. Drag and Drop no dropzone
+        dropzone?.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.style.borderColor = 'var(--theme-primary)';
+            dropzone.style.background = 'var(--bg-elevated)';
+        });
+        dropzone?.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropzone.style.borderColor = 'var(--border-color)';
+            dropzone.style.background = 'var(--bg-body)';
+        });
+        dropzone?.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.style.borderColor = 'var(--border-color)';
+            dropzone.style.background = 'var(--bg-body)';
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleFileSelected(e.dataTransfer.files[0]);
+            }
+        });
+
+        // 5. Input manual no textarea
+        rawTextarea?.addEventListener('input', (e) => {
+            parseAndPreviewCsv(e.target.value);
+        });
+
+        // 6. Envio para a API
+        submitBtn?.addEventListener('click', async () => {
+            const panelSelect = document.getElementById('csv-target-panel');
+            const panelId = parseInt(panelSelect.value, 10);
+
+            if (!panelId) {
+                Toast.error('Selecione um painel de destino.');
+                return;
+            }
+
+            if (!rawCsvContent.trim()) {
+                Toast.warning('Nenhum dado CSV para importar.');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Importando links...';
+
+                const response = await API.importLinksCsv(panelId, rawCsvContent);
+                const data = response.data || {};
+                const totalImported = data.total_imported || 0;
+                const totalErrors = data.total_errors || 0;
+
+                if (totalImported > 0) {
+                    Toast.success(`${totalImported} ${totalImported === 1 ? 'link importado' : 'links importados'} com sucesso!`);
+                }
+
+                if (totalErrors > 0) {
+                    const errLines = (data.errors || []).map(err => `Linha ${err.line}: ${err.error}`).join('\\n');
+                    Toast.warning(`${totalErrors} ${totalErrors === 1 ? 'linha com erro foi ignorada' : 'linhas com erro foram ignoradas'}.`);
+                    console.warn('[CSV Import Errors]', errLines);
+                }
+
+                Modal.close();
+                await this.loadData();
+            } catch (err) {
+                console.error('[CSV Import Error]', err);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="ri-upload-cloud-line"></i> Subir Links (.CSV)';
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.background = 'rgba(239, 68, 68, 0.1)';
+                feedbackBox.style.color = 'var(--status-offline)';
+                feedbackBox.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+                feedbackBox.innerHTML = `<i class="ri-error-warning-line"></i> ${err.message || 'Falha na importação do CSV.'}`;
+            }
+        });
     },
 
     renderFolderSkeletons(count) {

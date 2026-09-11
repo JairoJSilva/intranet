@@ -295,6 +295,132 @@
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
 }
 
+/* ---- 6. Safira Night (Inspirado em id-visual/tokens.json - Slate & Azul Cobalto) ---- */
+[data-theme="safira-dark"],
+[data-theme="cobalt-dark"] {
+    --theme-primary: #0178c8;
+    --theme-primary-hover: #0165aa;
+    --theme-accent: #f67f1d;
+    --theme-accent-hover: #ff9a3c;
+
+    --vem-blue-500: #0178c8;
+    --vem-blue-600: #0165aa;
+    --vem-blue-700: #005490;
+    --vem-blue-800: #004b80;
+    --vem-orange-400: #ff9a3c;
+    --vem-orange-500: #f67f1d;
+    --vem-orange-600: #d9650b;
+
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #111827;
+    --bg-card: #1a1f2e;
+    --bg-card-hover: #1f2937;
+    --bg-elevated: #242b3d;
+    --border-color: #2d3548;
+    --border-hover: #3d4560;
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --text-accent: #0178c8;
+
+    --status-online: #10b981;
+    --status-online-bg: rgba(16, 185, 129, 0.15);
+    --status-warning: #f59e0b;
+    --status-warning-bg: rgba(245, 158, 11, 0.15);
+    --status-offline: #ef4444;
+    --status-offline-bg: rgba(239, 68, 68, 0.15);
+
+    --glass-bg: rgba(26, 31, 46, 0.72);
+    --glass-border: rgba(1, 120, 200, 0.2);
+    --glass-shadow: 0 8px 32px rgba(10, 14, 26, 0.5);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* ---- 7. Safira Clean Light (Inspirado em id-visual/variables.css - Superfície Clara) ---- */
+[data-theme="safira-light"],
+[data-theme="cobalt-light"] {
+    --theme-primary: #0165aa;
+    --theme-primary-hover: #005288;
+    --theme-accent: #f67f1d;
+    --theme-accent-hover: #ff9a3c;
+
+    --vem-blue-500: #0178c8;
+    --vem-blue-600: #0165aa;
+    --vem-blue-700: #005288;
+    --vem-blue-800: #004979;
+    --vem-orange-400: #ff9a3c;
+    --vem-orange-500: #f67f1d;
+    --vem-orange-600: #d9650b;
+
+    --bg-primary: #eff3f8;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f5f9ff;
+    --bg-elevated: #e2eaf3;
+    --border-color: #dfe7ef;
+    --border-hover: #b6cde2;
+
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-accent: #0165aa;
+
+    --status-online: #10b981;
+    --status-online-bg: #d1fae5;
+    --status-warning: #f59e0b;
+    --status-warning-bg: #fef3c7;
+    --status-offline: #ef4444;
+    --status-offline-bg: #fee2e2;
+
+    --glass-bg: rgba(255, 255, 255, 0.92);
+    --glass-border: rgba(1, 101, 170, 0.16);
+    --glass-shadow: 0 4px 20px rgba(1, 101, 170, 0.08);
+    --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* ---- 8. Terracota Solar (Inspirado em id-visual/guia-de-estilo.md - #E75B32 & #F67F1D) ---- */
+[data-theme="terracotta-sunset"],
+[data-theme="solar-terracotta"] {
+    --theme-primary: #e75b32;
+    --theme-primary-hover: #d04f29;
+    --theme-accent: #f67f1d;
+    --theme-accent-hover: #ff9a3c;
+
+    --vem-blue-500: #f67f1d;
+    --vem-blue-600: #e75b32;
+    --vem-blue-700: #d04f29;
+    --vem-blue-800: #8c2f15;
+    --vem-orange-400: #ff9a3c;
+    --vem-orange-500: #f67f1d;
+    --vem-orange-600: #e75b32;
+
+    --bg-primary: #0f0e12;
+    --bg-secondary: #17151c;
+    --bg-card: #1f1b26;
+    --bg-card-hover: #282231;
+    --bg-elevated: #2f293b;
+    --border-color: #382f42;
+    --border-hover: #4e405d;
+
+    --text-primary: #fdf5f2;
+    --text-secondary: #bda9a3;
+    --text-muted: #7d6e6a;
+    --text-accent: #f67f1d;
+
+    --status-online: #10b981;
+    --status-online-bg: rgba(16, 185, 129, 0.15);
+    --status-warning: #f59e0b;
+    --status-warning-bg: rgba(245, 158, 11, 0.15);
+    --status-offline: #ef4444;
+    --status-offline-bg: rgba(239, 68, 68, 0.15);
+
+    --glass-bg: rgba(31, 27, 38, 0.74);
+    --glass-border: rgba(231, 91, 50, 0.22);
+    --glass-shadow: 0 8px 32px rgba(15, 14, 18, 0.55);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
 /* ---- Reset & Base ---- */
 *, *::before, *::after {
     margin: 0;
@@ -1100,6 +1226,27 @@ a:hover {
 [data-theme="aura"] .form-input:focus {
     border-color: #AB17EE !important;
     box-shadow: 0 0 0 3px rgba(171, 23, 238, 0.25), 0 0 12px rgba(171, 23, 238, 0.35) !important;
+}
+
+/* ---- Ambient Background Mesh for Safira Night & Terracota ---- */
+[data-theme="safira-dark"] body,
+[data-theme="cobalt-dark"] body {
+    background-color: #0a0e1a;
+    background-image: 
+        radial-gradient(circle at 12% 15%, rgba(1, 120, 200, 0.22) 0%, transparent 42%),
+        radial-gradient(circle at 88% 20%, rgba(246, 127, 29, 0.15) 0%, transparent 38%),
+        radial-gradient(circle at 50% 85%, rgba(0, 75, 128, 0.22) 0%, transparent 48%);
+    background-attachment: fixed;
+}
+
+[data-theme="terracotta-sunset"] body,
+[data-theme="solar-terracotta"] body {
+    background-color: #0f0e12;
+    background-image: 
+        radial-gradient(circle at 15% 15%, rgba(231, 91, 50, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 85% 25%, rgba(246, 127, 29, 0.18) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(140, 47, 21, 0.22) 0%, transparent 48%);
+    background-attachment: fixed;
 }
 
 /* Sidebar Logo Image */

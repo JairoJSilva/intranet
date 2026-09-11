@@ -1,12 +1,12 @@
-# 🎨 Guia de Identidade Visual - Cartão VEM (Urbana-PE)
+# 🎨 Guia de Identidade Visual - Urbana (PE)
 
-Este documento descreve a identidade visual e o design system extraídos da plataforma **Cartão VEM**.
+Este documento descreve a identidade visual e o design system corporativo extraídos da plataforma **Urbana-PE**.
 
 ---
 
 ## 📌 1. Visão Geral da Marca
 
-- **Nome:** Cartão VEM
+- **Nome:** Urbana-PE (Design System Corporativo)
 - **Tipografia Principal:** Poppins (Google Fonts)
 - **Pacote de Ícones:** Remix Icon (`remixicon@4.5.0`) e Icomoon
 - **Estilo Geral:** Cores contrastantes entre azul institucional e tons vibrantes de laranja/coral, cantos arredondados suaves (`6px` a `1rem`) e fundos claros/translúcidos (`#fafcff`).

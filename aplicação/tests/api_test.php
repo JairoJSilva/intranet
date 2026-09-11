@@ -243,6 +243,48 @@ foreach ($u3Groups as $ug) {
 }
 assertTest('Usuário 3 atualizado no grupo Financeiro', $hasFinanceiro);
 
+// ============================================================
+// 6. IMPORTAÇÃO EM MASSA VIA .CSV
+// ============================================================
+echo "\n\033[1;33m📋 Testes de Importação em Massa de Links via CSV\033[0m\n";
+
+// 6.1 Tentativa sem autenticação (deve rejeitar 401)
+$unauthCsv = apiRequest('POST', '/api/links/import-csv', [
+    'panel_id' => 1,
+    'csv_content' => "titulo;url\nTeste;https://teste.com"
+]);
+assertTest('POST /api/links/import-csv rejeita requisição não autenticada (401)', $unauthCsv['code'] === 401);
+
+// 6.2 Tentativa com dados inválidos (sem panel_id ou sem csv_content)
+$invalidCsv = apiRequest('POST', '/api/links/import-csv', [
+    'panel_id' => 1,
+    'csv_content' => ''
+], $adminCookies);
+assertTest('POST /api/links/import-csv valida conteúdo vazio (422)', $invalidCsv['code'] === 422);
+
+// 6.3 Importação com sucesso de múltiplos links com delimitador ';'
+$csvSample = "titulo;url;descricao;icone\n" .
+             "CSV Teste Link Alpha;https://alpha.flowti.internal;Aplicação importada via teste;ri-rocket-line\n" .
+             "CSV Teste Link Beta;beta.flowti.internal;Segunda aplicação com auto https;ri-database-line";
+
+$importRes = apiRequest('POST', '/api/links/import-csv', [
+    'panel_id' => 1,
+    'csv_content' => $csvSample
+], $adminCookies);
+
+assertTest('POST /api/links/import-csv importa links com sucesso (201)', $importRes['code'] === 201);
+assertTest('Resposta contém total_imported = 2', ($importRes['body']['data']['total_imported'] ?? 0) === 2);
+assertTest('Auto-correção de URL adiciona https://', ($importRes['body']['data']['imported'][1]['url'] ?? '') === 'https://beta.flowti.internal');
+
+// Limpeza dos links de teste criados
+if (!empty($importRes['body']['data']['imported'])) {
+    foreach ($importRes['body']['data']['imported'] as $imp) {
+        if (!empty($imp['id'])) {
+            apiRequest('DELETE', '/api/links/' . $imp['id'], null, $adminCookies);
+        }
+    }
+}
+
 // Limpeza de cookies de teste
 @unlink($adminCookies);
 @unlink($suporteCookies);

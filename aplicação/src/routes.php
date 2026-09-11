@@ -45,10 +45,11 @@ return [
     'DELETE /api/panels/{id}'  => [PanelController::class, 'destroy'],
 
     // ---- Links ----
-    'GET    /api/links'        => [LinkController::class, 'index'],
-    'POST   /api/links'        => [LinkController::class, 'store'],
-    'PUT    /api/links/{id}'   => [LinkController::class, 'update'],
-    'DELETE /api/links/{id}'   => [LinkController::class, 'destroy'],
+    'GET    /api/links'            => [LinkController::class, 'index'],
+    'POST   /api/links'            => [LinkController::class, 'store'],
+    'POST   /api/links/import-csv' => [LinkController::class, 'importCsv'],
+    'PUT    /api/links/{id}'       => [LinkController::class, 'update'],
+    'DELETE /api/links/{id}'       => [LinkController::class, 'destroy'],
 
     // ---- Health Check & Dashboard ----
     'POST /api/health/check'   => [HealthController::class, 'check'],
