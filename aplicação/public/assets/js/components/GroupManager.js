@@ -1,5 +1,5 @@
 /**
- * Intranet Flowti — Group Manager Component
+ * Omniflowti — Group Manager Component
  * Gestão de grupos/setores com associação de painéis.
  */
 const GroupManager = {

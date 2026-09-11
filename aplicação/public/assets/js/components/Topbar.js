@@ -1,5 +1,5 @@
 /**
- * Intranet Flowti — Topbar Component
+ * Omniflowti — Topbar Component
  */
 const Topbar = {
     render(pageTitle = 'Dashboard') {

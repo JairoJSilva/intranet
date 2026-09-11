@@ -1,5 +1,5 @@
 /**
- * Intranet Flowti — User Manager Component
+ * Omniflowti — User Manager Component
  * Gestão completa de usuários (CRUD + import CSV).
  * Disponível apenas para Administradores.
  */

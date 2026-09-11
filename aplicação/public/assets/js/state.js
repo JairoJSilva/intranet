@@ -1,5 +1,5 @@
 /**
- * Intranet Flowti — App State Manager
+ * Omniflowti — App State Manager
  * Estado global reativo armazenado em memória com persistência em sessionStorage.
  */
 const AppState = {
@@ -19,7 +19,7 @@ const AppState = {
      * Inicializa estado a partir de sessionStorage
      */
     init() {
-        const saved = sessionStorage.getItem('flowti_state');
+        const saved = sessionStorage.getItem('omniflowti_state') || sessionStorage.getItem('flowti_state');
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
@@ -93,6 +93,7 @@ const AppState = {
         this._data.groups = [];
         this._data.users = [];
         this._data.stats = null;
+        sessionStorage.removeItem('omniflowti_state');
         sessionStorage.removeItem('flowti_state');
         this._notify('user', null);
     },
@@ -119,7 +120,7 @@ const AppState = {
             const toSave = { ...this._data };
             // Não persiste dados grandes
             delete toSave.users;
-            sessionStorage.setItem('flowti_state', JSON.stringify(toSave));
+            sessionStorage.setItem('omniflowti_state', JSON.stringify(toSave));
         } catch (e) {
             // sessionStorage full
         }

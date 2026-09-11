@@ -1,5 +1,5 @@
 /**
- * Intranet Flowti — Sidebar Navigation
+ * Omniflowti — Sidebar Navigation
  */
 const Sidebar = {
     render() {
@@ -12,7 +12,7 @@ const Sidebar = {
         <aside class="sidebar ${collapsed ? 'collapsed' : ''}" id="sidebar">
             <div class="sidebar-header">
                 <i class="ri-global-line" style="font-size: 1.5rem; color: var(--vem-blue-500);"></i>
-                <span class="sidebar-brand">Intranet Flowti</span>
+                <span class="sidebar-brand">Omniflowti</span>
                 <button class="sidebar-toggle" id="sidebar-toggle" title="Recolher menu">
                     <i class="ri-menu-fold-line"></i>
                 </button>
