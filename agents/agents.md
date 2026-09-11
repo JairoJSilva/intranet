@@ -42,3 +42,9 @@ Guia rápido de invocação dos papéis de engenharia, produto e qualidade do **
 
 ### 7. 🗄️ @DBA
 - **Escopo**: Modelagem relacional MySQL, manutenção de esquemas, criação de índices otimizados para relacionamentos N:N e integridade referencial.
+
+---
+
+### 8. 🛡️ @PipelineOwner (ou @PipelineGuardian)
+- **Arquivo**: [`agents/08-PipelineOwner.md`](08-PipelineOwner.md)
+- **Escopo**: Dono autônomo da esteira CI/CD (GitHub Actions e GitLab CI). Geração automática de tags SemVer por commit, monitoramento ativo, auto-cura de builds quebrados, SAST, testes automatizados e GitOps sync.

@@ -1,13 +1,17 @@
 # .gitignore — Intranet Flowti
 
 # Ambiente
-aplicação/.env
-*.env.local
+aplicação/.env.local
+*.env.backup
 
-# Dependências PHP
+# Dependências PHP & Cache de Testes
 aplicação/vendor/
+aplicação/.phpunit.cache/
 
-# IDE
+# Docker volumes
+mysql_data/
+
+# IDE & Editor
 .idea/
 .vscode/
 *.swp
@@ -16,9 +20,6 @@ aplicação/vendor/
 # OS
 .DS_Store
 Thumbs.db
-
-# Docker volumes
-mysql_data/
 
 # Logs
 *.log

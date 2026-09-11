@@ -10,6 +10,7 @@ Consulte os manuais completos em `agents/`:
 - **QA Engineer & Tester**: `agents/07-QATester.md` (Pirâmide de testes para Frontend e Backend: PHPUnit, Jest, Supertest, Playwright, k6)
 - **Product Manager & Arquiteto**: `agents/01-ProductManager.md`
 - **UI/UX Designer**: `agents/02-UIUXDesigner.md`
+- **Pipeline Guardian / CI/CD Owner**: `agents/08-PipelineOwner.md` (Esteiras CI/CD, Automação SemVer de Tags por commit, Self-Healing, SAST, GitOps)
 
 Ao assumir qualquer um desses papéis, siga rigorosamente as diretrizes, boas práticas e restrições descritas nos respectivos arquivos.
 

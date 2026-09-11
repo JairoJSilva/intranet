@@ -1,0 +1,87 @@
+# ==============================================================================
+# 🚀 GitLab CI/CD Pipeline — Flowti Intranet (Local & Production Runner)
+# ==============================================================================
+
+stages:
+  - lint
+  - security
+  - test
+  - build
+  - deploy
+
+default:
+  image: php:8.2-cli
+  tags:
+    - kubernetes
+    - portal-cluster
+
+variables:
+  COMPOSER_ALLOW_SUPERUSER: "1"
+  MYSQL_DATABASE: intranet_flowti_test
+  MYSQL_ROOT_PASSWORD: root_password
+  MYSQL_USER: flowti_test
+  MYSQL_PASSWORD: flowti_password
+
+cache:
+  key: "${CI_COMMIT_REF_SLUG}"
+  paths:
+    - aplicação/vendor/
+
+# ------------------------------------------------------------------------------
+# 1. Lint & Code Quality
+# ------------------------------------------------------------------------------
+lint:composer:
+  stage: lint
+  before_script:
+    - apt-get update -qy && apt-get install -y git unzip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  script:
+    - cd aplicação
+    - composer validate --strict
+    - composer install --prefer-dist --no-interaction
+    - find src public tests -name "*.php" -print0 | xargs -0 -n1 -P4 php -l
+
+# ------------------------------------------------------------------------------
+# 2. Security & SAST
+# ------------------------------------------------------------------------------
+security:audit:
+  stage: security
+  before_script:
+    - apt-get update -qy && apt-get install -y git unzip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  script:
+    - cd aplicação
+    - composer audit || true
+
+# ------------------------------------------------------------------------------
+# 3. Unit & Integration Tests
+# ------------------------------------------------------------------------------
+test:phpunit:
+  stage: test
+  services:
+    - name: mysql:8.0
+      alias: mysql
+  before_script:
+    - apt-get update -qy && apt-get install -y default-mysql-client git unzip libldap2-dev libzip-dev
+    - docker-php-ext-install pdo_mysql ldap zip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - cd aplicação && composer install --prefer-dist --no-interaction
+  script:
+    - mysql -h mysql -u flowti_test -pflowti_password intranet_flowti_test < ../database/schema.sql
+    - mysql -h mysql -u flowti_test -pflowti_password intranet_flowti_test < ../database/seed.sql
+    - ./vendor/bin/phpunit --colors=never --testdox
+
+# ------------------------------------------------------------------------------
+# 4. Docker Build & Container Registry
+# ------------------------------------------------------------------------------
+build:docker:
+  stage: build
+  image: docker:24.0
+  services:
+    - docker:24.0-dind
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:${CI_COMMIT_TAG:-latest}" -f docker/Dockerfile .
+    - echo "Build da imagem concluído com sucesso!"
