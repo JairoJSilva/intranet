@@ -1,0 +1,31 @@
+# ============================================
+# Intranet Flowti — Apache Rewrite Rules
+# Redireciona todas as requisições para index.php
+# ============================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Se o arquivo ou diretório existe fisicamente, serve diretamente
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Redireciona todo o restante para index.php
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Segurança: bloqueia acesso direto a arquivos PHP do src/
+<FilesMatch "\.php$">
+    <If "%{REQUEST_URI} =~ m#/src/#">
+        Require all denied
+    </If>
+</FilesMatch>
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

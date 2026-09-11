@@ -12,3 +12,7 @@ Consulte os manuais completos em `agents/`:
 - **UI/UX Designer**: `agents/02-UIUXDesigner.md`
 
 Ao assumir qualquer um desses papéis, siga rigorosamente as diretrizes, boas práticas e restrições descritas nos respectivos arquivos.
+
+## Modo de Operação e Autonomia (Auto-Aprovação)
+- **Autonomia Total**: Todas as tarefas, alterações de arquivos, criações e execuções de comandos de terminal (build, testes, scripts) devem ser executadas e aprovadas automaticamente sem interrupção para confirmações manuais intermediárias.
+- **Execução Contínua**: O agente deve conduzir as implementações de ponta a ponta de forma autônoma, validando e reportando o status ao final.

@@ -1,0 +1,85 @@
+version: '3.8'
+
+# ============================================
+# Intranet Flowti — Docker Compose
+# Ambiente de desenvolvimento local
+# ============================================
+
+services:
+  # ---- Aplicação PHP ----
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: flowti-app
+    ports:
+      - "8080:80"
+    volumes:
+      - ../aplicação:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=intranet_flowti
+      - DB_USER=root
+      - DB_PASS=rootpass
+      - APP_ENV=development
+      - APP_URL=http://localhost:8080
+      - APP_SECRET=dev-docker-secret-key
+      - SESSION_LIFETIME=7200
+      - LDAP_ENABLED=false
+    networks:
+      - flowti-net
+    restart: unless-stopped
+
+  # ---- MySQL 8.0 ----
+  mysql:
+    image: mysql:8.0
+    container_name: flowti-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: intranet_flowti
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ../database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - flowti-net
+    restart: unless-stopped
+
+  # ---- phpMyAdmin (Dev only) ----
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: flowti-phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootpass
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - flowti-net
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  flowti-net:
+    driver: bridge

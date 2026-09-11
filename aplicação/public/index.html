@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Intranet Flowti — Portal Unificado Corporativo. Centralize todas as aplicações da empresa em um único ponto de acesso." />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="#0a0e1a" />
+
+    <title>Intranet Flowti — Portal Unificado</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>" />
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+
+    <!-- App Styles -->
+    <link rel="stylesheet" href="/assets/css/app.css" />
+</head>
+<body>
+    <!-- App Root -->
+    <div id="app">
+        <!-- Loading inicial -->
+        <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 16px;">
+            <i class="ri-global-line" style="font-size: 3rem; color: var(--vem-blue-500); animation: pulse-glow 2s ease-in-out infinite;"></i>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Carregando Intranet Flowti...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="/assets/js/state.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script src="/assets/js/components/Toast.js"></script>
+    <script src="/assets/js/components/Modal.js"></script>
+    <script src="/assets/js/components/Sidebar.js"></script>
+    <script src="/assets/js/components/Topbar.js"></script>
+    <script src="/assets/js/components/LoginForm.js"></script>
+    <script src="/assets/js/components/Dashboard.js"></script>
+    <script src="/assets/js/components/UserManager.js"></script>
+    <script src="/assets/js/components/GroupManager.js"></script>
+    <script src="/assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css");
+
+:root {
+  /* ==========================================================================
+     1. BRAND COLORS (CORES DA MARCA CARTÃO VEM)
+     ========================================================================== */
+  --color-primary: #0165aa;
+  --color-primary-active: #005288;
+  --color-secondary: #f67f1d;
+  --color-terciary: #e75b32;
+  --hover-terciary: rgba(231, 92, 50, 0.63);
+  --hover-card: rgba(231, 92, 50, 0.64);
+  --color-disabled: #75798b;
+  --color-border-bottom-input: #9ca1b6;
+  --color-cancel: #cc0000;
+  --color-primary-bg: rgba(255, 255, 255, 0.15);
+  --bg-empresa: #f67f1d;
+  --submenu-background: rgb(0, 73, 121);
+
+  /* ==========================================================================
+     2. GRADIENTES
+     ========================================================================== */
+  --gradient-primary: linear-gradient(to right, #e75b32, #f67f1d 90%);
+  --gradient-secondary: linear-gradient(to right, #f0974e, #e67356);
+  --gradient-primary-bottom: linear-gradient(to bottom, var(--color-primary), #4d90bd 90%);
+  --gradient-bg-usuario: linear-gradient(260deg, rgba(231, 78, 39, 0.7483) 34%, rgba(246, 127, 29, 0.75) 81%);
+  --gradient-beggar-bottom: #e67356;
+
+  /* ==========================================================================
+     3. STATUS & FEEDBACK
+     ========================================================================== */
+  --background-validate: #c8ffd9;
+  --text-validate: #006400;
+  --background-refused: #ffc8c8;
+  --text-refused: #dc2626;
+  --background-beggar: #ffeec8;
+  --text-beggar: #dc6026;
+  --color-success: #74e07b;
+  --color-info: #0165aa;
+  --color-info-lite: #17a2b8;
+  --color-warning: #ebb42c;
+
+  /* ==========================================================================
+     4. TIPOGRAFIA & SIZING
+     ========================================================================== */
+  --font-family-base: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --h1-font-size: 1.5rem;
+  --normal-font-size: 0.938rem;
+  --tiny-font-size: 0.625rem;
+  --header-height: 3rem;
+  --border-radius: 6px;
+
+  /* ==========================================================================
+     5. SUPERFÍCIES & PRIMENG/BOOTSTRAP TOKENS
+     ========================================================================== */
+  --surface-ground: #eff3f8;
+  --surface-section: #ffffff;
+  --surface-card: #ffffff;
+  --surface-overlay: #ffffff;
+  --surface-border: #dfe7ef;
+  --surface-hover: #f6f9fc;
+  --focus-ring: 0 0 0 0.2rem #bfdbfe;
+  --maskbg: rgba(0, 0, 0, 0.4);
+  --highlight-bg: #eff6ff;
+  --highlight-text-color: #1d4ed8;
+  --text-color: #495057;
+  --text-color-secondary: #6c757d;
+
+  /* Neutros Primários */
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #eeeeee;
+  --gray-300: #e0e0e0;
+  --gray-400: #bdbdbd;
+  --gray-500: #9e9e9e;
+  --gray-600: #757575;
+  --gray-700: #616161;
+  --gray-800: #424242;
+  --gray-900: #212121;
+
+  /* Escala Blue */
+  --blue-50: #f5f9ff;
+  --blue-100: #d0e1fd;
+  --blue-200: #abc9fb;
+  --blue-300: #85b2f9;
+  --blue-400: #609af8;
+  --blue-500: #3b82f6;
+  --blue-600: #326fd1;
+  --blue-700: #295bac;
+  --blue-800: #204887;
+  --blue-900: #183462;
+
+  /* Escala Orange */
+  --orange-50: #fff8f3;
+  --orange-100: #feddc7;
+  --orange-200: #fcc39b;
+  --orange-300: #fba86f;
+  --orange-400: #fa8e42;
+  --orange-500: #f97316;
+  --orange-600: #d46213;
+  --orange-700: #ae510f;
+  --orange-800: #893f0c;
+  --orange-900: #642e09;
+
+  /* Backgrounds */
+  --bg-page: #fafcff;
+  --bg-image-banner: url("pattern-map-bg.dd72fd39914cb874.png");
+  --bg-image-banner-mobile: url("pattern-map-mobile.465f48ccef062325.png");
+}
+
+@media screen and (min-width: 968px) {
+  :root {
+    --h1-font-size: 2.25rem;
+    --normal-font-size: 1rem;
+  }
+}
+
+* {
+  font-family: var(--font-family-base);
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-page);
+  color: var(--text-color);
+  font-size: var(--normal-font-size);
+}
