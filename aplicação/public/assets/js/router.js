@@ -1,5 +1,5 @@
 /**
- * Intranet Flowti — Client-Side Hash Router
+ * Omniflowti — Client-Side Hash Router
  * Gerencia navegação SPA via hash (#/route).
  */
 const Router = {

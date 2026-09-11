@@ -2,18 +2,18 @@
 declare(strict_types=1);
 
 /**
- * Intranet Flowti — Bootstrap
+ * Omniflowti — Bootstrap
  * Inicializa o ambiente: autoload, .env, sessão segura.
  */
 
 // -----------------------------------------------
-// 1. Autoload PSR-4 via Composer
+// 1. Autoload PSR-4 via Composer (ou fallback manual)
 // -----------------------------------------------
 $autoloadPath = __DIR__ . '/../vendor/autoload.php';
 if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 } else {
-    // Fallback: autoload manual simples
+    // Fallback: autoload manual simples sem Composer
     spl_autoload_register(function (string $class): void {
         $prefix = 'App\\';
         $baseDir = __DIR__ . '/';
@@ -32,7 +32,7 @@ if (file_exists($autoloadPath)) {
 }
 
 // -----------------------------------------------
-// 2. Carregar variáveis de ambiente
+// 2. Carregar variáveis de ambiente (.env)
 // -----------------------------------------------
 \App\Config\Env::load(dirname(__DIR__));
 
@@ -53,7 +53,7 @@ if (session_status() === PHP_SESSION_NONE) {
         ini_set('session.cookie_secure', '1');
     }
 
-    session_name('FLOWTI_SESSION');
+    session_name('OMNIFLOWTI_SESSION');
     session_start();
 }
 
@@ -73,5 +73,12 @@ if ($env === 'development') {
 } else {
     error_reporting(0);
     ini_set('display_errors', '0');
-    ini_set('log_errors', '1');
 }
+
+// -----------------------------------------------
+// 6. Security Headers globais
+// -----------------------------------------------
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');

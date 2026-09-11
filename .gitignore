@@ -1,18 +1,29 @@
-# Composer dependencies & cache
-/aplicação/vendor/
-/aplicação/.phpunit.cache/
+# .gitignore — Intranet Flowti
 
-# Environment local overrides
-/aplicação/.env.local
+# Ambiente
+aplicação/.env.local
 *.env.backup
 
-# OS & Editor
-.DS_Store
-Thumbs.db
+# Dependências PHP & Cache de Testes
+aplicação/vendor/
+aplicação/.phpunit.cache/
+
+# Docker volumes
+mysql_data/
+
+# IDE & Editor
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# Temporary logs
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
 *.log
+
+# Temporários
+*.tmp
+*.bak

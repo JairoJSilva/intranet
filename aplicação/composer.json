@@ -1,6 +1,6 @@
 {
-    "name": "flowti/intranet",
-    "description": "Intranet Flowti — Portal Unificado Corporativo",
+    "name": "flowti/omniflowti",
+    "description": "Omniflowti — Portal Unificado Corporativo",
     "type": "project",
     "license": "proprietary",
     "require": {

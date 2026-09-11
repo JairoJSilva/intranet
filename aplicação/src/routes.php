@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Intranet Flowti — Router de API REST
+ * Omniflowti — Router de API REST
  * Mapeia rotas para Controllers com suporte a parâmetros dinâmicos.
  */
 

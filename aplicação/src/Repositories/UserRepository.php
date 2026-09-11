@@ -266,7 +266,7 @@ final class UserRepository
     {
         $stmt = $this->db->prepare(
             "SELECT g.id, g.name, g.slug, g.icon, g.color
-             FROM groups g
+             FROM `groups` g
              INNER JOIN user_groups ug ON ug.group_id = g.id
              WHERE ug.user_id = :user_id AND g.is_active = 1
              ORDER BY g.name ASC"

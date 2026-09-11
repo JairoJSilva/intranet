@@ -1,5 +1,5 @@
 -- ============================================================
--- Intranet Flowti — Portal Unificado Corporativo
+-- Omniflowti — Portal Unificado Corporativo
 -- Schema DDL — MySQL 8.0+ / MariaDB 10.6+
 -- Charset: utf8mb4_unicode_ci
 -- ============================================================

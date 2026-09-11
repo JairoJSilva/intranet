@@ -1,5 +1,5 @@
 -- ============================================================
--- Intranet Flowti — Seed Data
+-- Omniflowti — Seed Data
 -- Senhas padrão (BCrypt):
 --   admin   → Admin@Flowti2024
 --   suporte → Suporte@Flowti2024
@@ -43,44 +43,70 @@ INSERT INTO `user_groups` (`user_id`, `group_id`) VALUES
 -- 4. PANELS
 -- ------------------------------------------------------------
 INSERT INTO `panels` (`title`, `description`, `icon`, `sort_order`) VALUES
-('Monitoramento',         'Ferramentas de monitoramento e observabilidade',  'ri-line-chart-line',   1),
-('DevOps & CI/CD',        'Ferramentas de desenvolvimento e deploy',         'ri-git-branch-line',   2),
-('Faturamento',           'Sistemas de faturamento e notas fiscais',         'ri-bill-line',         3),
-('Contas a Pagar',        'Gestão de pagamentos e fornecedores',             'ri-bank-card-line',    4),
-('Portal RH',             'Sistemas de gestão de pessoas',                   'ri-user-heart-line',   5),
-('Relatórios Gerenciais', 'Dashboards e relatórios executivos',              'ri-pie-chart-line',    6);
+('Sistemas Flowti',        'Aplicações e agentes internos de automação',       'ri-cpu-line',            1),
+('Portal-OCI',            'Oracle Cloud Infrastructure — Ambientes e Tenants','ri-cloud-line',          2),
+('Portal-Azure',          'Microsoft Azure — Portal de Gestão Cloud',        'ri-microsoft-line',      3),
+('Portal-AWS',            'Amazon Web Services — Console de Gestão Cloud',    'ri-amazon-line',         4),
+('Cofres de Senhas',      'Cofres e gerenciadores corporativos de senhas',   'ri-shield-keyhole-line', 5),
+('DevOps & Monitoramento','Operações, observabilidade e gestão de chamados', 'ri-pulse-line',          6),
+('Financeiro',            'Sistemas de faturamento e notas fiscais',          'ri-bill-line',           7),
+('Recursos Humanos',      'Sistemas de gestão de pessoas e benefícios',       'ri-user-heart-line',     8);
 
 -- ------------------------------------------------------------
 -- 5. GROUP_PANELS
--- TIC: Monitoramento, DevOps
--- Financeiro: Faturamento, Contas a Pagar
--- RH: Portal RH
--- Diretoria: Relatórios Gerenciais
+-- TIC (1): Sistemas Flowti, Portal-OCI, Portal-Azure, Portal-AWS, Cofres, DevOps
+-- Financeiro (2): Financeiro
+-- RH (3): Recursos Humanos
+-- Diretoria (4): Sistemas Flowti, Portais Cloud, DevOps, Financeiro
 -- ------------------------------------------------------------
 INSERT INTO `group_panels` (`group_id`, `panel_id`) VALUES
 (1, 1),
 (1, 2),
-(2, 3),
-(2, 4),
-(3, 5),
-(4, 6);
+(1, 3),
+(1, 4),
+(1, 5),
+(1, 6),
+(2, 7),
+(3, 8),
+(4, 1),
+(4, 2),
+(4, 3),
+(4, 4),
+(4, 6),
+(4, 7);
 
 -- ------------------------------------------------------------
 -- 6. LINKS
+-- Links reais cadastrados a partir de links-salvos
 -- ------------------------------------------------------------
 INSERT INTO `links` (`panel_id`, `title`, `url`, `description`, `icon`, `sort_order`) VALUES
-(1, 'Grafana',              'https://grafana.flowti.com.br',        'Dashboards de monitoramento',          'ri-dashboard-3-line',    1),
-(1, 'Zabbix',               'https://zabbix.flowti.com.br',         'Monitoramento de infraestrutura',      'ri-radar-line',          2),
-(1, 'Kibana',               'https://kibana.flowti.com.br',         'Análise de logs centralizada',         'ri-search-eye-line',     3),
-(2, 'GitLab',               'https://gitlab.flowti.com.br',         'Repositório de código e CI/CD',        'ri-git-repository-line', 1),
-(2, 'ArgoCD',               'https://argocd.flowti.com.br',         'GitOps — Deploy automático K8s',       'ri-rocket-2-line',       2),
-(2, 'Harbor Registry',      'https://harbor.flowti.com.br',         'Registry de imagens Docker',           'ri-ship-line',           3),
-(2, 'SonarQube',            'https://sonar.flowti.com.br',          'Qualidade e segurança de código',      'ri-bug-line',            4),
-(3, 'Sistema NFe',          'https://nfe.flowti.com.br',            'Emissão de notas fiscais eletrônicas', 'ri-file-text-line',      1),
-(3, 'ERP Financeiro',       'https://erp.flowti.com.br/financeiro', 'Módulo financeiro do ERP',             'ri-funds-line',          2),
-(4, 'Portal Fornecedores',  'https://fornecedores.flowti.com.br',   'Gestão de fornecedores e pagamentos',  'ri-store-2-line',        1),
-(4, 'Internet Banking',     'https://www.bb.com.br',                'Banco do Brasil — Internet Banking',   'ri-bank-line',           2),
-(5, 'Ponto Eletrônico',     'https://ponto.flowti.com.br',          'Sistema de ponto e frequência',        'ri-time-line',           1),
-(5, 'Portal do Colaborador','https://rh.flowti.com.br',             'Holerites, férias e benefícios',       'ri-user-smile-line',     2),
-(6, 'Power BI',             'https://app.powerbi.com',              'Dashboards executivos',                'ri-bar-chart-box-line',  1),
-(6, 'Relatórios Custom',    'https://reports.flowti.com.br',        'Relatórios personalizados',            'ri-file-chart-line',     2);
+-- Sistemas Flowti
+(1, 'Flowti-agent',     'https://flowti-agent-develop.flowti.com.br/index.php',                                        'Agente de monitoramento e automação Flowti',       'ri-robot-line',        1),
+(1, 'Cloud-Inventory',  'https://cloud-inventory.flowti.com.br/index.php',                                            'Inventário de recursos e infraestrutura cloud',    'ri-server-line',       2),
+
+-- Portal-OCI (Pastas Cloud)
+(2, 'cloudmvoracle',    'https://cloud.oracle.com/?tenant=cloudmvoracle&region=eu-frankfurt-1',                        'Oracle Cloud — Tenant cloudmvoracle (eu-frankfurt-1)', 'ri-cloud-line',   1),
+(2, 'mvcliensaas',      'https://www.oracle.com/cloud/sign-in.html?redirect_uri=https%3A%2F%2Fcloud.oracle.com%2F%3Fregion%3Dsa-saopaulo-1', 'Oracle Cloud — Tenant mvcliensaas (sa-saopaulo-1)', 'ri-cloud-line', 2),
+
+-- Portal-Azure
+(3, 'Portal Azure',     'https://portal.azure.com',                                                                   'Console de administração Microsoft Azure',         'ri-microsoft-line',    1),
+
+-- Portal-AWS
+(4, 'Portal AWS',       'https://console.aws.amazon.com',                                                             'AWS Management Console — Acesso global aos serviços', 'ri-amazon-line',    1),
+
+-- Cofres de Senhas
+(5, 'Passbolt',         'https://passbolt-develop.flowti.com.br/app/passwords',                                       'Cofre de senhas corporativo compartilhado',        'ri-key-2-line',        1),
+(5, 'Keeper',           'https://keepersecurity.com/vault/#',                                                         'Keeper Security Vault — Cofre seguro de senhas',   'ri-safe-2-line',       2),
+
+-- DevOps & Monitoramento
+(6, 'Grafana',          'https://dash.flowti.com.br/login',                                                           'Dashboards de telemetria e monitoramento',         'ri-dashboard-3-line',  1),
+(6, 'Jira-DevOps',      'https://jira.mv.com.br/projects/OPS/issues/OPS-14?filter=allopenissues',                     'Gestão de demandas e chamados de Operações',       'ri-task-line',         2),
+
+-- Financeiro
+(7, 'Sistema NFe',      'https://nfe.flowti.com.br',                                                                  'Emissão de notas fiscais eletrônicas',             'ri-file-text-line',    1),
+(7, 'ERP Financeiro',   'https://erp.flowti.com.br/financeiro',                                                       'Módulo financeiro do ERP',                         'ri-funds-line',        2),
+
+-- Recursos Humanos
+(8, 'Ponto Eletrônico', 'https://ponto.flowti.com.br',                                                                'Sistema de ponto e frequência',                    'ri-time-line',         1),
+(8, 'Portal do Colaborador', 'https://rh.flowti.com.br',                                                              'Holerites, férias e benefícios',                   'ri-user-smile-line',   2);
+

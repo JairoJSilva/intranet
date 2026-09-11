@@ -1,4 +1,4 @@
-# 🚀 Intranet Flowti — Task List
+# 🚀 Omniflowti — Task List
 
 ## Phase 1: Database
 - [ ] `database/schema.sql` — DDL completo

@@ -1,5 +1,5 @@
 /**
- * Intranet Flowti — Login Form Component
+ * Omniflowti — Login Form Component
  */
 const LoginForm = {
     render() {
@@ -8,7 +8,7 @@ const LoginForm = {
             <div class="login-card">
                 <div class="login-logo">
                     <i class="ri-global-line" style="font-size: 3rem; color: var(--vem-blue-500); display: block; margin-bottom: 12px;"></i>
-                    <h1>Intranet Flowti</h1>
+                    <h1>Omniflowti</h1>
                     <p>Portal Unificado Corporativo</p>
                 </div>
 

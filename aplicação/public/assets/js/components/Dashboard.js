@@ -1,5 +1,5 @@
 /**
- * Intranet Flowti — Dashboard Component
+ * Omniflowti — Dashboard Component
  * Exibe métricas executivas e resumo do status dos sistemas.
  */
 const Dashboard = {

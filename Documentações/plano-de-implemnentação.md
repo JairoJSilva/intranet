@@ -1,4 +1,4 @@
-# 🚀 Intranet Flowti — Portal Unificado Corporativo
+# 🚀 Omniflowti — Portal Unificado Corporativo
 
 Construção completa de um portal intranet corporativo robusto e escalável para centralizar todas as aplicações da empresa num único ponto de acesso. Backend em **PHP 8.2+** com MySQL, frontend em **Vanilla JS + Tailwind CSS**, modelo de permissões **RBAC N:N**, autenticação híbrida **LDAP/AD + Local**, e design system **VEM** com tema dark nativo.
 
@@ -290,7 +290,7 @@ LDAP_SEARCH_FILTER=(sAMAccountName={username})
 LDAP_DEFAULT_GROUP=Colaboradores
 
 # App
-APP_NAME=Intranet Flowti
+APP_NAME=Omniflowti
 APP_ENV=development
 APP_SECRET=change-me-to-a-random-string
 SESSION_LIFETIME=7200
