@@ -27,3 +27,10 @@ Thumbs.db
 # Temporários
 *.tmp
 *.bak
+
+# Senhas & Credenciais Sensíveis
+senhas-padrão
+
+# Uploads & Favicons Baixados em Tempo de Execução
+aplicação/public/uploads/favicons/*
+!aplicação/public/uploads/favicons/.gitkeep
