@@ -135,4 +135,21 @@ final class PanelService
 
         return $result;
     }
+
+    /**
+     * Atualiza a ordenação dos painéis
+     * @param int[] $ids
+     */
+    public function reorder(array $ids, array $currentUser): bool
+    {
+        $cleanIds = array_map('intval', array_filter($ids, fn($id) => is_numeric($id) && (int)$id > 0));
+        if (empty($cleanIds)) {
+            throw new \InvalidArgumentException('A lista de IDs para reordenação é inválida.');
+        }
+
+        $result = $this->repo->reorder($cleanIds);
+        $this->auditRepo->log($currentUser['id'], 'reorder', 'panel', 0, ['ordered_ids' => $cleanIds]);
+
+        return $result;
+    }
 }

@@ -7,11 +7,12 @@ use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\AuditLogRepository;
 use App\Config\Ldap;
+use App\Config\Sso;
 
 /**
  * Serviço de autenticação com Strategy Pattern.
- * Tenta LDAP/AD primeiro (se habilitado), depois fallback local.
- * Auto-provisionamento de usuários vindos do AD no primeiro login.
+ * Suporta Local, LDAP/AD e SSO Moderno (OAuth2 / OIDC).
+ * Auto-provisionamento de usuários vindos do AD ou SSO no primeiro login.
  */
 final class AuthService
 {
@@ -20,6 +21,7 @@ final class AuthService
     private AuditLogRepository $auditRepo;
     private LocalAuthStrategy $localAuth;
     private LdapAuthStrategy $ldapAuth;
+    private SsoAuthStrategy $ssoAuth;
 
     public function __construct()
     {
@@ -28,6 +30,7 @@ final class AuthService
         $this->auditRepo = new AuditLogRepository();
         $this->localAuth = new LocalAuthStrategy();
         $this->ldapAuth  = new LdapAuthStrategy();
+        $this->ssoAuth   = new SsoAuthStrategy();
     }
 
     /**
@@ -187,6 +190,119 @@ final class AuthService
         $this->auditRepo->log($userId, 'create', 'user', $userId, null, [
             'source' => 'ldap_auto_provision',
             'username' => $ldapData['username'],
+        ]);
+
+        return $userId;
+    }
+
+    /**
+     * Retorna a URL para redirecionamento ao Identity Provider SSO
+     */
+    public function getSsoAuthorizationUrl(string $redirectUri): string
+    {
+        if (!Sso::isEnabled()) {
+            throw new \RuntimeException('Autenticação SSO não está habilitada.');
+        }
+
+        return $this->ssoAuth->getAuthorizationUrl($redirectUri);
+    }
+
+    /**
+     * Processa o retorno do SSO, autentica ou auto-provisiona o usuário e cria a sessão
+     */
+    public function handleSsoCallback(string $code, string $state, string $redirectUri): array
+    {
+        if (!Sso::isEnabled()) {
+            throw new \RuntimeException('Autenticação SSO não está habilitada.');
+        }
+
+        $ssoData = $this->ssoAuth->handleCallback($code, $state, $redirectUri);
+
+        // Busca o usuário local por e-mail ou username
+        $user = null;
+        if (!empty($ssoData['email'])) {
+            $user = $this->userRepo->findByEmail($ssoData['email']);
+        }
+
+        if ($user === null && !empty($ssoData['username'])) {
+            $user = $this->userRepo->findByUsername($ssoData['username']);
+        }
+
+        if ($user === null) {
+            // Primeiro acesso via SSO — auto-provisionamento
+            $userId = $this->autoProvisionSso($ssoData);
+            $user = $this->userRepo->findById($userId);
+        } else {
+            // Atualiza dados e provider se necessário
+            $updates = [];
+            if (!empty($ssoData['display_name']) && $ssoData['display_name'] !== $user['display_name']) {
+                $updates['display_name'] = $ssoData['display_name'];
+            }
+            if (!empty($updates)) {
+                $this->userRepo->update((int)$user['id'], $updates);
+                $user = $this->userRepo->findById((int)$user['id']);
+            }
+        }
+
+        if (!$user['is_active']) {
+            throw new \RuntimeException('Conta desativada. Contate o administrador.');
+        }
+
+        // Atualiza último login
+        $this->userRepo->updateLastLogin((int)$user['id']);
+
+        // Cria sessão
+        $this->createSession($user);
+
+        // Auditoria
+        $this->auditRepo->log((int)$user['id'], 'login', 'user', (int)$user['id'], null, [
+            'auth_method' => 'sso',
+            'provider'    => Sso::getProvider(),
+        ]);
+
+        unset($user['password_hash']);
+        $user['groups'] = $this->userRepo->getUserGroups((int)$user['id']);
+
+        return $user;
+    }
+
+    /**
+     * Auto-provisiona um usuário vindo do SSO
+     */
+    private function autoProvisionSso(array $ssoData): int
+    {
+        // Garante username único caso já exista
+        $baseUsername = $ssoData['username'] ?: 'sso_user';
+        $username = $baseUsername;
+        $counter = 1;
+        while ($this->userRepo->findByUsername($username) !== null) {
+            $username = "{$baseUsername}_{$counter}";
+            $counter++;
+        }
+
+        $userId = $this->userRepo->create([
+            'username'      => $username,
+            'display_name'  => $ssoData['display_name'],
+            'email'         => $ssoData['email'],
+            'password_hash' => null,
+            'auth_provider' => 'sso',
+            'is_admin'      => false,
+            'is_supervisor' => false,
+            'is_active'     => true,
+        ]);
+
+        // Associa ao grupo padrão do SSO
+        $defaultGroup = Sso::getConfig()['default_group'] ?? 'Colaboradores';
+        $group = $this->groupRepo->findBySlug($this->slugify($defaultGroup));
+
+        if ($group) {
+            $this->userRepo->syncGroups($userId, [(int)$group['id']]);
+        }
+
+        $this->auditRepo->log($userId, 'create', 'user', $userId, null, [
+            'source'   => 'sso_auto_provision',
+            'provider' => Sso::getProvider(),
+            'email'    => $ssoData['email'],
         ]);
 
         return $userId;

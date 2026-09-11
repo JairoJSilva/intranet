@@ -26,7 +26,11 @@ const Router = {
      * Navega para uma rota
      */
     navigate(path) {
-        window.location.hash = path;
+        if (window.location.hash === path) {
+            this.resolve();
+        } else {
+            window.location.hash = path;
+        }
     },
 
     /**

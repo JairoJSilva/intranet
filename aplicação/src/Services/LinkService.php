@@ -51,6 +51,21 @@ final class LinkService
             );
         }
 
+        // Tenta auto-detectar favicon se o ícone não foi explicitamente customizado
+        if (empty($data['icon']) || in_array($data['icon'], ['ri-links-line', 'ri-global-line'])) {
+            try {
+                $favService = new FaviconService();
+                $fav = $favService->detectAndDownload($data['url']);
+                if (!empty($fav['icon_url'])) {
+                    $data['icon'] = $fav['icon_url'];
+                } elseif (!empty($fav['suggested_icon'])) {
+                    $data['icon'] = $fav['suggested_icon'];
+                }
+            } catch (\Throwable) {
+                // Fallback silencioso mantendo o ícone padrão
+            }
+        }
+
         $linkId = $this->repo->create($data);
         $this->auditRepo->log($currentUserId, 'create', 'link', $linkId);
 
@@ -220,5 +235,22 @@ final class LinkService
             'imported'       => $imported,
             'errors'         => $errors,
         ];
+    }
+
+    /**
+     * Atualiza a ordenação dos links
+     * @param int[] $ids
+     */
+    public function reorder(array $ids, int $currentUserId): bool
+    {
+        $cleanIds = array_map('intval', array_filter($ids, fn($id) => is_numeric($id) && (int)$id > 0));
+        if (empty($cleanIds)) {
+            throw new \InvalidArgumentException('A lista de IDs para reordenação é inválida.');
+        }
+
+        $result = $this->repo->reorder($cleanIds);
+        $this->auditRepo->log($currentUserId, 'reorder', 'link', 0, ['ordered_ids' => $cleanIds]);
+
+        return $result;
     }
 }

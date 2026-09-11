@@ -82,6 +82,9 @@ const PanelManager = {
      * 2. Página Dedicada de um Painel (#/panels/:id) — Contém apenas os links daquele painel
      */
     renderSinglePanelPage() {
+        if (!this.allPanels || this.allPanels.length === 0) {
+            this.allPanels = AppState.get('panels') || [];
+        }
         const panel = this.allPanels.find(p => p.id == this.activePanelId);
         const canManage = AppState.isAdmin() || AppState.isSupervisor();
 
@@ -92,8 +95,10 @@ const PanelManager = {
                     <i class="ri-arrow-left-line"></i> Voltar para Todos os Painéis
                 </button>
             </div>
-            <div class="panel-hero-card">
-                <div class="skeleton" style="height: 80px; width: 100%;"></div>
+            <div id="single-panel-hero-container">
+                <div class="panel-hero-card">
+                    <div class="skeleton" style="height: 80px; width: 100%;"></div>
+                </div>
             </div>
             <div class="apps-grid" id="single-panel-links-container">
                 ${this.renderLinkSkeletons(3)}
@@ -102,6 +107,7 @@ const PanelManager = {
 
         const links = panel.links || [];
         const panelColor = panel.color || 'var(--theme-primary)';
+        const isPinned = AppState.isPanelPinned(panel.id);
 
         return `
         <!-- Botão Voltar -->
@@ -129,6 +135,15 @@ const PanelManager = {
             </div>
 
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <!-- Botão Fixar / Desafixar Painel na Barra Lateral -->
+                <button class="btn ${isPinned ? 'btn-secondary pinned' : 'btn-ghost'} btn-sm btn-pin-hero" 
+                        id="btn-hero-pin-panel"
+                        onclick="PanelManager.togglePin(${panel.id}, event)" 
+                        title="${isPinned ? 'Desafixar da barra lateral' : 'Fixar na barra lateral'}"
+                        style="gap: 6px;">
+                    <i class="${isPinned ? 'ri-pushpin-fill' : 'ri-pushpin-line'}" style="${isPinned ? 'color: var(--theme-primary);' : ''}"></i>
+                    <span>${isPinned ? 'Fixado na Barra' : 'Fixar na Barra'}</span>
+                </button>
                 ${canManage ? `
                 <button class="btn btn-primary btn-sm" onclick="PanelManager.openLinkForm(null, ${panel.id})" title="Adicionar link neste painel" style="gap: 6px;">
                     <i class="ri-add-line"></i> Adicionar Link
@@ -192,9 +207,19 @@ const PanelManager = {
             const res = await API.getPanels();
             this.allPanels = res.data || [];
             AppState.set('panels', this.allPanels);
+            AppState.syncPinnedPanelsWith(this.allPanels);
 
             if (this.activePanelId !== null) {
-                this.renderSinglePanelLinks();
+                const heroContainer = document.getElementById('single-panel-hero-container');
+                if (heroContainer) {
+                    const contentArea = document.getElementById('content-area');
+                    if (contentArea) {
+                        contentArea.innerHTML = this.renderSinglePanelPage();
+                        this.initEvents();
+                    }
+                } else {
+                    this.renderSinglePanelLinks();
+                }
             } else {
                 this.renderCatalogGrid();
             }
@@ -249,6 +274,52 @@ const PanelManager = {
             document.getElementById('btn-view-tiles')?.classList.remove('active');
             this.renderSinglePanelLinks();
         });
+
+        if (this.activePanelId !== null) {
+            this.initLinksDragDrop(this.activePanelId);
+        } else {
+            this.initPanelsDragDrop();
+        }
+    },
+
+    /**
+     * Alterna o estado de fixação de um painel na barra lateral
+     */
+    togglePin(panelId, event) {
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        const panel = this.allPanels.find(p => p.id == panelId);
+        const isPinned = AppState.togglePinPanel(panel || panelId);
+
+        // Atualiza botão no card do catálogo (se presente no DOM)
+        const cardBtn = document.querySelector(`.btn-pin-panel[data-panel-id="${panelId}"]`);
+        if (cardBtn) {
+            cardBtn.classList.toggle('pinned', isPinned);
+            cardBtn.title = isPinned ? 'Desafixar da barra lateral' : 'Fixar na barra lateral';
+            const icon = cardBtn.querySelector('i');
+            if (icon) {
+                icon.className = isPinned ? 'ri-pushpin-fill' : 'ri-pushpin-line';
+            }
+        }
+
+        // Atualiza botão no hero do painel dedicado (se presente no DOM)
+        const heroBtn = document.getElementById('btn-hero-pin-panel');
+        if (heroBtn && this.activePanelId == panelId) {
+            heroBtn.classList.toggle('pinned', isPinned);
+            heroBtn.title = isPinned ? 'Desafixar da barra lateral' : 'Fixar na barra lateral';
+            const icon = heroBtn.querySelector('i');
+            const span = heroBtn.querySelector('span');
+            if (icon) {
+                icon.className = isPinned ? 'ri-pushpin-fill' : 'ri-pushpin-line';
+                icon.style.color = isPinned ? 'var(--theme-primary)' : '';
+            }
+            if (span) {
+                span.textContent = isPinned ? 'Fixado na Barra' : 'Fixar na Barra';
+            }
+        }
     },
 
     /**
@@ -284,20 +355,37 @@ const PanelManager = {
             const links = panel.links || [];
             const panelColor = panel.color || 'var(--theme-primary)';
             const onlineCount = links.filter(l => l.health_status === 'online').length;
+            const isPinned = AppState.isPanelPinned(panel.id);
+            const isDraggable = canManage && !this.searchQuery;
 
             return `
-            <div class="panel-folder-card" data-panel-id="${panel.id}" 
+            <div class="panel-folder-card ${isDraggable ? 'draggable-card' : ''}" data-panel-id="${panel.id}" 
+                 draggable="${isDraggable ? 'true' : 'false'}"
                  style="border-top: 4px solid ${panelColor};"
                  onclick="Router.navigate('#/panels/${panel.id}')"
-                 title="Clique para abrir as aplicações de ${panel.title}">
+                 title="Clique para abrir as aplicações de ${panel.title}${isDraggable ? ' (arraste para reordenar)' : ''}">
                 
                 <div class="panel-folder-header">
                     <div class="panel-folder-icon" style="background: ${panelColor}1a; color: ${panelColor}; border: 1px solid ${panelColor}33;">
                         <i class="${panel.icon || 'ri-dashboard-line'}"></i>
                     </div>
 
-                    ${canManage ? `
-                    <div style="display: flex; gap: 4px;" onclick="event.stopPropagation();">
+                    <div style="display: flex; gap: 4px; align-items: center;" onclick="event.stopPropagation();">
+                        ${isDraggable ? `
+                        <span class="card-drag-handle panel-drag-handle" title="Arraste para reordenar painel" onclick="event.stopPropagation();">
+                            <i class="ri-drag-move-2-line"></i>
+                        </span>
+                        ` : ''}
+
+                        <!-- Botão Fixar / Desafixar da Barra Lateral -->
+                        <button class="btn-pin-panel ${isPinned ? 'pinned' : ''}" 
+                                data-panel-id="${panel.id}"
+                                onclick="PanelManager.togglePin(${panel.id}, event)" 
+                                title="${isPinned ? 'Desafixar da barra lateral' : 'Fixar na barra lateral'}">
+                            <i class="${isPinned ? 'ri-pushpin-fill' : 'ri-pushpin-line'}"></i>
+                        </button>
+
+                        ${canManage ? `
                         <button class="btn btn-ghost btn-sm" onclick="PanelManager.openPanelForm(${panel.id})" title="Editar Painel" style="padding: 4px 8px;">
                             <i class="ri-edit-line"></i>
                         </button>
@@ -306,8 +394,8 @@ const PanelManager = {
                             <i class="ri-delete-bin-line"></i>
                         </button>
                         ` : ''}
+                        ` : ''}
                     </div>
-                    ` : ''}
                 </div>
 
                 <div>
@@ -337,6 +425,8 @@ const PanelManager = {
                 <div style="font-size: 0.8rem; color: var(--text-muted);">Adicione um novo setor corporativo</div>
             </div>
         ` : '');
+
+        this.initPanelsDragDrop();
     },
 
     /**
@@ -350,6 +440,18 @@ const PanelManager = {
         if (!panel) return;
 
         container.innerHTML = this.renderLinksContent(panel);
+        this.initLinksDragDrop(panel.id);
+    },
+
+    /**
+     * Renderiza ícone ou imagem de favicon com fallback automático
+     */
+    renderIcon(icon, defaultIcon = 'ri-global-line') {
+        if (!icon) icon = defaultIcon;
+        if (icon.startsWith('/') || icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('data:image/')) {
+            return `<img src="${icon}" class="app-icon-img" alt="" onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='inline-block';" /><i class="${defaultIcon}" style="display: none;"></i>`;
+        }
+        return `<i class="${icon}"></i>`;
     },
 
     renderLinksContent(panel) {
@@ -399,13 +501,24 @@ const PanelManager = {
             <div class="apps-grid" style="padding: 0;">
                 ${links.map(link => {
                     const domain = this.extractDomain(link.url);
+                    const isDraggable = canManage && !this.searchQuery && this.statusFilter === 'all';
                     return `
-                    <div class="app-tile" data-link-id="${link.id}">
+                    <div class="app-tile ${isDraggable ? 'draggable-card' : ''}" 
+                         data-link-id="${link.id}" 
+                         draggable="${isDraggable ? 'true' : 'false'}"
+                         onclick="window.open('${link.url}', '_blank', 'noopener,noreferrer')" 
+                         style="cursor: pointer;" 
+                         title="Acessar ${link.title} em nova aba${isDraggable ? ' (arraste para reordenar)' : ''}">
                         <div class="app-tile-header">
                             <div class="app-tile-icon" style="background: ${panelColor}18; color: ${panelColor};">
-                                <i class="${link.icon || 'ri-global-line'}"></i>
+                                ${this.renderIcon(link.icon, 'ri-global-line')}
                             </div>
                             <div class="app-tile-meta">
+                                ${isDraggable ? `
+                                <span class="card-drag-handle link-drag-handle" title="Arraste para reordenar aplicação" onclick="event.stopPropagation();">
+                                    <i class="ri-drag-move-2-line"></i>
+                                </span>
+                                ` : ''}
                                 <span class="health-badge ${link.health_status || 'unknown'}" title="Última checagem: ${link.last_checked_at || 'Nunca'}">
                                     <span class="health-dot"></span>
                                     ${link.health_status === 'online' ? 'Online' : (link.health_status === 'offline' ? 'Offline' : 'Aguardando')}
@@ -424,12 +537,12 @@ const PanelManager = {
                         </div>
 
                         <div class="app-tile-footer">
-                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="app-tile-access-btn" title="Acessar ${link.title} em nova aba">
+                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="app-tile-access-btn" title="Acessar ${link.title} em nova aba">
                                 <span>Acessar Sistema</span>
                                 <i class="ri-arrow-right-up-line"></i>
                             </a>
 
-                            <div class="app-tile-actions">
+                            <div class="app-tile-actions" onclick="event.stopPropagation()">
                                 <button class="btn btn-ghost btn-sm" onclick="PanelManager.copyUrl('${link.url}')" title="Copiar URL" style="padding: 6px 8px;">
                                     <i class="ri-file-copy-line"></i>
                                 </button>
@@ -483,8 +596,8 @@ const PanelManager = {
                         <tr>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 12px;">
-                                    <div class="link-icon" style="background: ${panelColor}15; color: ${panelColor}; width: 38px; height: 38px; border-radius: var(--radius-sm); font-size: 1.15rem; flex-shrink: 0;">
-                                        <i class="${link.icon || 'ri-global-line'}"></i>
+                                    <div class="link-icon" style="background: ${panelColor}15; color: ${panelColor}; width: 38px; height: 38px; border-radius: var(--radius-sm); font-size: 1.15rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                        ${this.renderIcon(link.icon, 'ri-global-line')}
                                     </div>
                                     <div style="min-width: 0;">
                                         <div style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem; word-break: break-word;">${link.title}</div>
@@ -535,6 +648,144 @@ const PanelManager = {
             </table>
         </div>
         `;
+    },
+
+    /**
+     * Habilita reordenação por arrastar e soltar (Drag & Drop) dos Links de um painel
+     */
+    initLinksDragDrop(panelId) {
+        const canManage = AppState.isAdmin() || AppState.isSupervisor();
+        if (!canManage || this.searchQuery || this.statusFilter !== 'all' || this.viewMode !== 'tiles') {
+            return;
+        }
+
+        const grid = document.querySelector('#single-panel-links-container .apps-grid');
+        if (!grid) return;
+
+        const cards = grid.querySelectorAll('.app-tile[draggable="true"]');
+        let draggedCard = null;
+
+        cards.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                draggedCard = card;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', card.dataset.linkId);
+            });
+
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (card !== draggedCard) {
+                    card.classList.add('drag-over');
+                }
+            });
+
+            card.addEventListener('dragleave', () => {
+                card.classList.remove('drag-over');
+            });
+
+            card.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                card.classList.remove('drag-over');
+                if (draggedCard && card !== draggedCard) {
+                    const rect = card.getBoundingClientRect();
+                    const next = (e.clientX - rect.left) / (rect.right - rect.left) > 0.5;
+                    grid.insertBefore(draggedCard, next ? card.nextSibling : card);
+
+                    const orderedIds = Array.from(grid.querySelectorAll('.app-tile'))
+                        .map(el => parseInt(el.dataset.linkId, 10))
+                        .filter(id => !isNaN(id) && id > 0);
+
+                    try {
+                        await API.reorderLinks(orderedIds);
+                        Toast.success('Ordem das aplicações atualizada com sucesso!');
+                        const p = this.allPanels.find(x => x.id == panelId);
+                        if (p && p.links) {
+                            p.links.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
+                        }
+                    } catch (err) {
+                        console.error('[PanelManager] Erro ao reordenar links:', err);
+                        Toast.error('Erro ao salvar nova ordem dos links.');
+                    }
+                }
+            });
+
+            card.addEventListener('dragend', () => {
+                cards.forEach(c => {
+                    c.classList.remove('dragging');
+                    c.classList.remove('drag-over');
+                });
+                draggedCard = null;
+            });
+        });
+    },
+
+    /**
+     * Habilita reordenação por arrastar e soltar (Drag & Drop) dos Painéis no Catálogo
+     */
+    initPanelsDragDrop() {
+        const canManage = AppState.isAdmin() || AppState.isSupervisor();
+        if (!canManage || this.searchQuery) return;
+
+        const grid = document.getElementById('catalog-grid-container');
+        if (!grid) return;
+
+        const cards = grid.querySelectorAll('.panel-folder-card[draggable="true"]');
+        let draggedCard = null;
+
+        cards.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                draggedCard = card;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', card.dataset.panelId);
+            });
+
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (card !== draggedCard) {
+                    card.classList.add('drag-over');
+                }
+            });
+
+            card.addEventListener('dragleave', () => {
+                card.classList.remove('drag-over');
+            });
+
+            card.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                card.classList.remove('drag-over');
+                if (draggedCard && card !== draggedCard) {
+                    const rect = card.getBoundingClientRect();
+                    const next = (e.clientX - rect.left) / (rect.right - rect.left) > 0.5;
+                    grid.insertBefore(draggedCard, next ? card.nextSibling : card);
+
+                    const orderedIds = Array.from(grid.querySelectorAll('.panel-folder-card'))
+                        .map(el => parseInt(el.dataset.panelId, 10))
+                        .filter(id => !isNaN(id) && id > 0);
+
+                    try {
+                        await API.reorderPanels(orderedIds);
+                        Toast.success('Ordem dos painéis atualizada com sucesso!');
+                        this.allPanels.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
+                        AppState.set('panels', this.allPanels);
+                    } catch (err) {
+                        console.error('[PanelManager] Erro ao reordenar painéis:', err);
+                        Toast.error('Erro ao salvar nova ordem dos painéis.');
+                    }
+                }
+            });
+
+            card.addEventListener('dragend', () => {
+                cards.forEach(c => {
+                    c.classList.remove('dragging');
+                    c.classList.remove('drag-over');
+                });
+                draggedCard = null;
+            });
+        });
     },
 
     copyUrl(url) {
@@ -737,9 +988,14 @@ const PanelManager = {
                 </div>
                 <div class="form-group">
                     <label class="form-label">URL ou Domínio</label>
-                    <input type="text" class="form-input" id="form-link-url" value="${link?.url || ''}" placeholder="ex.: https://dash.flowti.com.br ou sistema.flowti.com.br" />
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" class="form-input" id="form-link-url" value="${link?.url || ''}" placeholder="ex.: https://dash.flowti.com.br ou sistema.flowti.com.br" style="flex: 1;" />
+                        <button type="button" class="btn-detect-favicon" id="btn-detect-favicon" title="Detectar e baixar favicon automaticamente">
+                            <i class="ri-magic-line"></i> <span>Detectar</span>
+                        </button>
+                    </div>
                     <small style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px; display: block;">
-                        <i class="ri-information-line"></i> Aceita URLs completas com <code>https://</code> ou domínios diretos (será prefixado automaticamente com https://).
+                        <i class="ri-information-line"></i> Aceita URLs completas com <code>https://</code> ou domínios diretos. O favicon é detectado automaticamente ao preencher.
                     </small>
                 </div>
                 <div class="form-group">
@@ -747,9 +1003,18 @@ const PanelManager = {
                     <input type="text" class="form-input" id="form-link-desc" value="${link?.description || ''}" placeholder="Ex.: Portal de monitoramento e NOC" />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Ícone RemixIcon</label>
-                    <input type="text" class="form-input" id="form-link-icon" value="${link?.icon || 'ri-global-line'}" placeholder="ri-global-line" />
-                    <small style="color: var(--text-muted); font-size: 0.75rem;">Sugestões: <code>ri-cloud-line</code>, <code>ri-database-line</code>, <code>ri-shield-keyhole-line</code>, <code>ri-dashboard-line</code>, <code>ri-global-line</code></small>
+                    <label class="form-label">Ícone ou Favicon</label>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="link-icon-preview-box" id="link-icon-preview">
+                            ${this.renderIcon(link?.icon || 'ri-global-line')}
+                        </div>
+                        <div style="flex: 1;">
+                            <input type="text" class="form-input" id="form-link-icon" value="${link?.icon || 'ri-global-line'}" placeholder="ri-global-line ou caminho do favicon" />
+                            <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; display: block;">
+                                Use uma classe RemixIcon (ex: <code>ri-cloud-line</code>) ou o caminho do favicon detectado.
+                            </small>
+                        </div>
+                    </div>
                 </div>
             `,
             footer: `
@@ -758,6 +1023,68 @@ const PanelManager = {
                     <i class="ri-save-line"></i> ${isEdit ? 'Salvar Alterações' : 'Cadastrar Aplicação'}
                 </button>
             `
+        });
+
+        // Eventos do Formulário de Link & Detecção de Favicon
+        const urlInput = document.getElementById('form-link-url');
+        const iconInput = document.getElementById('form-link-icon');
+        const iconPreview = document.getElementById('link-icon-preview');
+        const detectBtn = document.getElementById('btn-detect-favicon');
+
+        const updatePreview = (val) => {
+            if (iconPreview) {
+                iconPreview.innerHTML = this.renderIcon(val || 'ri-global-line');
+            }
+        };
+
+        iconInput?.addEventListener('input', (e) => {
+            updatePreview(e.target.value.trim());
+        });
+
+        const runFaviconDetection = async (showToast = false) => {
+            const url = urlInput?.value.trim();
+            if (!url || url.length < 4) {
+                if (showToast) Toast.error('Informe uma URL válida para detectar o favicon.');
+                return;
+            }
+
+            if (detectBtn) {
+                detectBtn.disabled = true;
+                detectBtn.innerHTML = '<i class="ri-loader-4-line spin"></i> <span>Detectando...</span>';
+            }
+
+            try {
+                const res = await API.detectFavicon(url);
+                if (res.data && res.data.found && res.data.icon_url) {
+                    iconInput.value = res.data.icon_url;
+                    updatePreview(res.data.icon_url);
+                    if (showToast) Toast.success('Favicon detectado e baixado com sucesso!');
+                } else if (res.data && res.data.suggested_icon) {
+                    const current = iconInput.value.trim();
+                    if (!current || current === 'ri-global-line' || current === 'ri-links-line') {
+                        iconInput.value = res.data.suggested_icon;
+                        updatePreview(res.data.suggested_icon);
+                    }
+                    if (showToast) Toast.info(res.data.message || 'Ícone contextual sugerido.');
+                }
+            } catch (err) {
+                if (showToast) Toast.error('Não foi possível obter o favicon do destino.');
+            } finally {
+                if (detectBtn) {
+                    detectBtn.disabled = false;
+                    detectBtn.innerHTML = '<i class="ri-magic-line"></i> <span>Detectar</span>';
+                }
+            }
+        };
+
+        detectBtn?.addEventListener('click', () => runFaviconDetection(true));
+
+        // Auto-detect ao perder foco da URL se for novo link ou ícone padrão
+        urlInput?.addEventListener('blur', () => {
+            const current = iconInput?.value.trim();
+            if (!current || current === 'ri-global-line' || current === 'ri-links-line') {
+                runFaviconDetection(false);
+            }
         });
 
         document.getElementById('btn-save-link')?.addEventListener('click', async () => {

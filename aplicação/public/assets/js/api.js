@@ -66,6 +66,7 @@ const API = {
     login(username, password) { return this.post('/auth/login', { username, password }); },
     logout()                  { return this.post('/auth/logout'); },
     me()                      { return this.get('/auth/me'); },
+    getSsoConfig()            { return this.get('/auth/sso/config'); },
 
     // --- Users ---
     getUsers()                { return this.get('/users'); },
@@ -89,15 +90,25 @@ const API = {
     createPanel(data)         { return this.post('/panels', data); },
     updatePanel(id, data)     { return this.put(`/panels/${id}`, data); },
     deletePanel(id)           { return this.delete(`/panels/${id}`); },
+    reorderPanels(ids)        { return this.put('/panels/reorder', { ids }); },
 
     // --- Links ---
     getLinks(panelId)         { return this.get(`/links?panel_id=${panelId}`); },
     createLink(data)          { return this.post('/links', data); },
     updateLink(id, data)      { return this.put(`/links/${id}`, data); },
     deleteLink(id)            { return this.delete(`/links/${id}`); },
+    reorderLinks(ids)         { return this.put('/links/reorder', { ids }); },
+    detectFavicon(url)        { return this.post('/links/detect-favicon', { url }); },
     importLinksCsv(panelId, csvContent) { return this.post('/links/import-csv', { panel_id: panelId, csv_content: csvContent }); },
 
     // --- Health & Dashboard ---
     healthCheck()             { return this.post('/health/check'); },
     dashboardStats()          { return this.get('/dashboard/stats'); },
+
+    // --- Notices & Broadcast Banners ---
+    getActiveNotices()        { return this.get('/notices/active'); },
+    getNotices()              { return this.get('/notices'); },
+    createNotice(data)        { return this.post('/notices', data); },
+    updateNotice(id, data)    { return this.put(`/notices/${id}`, data); },
+    deleteNotice(id)          { return this.delete(`/notices/${id}`); },
 };

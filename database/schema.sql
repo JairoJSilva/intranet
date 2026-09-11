@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `display_name`   VARCHAR(255)    NOT NULL,
     `email`          VARCHAR(255)    NOT NULL,
     `password_hash`  VARCHAR(255)    DEFAULT NULL COMMENT 'NULL para usuários autenticados apenas via LDAP',
-    `auth_provider`  ENUM('local','ldap') NOT NULL DEFAULT 'local',
+    `auth_provider`  ENUM('local','ldap','sso') NOT NULL DEFAULT 'local',
     `is_admin`       TINYINT(1)      NOT NULL DEFAULT 0,
     `is_supervisor`  TINYINT(1)      NOT NULL DEFAULT 0,
     `is_active`      TINYINT(1)      NOT NULL DEFAULT 1,
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `links` (
     `title`            VARCHAR(200)   NOT NULL,
     `url`              VARCHAR(2048)  NOT NULL,
     `description`      TEXT           DEFAULT NULL,
-    `icon`             VARCHAR(100)   DEFAULT 'ri-links-line',
+    `icon`             VARCHAR(500)   DEFAULT 'ri-global-line' COMMENT 'RemixIcon ou URL do Favicon',
     `health_status`    ENUM('online','warning','offline','unknown') NOT NULL DEFAULT 'unknown',
     `response_time_ms` INT            DEFAULT NULL,
     `last_check_at`    DATETIME       DEFAULT NULL,
@@ -169,3 +169,29 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
         FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
         ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 8. NOTICES — Mural de avisos e manutenções programadas
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `notices` (
+    `id`          INT UNSIGNED   NOT NULL AUTO_INCREMENT,
+    `title`       VARCHAR(255)   NOT NULL,
+    `message`     TEXT           NOT NULL,
+    `type`        ENUM('info', 'warning', 'critical') NOT NULL DEFAULT 'info',
+    `link_url`    VARCHAR(2048)  DEFAULT NULL,
+    `link_text`   VARCHAR(100)   DEFAULT NULL,
+    `starts_at`   DATETIME       DEFAULT NULL,
+    `expires_at`  DATETIME       DEFAULT NULL,
+    `is_active`   TINYINT(1)     NOT NULL DEFAULT 1,
+    `created_by`  INT UNSIGNED   DEFAULT NULL,
+    `created_at`  DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`  DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`id`),
+    INDEX `idx_notices_active` (`is_active`, `starts_at`, `expires_at`),
+
+    CONSTRAINT `fk_notices_user`
+        FOREIGN KEY (`created_by`) REFERENCES `users` (`id`)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

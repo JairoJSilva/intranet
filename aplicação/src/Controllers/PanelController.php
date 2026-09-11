@@ -108,4 +108,29 @@ final class PanelController
             Response::error($e->getMessage(), 403);
         }
     }
+
+    /**
+     * PUT /api/panels/reorder
+     */
+    public function reorder(): void
+    {
+        $user = AuthMiddleware::handle();
+        SupervisorMiddleware::handle($user);
+
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        $ids = $data['ids'] ?? [];
+
+        if (!is_array($ids) || empty($ids)) {
+            Response::error('A lista de IDs para reordenação é obrigatória.', 422);
+        }
+
+        try {
+            $this->service->reorder($ids, $user);
+            Response::success(null, 'Ordenação de painéis atualizada com sucesso.');
+        } catch (\InvalidArgumentException $e) {
+            Response::error($e->getMessage(), 422);
+        } catch (\Throwable $e) {
+            Response::error($e->getMessage(), 400);
+        }
+    }
 }

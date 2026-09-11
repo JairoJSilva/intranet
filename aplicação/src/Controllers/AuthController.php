@@ -64,4 +64,66 @@ final class AuthController
 
         Response::success($user);
     }
+
+    /**
+     * GET /api/auth/sso/config
+     */
+    public function ssoConfig(): void
+    {
+        $config = \App\Config\Sso::getConfig();
+        Response::success([
+            'enabled'      => $config['enabled'],
+            'provider'     => $config['provider'],
+            'button_label' => $config['button_label'],
+            'redirect_url' => '/api/auth/sso/redirect',
+        ]);
+    }
+
+    /**
+     * GET /api/auth/sso/redirect
+     */
+    public function ssoRedirect(): void
+    {
+        try {
+            $appUrl = \App\Config\Env::get('APP_URL', 'http://localhost:8080');
+            $redirectUri = rtrim($appUrl, '/') . '/api/auth/sso/callback';
+
+            $authUrl = $this->authService->getSsoAuthorizationUrl($redirectUri);
+            header("Location: {$authUrl}", true, 302);
+            exit;
+        } catch (\Throwable $e) {
+            header('Location: /#/login?sso_error=' . urlencode($e->getMessage()), true, 302);
+            exit;
+        }
+    }
+
+    /**
+     * GET /api/auth/sso/callback
+     */
+    public function ssoCallback(): void
+    {
+        $code  = $_GET['code'] ?? '';
+        $state = $_GET['state'] ?? '';
+
+        if (empty($code) || empty($state)) {
+            $error = $_GET['error_description'] ?? $_GET['error'] ?? 'Parâmetros de autorização ausentes.';
+            header('Location: /#/login?sso_error=' . urlencode((string)$error), true, 302);
+            exit;
+        }
+
+        try {
+            $appUrl = \App\Config\Env::get('APP_URL', 'http://localhost:8080');
+            $redirectUri = rtrim($appUrl, '/') . '/api/auth/sso/callback';
+
+            $this->authService->handleSsoCallback($code, $state, $redirectUri);
+            
+            // Redireciona com sucesso para o dashboard
+            header('Location: /#/dashboard', true, 302);
+            exit;
+        } catch (\Throwable $e) {
+            header('Location: /#/login?sso_error=' . urlencode($e->getMessage()), true, 302);
+            exit;
+        }
+    }
 }
+

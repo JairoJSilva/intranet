@@ -9,8 +9,14 @@
 
     <title>Omniflowti — Portal Unificado</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>" />
+    <!-- Favicon & PWA -->
+    <link rel="icon" type="image/svg+xml" href="/assets/img/pwa-icon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Omniflowti" />
+    <link rel="apple-touch-icon" href="/assets/img/pwa-icon.svg" />
 
     <!-- Google Fonts: Space Grotesk, Inter, Poppins, Raleway, Rubik -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,7 +27,7 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
 
     <!-- App Styles -->
-    <link rel="stylesheet" href="/assets/css/app.css" />
+    <link rel="stylesheet" href="/assets/css/app.css?v=1.4.1" />
 
     <!-- Theme Restore (Anti-FOUC) -->
     <script>
@@ -41,6 +47,10 @@
                 theme = 'terracotta-sunset';
             }
             document.documentElement.setAttribute('data-theme', theme);
+            var density = localStorage.getItem('omniflowti_density');
+            if (density === 'compact') {
+                document.documentElement.classList.add('density-compact');
+            }
         })();
     </script>
 </head>
@@ -55,19 +65,41 @@
     </div>
 
     <!-- JavaScript Modules -->
-    <script src="/assets/js/state.js"></script>
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/router.js"></script>
-    <script src="/assets/js/components/Toast.js"></script>
-    <script src="/assets/js/components/Modal.js"></script>
-    <script src="/assets/js/components/ThemeManager.js"></script>
-    <script src="/assets/js/components/Sidebar.js"></script>
-    <script src="/assets/js/components/Topbar.js"></script>
-    <script src="/assets/js/components/LoginForm.js"></script>
-    <script src="/assets/js/components/Dashboard.js"></script>
-    <script src="/assets/js/components/PanelManager.js"></script>
-    <script src="/assets/js/components/UserManager.js"></script>
-    <script src="/assets/js/components/GroupManager.js"></script>
-    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/state.js?v=1.4.1"></script>
+    <script src="/assets/js/api.js?v=1.4.1"></script>
+    <script src="/assets/js/router.js?v=1.4.1"></script>
+    <script src="/assets/js/components/Toast.js?v=1.4.1"></script>
+    <script src="/assets/js/components/Modal.js?v=1.4.1"></script>
+    <script src="/assets/js/components/ThemeManager.js?v=1.4.1"></script>
+    <script src="/assets/js/components/NotificationManager.js?v=1.4.1"></script>
+    <script src="/assets/js/components/BroadcastBanner.js?v=1.4.1"></script>
+    <script src="/assets/js/components/CommandPalette.js?v=1.4.1"></script>
+    <script src="/assets/js/components/Sidebar.js?v=1.4.1"></script>
+    <script src="/assets/js/components/Topbar.js?v=1.4.1"></script>
+    <script src="/assets/js/components/LoginForm.js?v=1.4.1"></script>
+    <script src="/assets/js/components/Dashboard.js?v=1.4.1"></script>
+    <script src="/assets/js/components/PanelManager.js?v=1.4.1"></script>
+    <script src="/assets/js/components/UserManager.js?v=1.4.1"></script>
+    <script src="/assets/js/components/GroupManager.js?v=1.4.1"></script>
+    <script src="/assets/js/app.js?v=1.4.1"></script>
+
+    <!-- PWA Service Worker Registration & Install Prompt -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.debug('[PWA] Service Worker ativo:', reg.scope))
+                    .catch(err => console.debug('[PWA] Falha ao registrar Service Worker:', err));
+            });
+        }
+
+        // Captura evento de instalação para permitir instalação sob demanda
+        window.deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+            window.dispatchEvent(new CustomEvent('pwa-installable'));
+        });
+    </script>
 </body>
 </html>

@@ -54,8 +54,10 @@ const LoginForm = {
                     </button>
                 </form>
 
+                <div id="sso-container"></div>
+
                 <p style="text-align: center; margin-top: 24px; font-size: 0.75rem; color: var(--text-muted);">
-                    Autenticação via Active Directory ou conta local
+                    Autenticação via SSO Corporativo, Active Directory ou conta local
                 </p>
             </div>
         </div>`;
@@ -120,5 +122,46 @@ const LoginForm = {
                 submitBtn.innerHTML = '<i class="ri-login-box-line"></i> Entrar';
             }
         });
+
+        // Check for SSO error in URL query
+        const hashQuery = window.location.hash.includes('?') ? window.location.hash.split('?')[1] : '';
+        const searchParams = new URLSearchParams(window.location.search || hashQuery);
+        const ssoError = searchParams.get('sso_error');
+        if (ssoError && errorText && errorDiv) {
+            errorText.textContent = decodeURIComponent(ssoError);
+            errorDiv.classList.remove('hidden');
+        }
+
+        // Load SSO configuration dynamically
+        const ssoContainer = document.getElementById('sso-container');
+        if (ssoContainer) {
+            API.getSsoConfig().then(res => {
+                if (res.success && res.data && res.data.enabled) {
+                    const provider = (res.data.provider || 'sso').toLowerCase();
+                    let iconClass = 'ri-shield-user-line';
+                    if (provider.includes('azure') || provider.includes('entra') || provider.includes('microsoft')) {
+                        iconClass = 'ri-windows-fill';
+                    } else if (provider.includes('keycloak')) {
+                        iconClass = 'ri-shield-keyhole-line';
+                    } else if (provider.includes('google')) {
+                        iconClass = 'ri-google-fill';
+                    } else if (provider.includes('okta')) {
+                        iconClass = 'ri-lock-password-line';
+                    }
+
+                    ssoContainer.innerHTML = `
+                        <div class="sso-divider">
+                            <span>ou continue com</span>
+                        </div>
+                        <a href="/api/auth/sso/redirect" class="btn btn-secondary btn-block btn-lg sso-btn" id="sso-login-btn">
+                            <i class="${iconClass}"></i> ${res.data.button_label || res.data.button_text || ('Entrar com ' + (res.data.provider_name || 'SSO Corporativo'))}
+                        </a>
+                    `;
+                }
+            }).catch(err => {
+                // SSO not configured or disabled, silently keep local login
+                console.debug('SSO não ativado:', err.message);
+            });
+        }
     }
 };

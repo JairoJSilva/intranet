@@ -77,6 +77,7 @@ const Dashboard = {
 
             AppState.set('stats', this.stats);
             AppState.set('panels', this.panels);
+            AppState.syncPinnedPanelsWith(this.panels);
 
             this.renderStats(this.stats);
             this.renderIncidents(this.panels);
@@ -99,6 +100,16 @@ const Dashboard = {
                 Toast.info('Disparando verificação geral de integridade...');
                 const res = await API.healthCheck();
                 Toast.success(`Health check concluído: ${res.data.stats.online}/${res.data.stats.total} sistemas online.`);
+                
+                // Notifica incidentes operacionais no navegador
+                if (res.data && Array.isArray(res.data.results)) {
+                    res.data.results.forEach(item => {
+                        if (item.status === 'offline' || item.status === 'warning') {
+                            NotificationManager.notifyIncident(item, item.panel_title || 'Painel de Links');
+                        }
+                    });
+                }
+
                 await this.loadData();
             } catch (err) {
                 Toast.error('Erro ao executar health check.');
@@ -107,6 +118,19 @@ const Dashboard = {
                 if (icon) icon.className = 'ri-pulse-line';
             }
         });
+    },
+
+    /**
+     * Alterna fixação de painel a partir do Dashboard
+     */
+    togglePin(panelId, event) {
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+        const panel = (this.panels || []).find(p => p.id == panelId);
+        AppState.togglePinPanel(panel || panelId);
+        this.renderSectorsTable(this.panels);
     },
 
     renderStats(stats) {
@@ -245,12 +269,12 @@ const Dashboard = {
         }
 
         container.innerHTML = selected.map(link => `
-            <div class="card" style="margin: 0; padding: 14px 16px; background: var(--bg-card); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid ${link.panelColor};">
+            <div class="card" onclick="window.open('${link.url}', '_blank', 'noopener,noreferrer')" style="margin: 0; padding: 14px 16px; background: var(--bg-card); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid ${link.panelColor}; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;" title="Acessar ${link.title} em nova aba">
                 <div>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: ${link.panelColor}18; color: ${link.panelColor}; display: flex; align-items: center; justify-content: center;">
-                                <i class="${link.icon || 'ri-global-line'}"></i>
+                                ${this.renderIcon(link.icon, 'ri-global-line')}
                             </div>
                             <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); word-break: break-word;">
                                 ${link.title}
@@ -267,7 +291,7 @@ const Dashboard = {
                 </div>
                 <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border-color); font-size: 0.78rem;">
                     <span style="color: var(--text-secondary);">${link.response_time_ms ? `${link.response_time_ms}ms` : 'Disponível'}</span>
-                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 3px 10px; font-size: 0.75rem;">
+                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="btn btn-secondary btn-sm" style="padding: 3px 10px; font-size: 0.75rem;">
                         Acessar <i class="ri-arrow-right-up-line"></i>
                     </a>
                 </div>
@@ -329,8 +353,14 @@ const Dashboard = {
                                         <span style="font-size: 0.75rem; color: ${pctColor}; font-weight: 600;">${pct}%</span>
                                     </div>
                                 </td>
-                                <td style="padding: 12px; text-align: right;">
-                                    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('#/panels')" title="Abrir no Catálogo" style="color: var(--theme-primary); font-size: 0.78rem;">
+                                <td style="padding: 12px; text-align: right; white-space: nowrap;">
+                                    <button class="btn-pin-panel ${AppState.isPanelPinned(p.id) ? 'pinned' : ''}" 
+                                            onclick="Dashboard.togglePin(${p.id}, event)" 
+                                            title="${AppState.isPanelPinned(p.id) ? 'Desafixar da barra lateral' : 'Fixar na barra lateral'}"
+                                            style="width: 28px; height: 28px; font-size: 0.85rem; margin-right: 6px;">
+                                        <i class="${AppState.isPanelPinned(p.id) ? 'ri-pushpin-fill' : 'ri-pushpin-line'}"></i>
+                                    </button>
+                                    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('#/panels/${p.id}')" title="Acessar painel de ${p.title}" style="color: var(--theme-primary); font-size: 0.78rem;">
                                         Explorar <i class="ri-arrow-right-line"></i>
                                     </button>
                                 </td>
@@ -363,5 +393,13 @@ const Dashboard = {
                 <div class="skeleton" style="height: 24px; width: 40%;"></div>
             </div>
         `).join('');
+    },
+
+    renderIcon(icon, defaultIcon = 'ri-global-line') {
+        if (!icon) icon = defaultIcon;
+        if (icon.startsWith('/') || icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('data:image/')) {
+            return `<img src="${icon}" class="app-icon-img" alt="" onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='inline-block';" /><i class="${defaultIcon}" style="display: none;"></i>`;
+        }
+        return `<i class="${icon}"></i>`;
     }
 };

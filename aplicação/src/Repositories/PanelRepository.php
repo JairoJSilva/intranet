@@ -173,4 +173,27 @@ final class PanelRepository
         $stmt = $this->db->query("SELECT COUNT(*) FROM panels WHERE is_active = 1");
         return (int)$stmt->fetchColumn();
     }
+
+    /**
+     * Atualiza a ordenação em lote dos painéis
+     * @param int[] $orderedIds
+     */
+    public function reorder(array $orderedIds): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare("UPDATE panels SET sort_order = :order WHERE id = :id");
+            foreach ($orderedIds as $index => $id) {
+                $stmt->execute([
+                    ':order' => (int)$index + 1,
+                    ':id'    => (int)$id,
+                ]);
+            }
+            $this->db->commit();
+            return true;
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
 }

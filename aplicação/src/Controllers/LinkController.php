@@ -129,4 +129,51 @@ final class LinkController
             Response::error($e->getMessage(), 404);
         }
     }
+
+    /**
+     * PUT /api/links/reorder
+     */
+    public function reorder(): void
+    {
+        $user = AuthMiddleware::handle();
+        SupervisorMiddleware::handle($user);
+
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        $ids = $data['ids'] ?? [];
+
+        if (!is_array($ids) || empty($ids)) {
+            Response::error('A lista de IDs para reordenação é obrigatória.', 422);
+        }
+
+        try {
+            $this->service->reorder($ids, $user['id']);
+            Response::success(null, 'Ordenação de links atualizada com sucesso.');
+        } catch (\InvalidArgumentException $e) {
+            Response::error($e->getMessage(), 422);
+        } catch (\Throwable $e) {
+            Response::error($e->getMessage(), 400);
+        }
+    }
+
+    /**
+     * POST /api/links/detect-favicon
+     * Body JSON: { "url": "https://..." }
+     */
+    public function detectFavicon(): void
+    {
+        $user = AuthMiddleware::handle();
+        SupervisorMiddleware::handle($user);
+
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        $url = trim((string)($data['url'] ?? ''));
+
+        if (empty($url)) {
+            Response::error('A URL é obrigatória para detecção de favicon.', 422);
+        }
+
+        $faviconService = new \App\Services\FaviconService();
+        $result = $faviconService->detectAndDownload($url);
+
+        Response::success($result, $result['message']);
+    }
 }

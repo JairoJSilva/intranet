@@ -1,0 +1,37 @@
+{
+  "name": "Omniflowti — Portal Unificado",
+  "short_name": "Omniflowti",
+  "description": "Portal Corporativo Unificado Flowti de Aplicações e Observabilidade",
+  "start_url": "/#/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08131a",
+  "theme_color": "#00c4bf",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/assets/img/pwa-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/img/flowti-label.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/#/dashboard",
+      "description": "Painel operacional e métricas de saúde"
+    },
+    {
+      "name": "Painéis",
+      "url": "/#/panels",
+      "description": "Catálogo completo de aplicações"
+    }
+  ]
+}

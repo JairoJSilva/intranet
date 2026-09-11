@@ -9,6 +9,7 @@ const App = {
     init() {
         AppState.init();
         ThemeManager.init();
+        CommandPalette.init();
 
         // Registra rotas
         Router
@@ -51,6 +52,7 @@ const App = {
             ${Sidebar.render()}
             <div class="main-content" id="main-content">
                 ${Topbar.render(title)}
+                <div id="broadcast-banner-container" class="broadcast-banner-container" style="display: none;"></div>
                 <div class="content-area" id="content-area">
                     ${await component.render()}
                 </div>
@@ -60,6 +62,11 @@ const App = {
         // Inicializa eventos dos componentes de layout
         Sidebar.initEvents();
         Topbar.initEvents();
+
+        // Inicializa banners de avisos operacionais e comunicados
+        if (typeof BroadcastBanner !== 'undefined') {
+            BroadcastBanner.init();
+        }
 
         // Inicializa eventos do componente da página
         if (typeof component.initEvents === 'function') {
