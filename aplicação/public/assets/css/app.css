@@ -421,6 +421,129 @@
     --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
+/* ---- 9. Dark Mode Tecnológico (Inspirado em guia-identidade-web.md - #121212 & #6200EA & #00E676) ---- */
+[data-theme="tech-neon-dark"] {
+    --theme-primary: #6200ea;
+    --theme-primary-hover: #7c25f8;
+    --theme-accent: #00e676;
+    --theme-accent-hover: #33eb91;
+
+    --vem-blue-500: #6200ea;
+    --vem-blue-600: #7c25f8;
+    --vem-blue-700: #5000c2;
+    --vem-blue-800: #370094;
+    --vem-orange-400: #33eb91;
+    --vem-orange-500: #00e676;
+    --vem-orange-600: #00b35c;
+
+    --bg-primary: #121212;
+    --bg-secondary: #181818;
+    --bg-card: #1e1e1e;
+    --bg-card-hover: #262626;
+    --bg-elevated: #2c2c2c;
+    --border-color: #333333;
+    --border-hover: #4d4d4d;
+
+    --text-primary: #e0e0e0;
+    --text-secondary: #aaaaaa;
+    --text-muted: #757575;
+    --text-accent: #00e676;
+
+    --status-online: #00e676;
+    --status-online-bg: rgba(0, 230, 118, 0.16);
+    --status-warning: #ffab00;
+    --status-warning-bg: rgba(255, 171, 0, 0.16);
+    --status-offline: #ff5252;
+    --status-offline-bg: rgba(255, 82, 82, 0.16);
+
+    --glass-bg: rgba(30, 30, 30, 0.75);
+    --glass-border: rgba(98, 0, 234, 0.25);
+    --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- 10. Clássico Corporativo Moderno (Inspirado em guia-identidade-web.md - #F4F7F6 & #0F52BA & #2563EB) ---- */
+[data-theme="classic-corp-light"] {
+    --theme-primary: #0f52ba;
+    --theme-primary-hover: #2563eb;
+    --theme-accent: #2563eb;
+    --theme-accent-hover: #1d4ed8;
+
+    --vem-blue-500: #0f52ba;
+    --vem-blue-600: #2563eb;
+    --vem-blue-700: #1d4ed8;
+    --vem-blue-800: #1e40af;
+    --vem-orange-400: #60a5fa;
+    --vem-orange-500: #2563eb;
+    --vem-orange-600: #1d4ed8;
+
+    --bg-primary: #f4f7f6;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f0f4f3;
+    --bg-elevated: #e8eee8;
+    --border-color: #e2e8f0;
+    --border-hover: #cbd5e1;
+
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+    --text-accent: #0f52ba;
+
+    --status-online: #10b981;
+    --status-online-bg: #d1fae5;
+    --status-warning: #f59e0b;
+    --status-warning-bg: #fef3c7;
+    --status-offline: #ef4444;
+    --status-offline-bg: #fee2e2;
+
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(15, 82, 186, 0.15);
+    --glass-shadow: 0 4px 12px rgba(15, 82, 186, 0.08);
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+}
+
+/* ---- 11. Minimalista Quente (Inspirado em guia-identidade-web.md - #FAFAFA & #E07A5F & #81B29A & #3D405B) ---- */
+[data-theme="warm-minimalist"] {
+    --theme-primary: #e07a5f;
+    --theme-primary-hover: #cb654b;
+    --theme-accent: #81b29a;
+    --theme-accent-hover: #6ea188;
+
+    --vem-blue-500: #e07a5f;
+    --vem-blue-600: #cb654b;
+    --vem-blue-700: #b5543c;
+    --vem-blue-800: #9e442f;
+    --vem-orange-400: #f2cc8f;
+    --vem-orange-500: #e07a5f;
+    --vem-orange-600: #cb654b;
+
+    --bg-primary: #fdfbf7;
+    --bg-secondary: #f4f0ea;
+    --bg-card: #ffffff;
+    --bg-card-hover: #faf6f0;
+    --bg-elevated: #ede6dc;
+    --border-color: #e5ddd0;
+    --border-hover: #d3c7b5;
+
+    --text-primary: #3d405b;
+    --text-secondary: #5e6282;
+    --text-muted: #8d92ab;
+    --text-accent: #e07a5f;
+
+    --status-online: #81b29a;
+    --status-online-bg: #e6f2ec;
+    --status-warning: #f2cc8f;
+    --status-warning-bg: #fdf6e7;
+    --status-offline: #e07a5f;
+    --status-offline-bg: #fcece8;
+
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(224, 122, 95, 0.18);
+    --glass-shadow: 0 4px 16px rgba(61, 64, 91, 0.08);
+    --shadow-card: 0 4px 10px rgba(61, 64, 91, 0.06);
+}
+
 /* ---- Reset & Base ---- */
 *, *::before, *::after {
     margin: 0;
@@ -1246,6 +1369,15 @@ a:hover {
         radial-gradient(circle at 15% 15%, rgba(231, 91, 50, 0.22) 0%, transparent 45%),
         radial-gradient(circle at 85% 25%, rgba(246, 127, 29, 0.18) 0%, transparent 40%),
         radial-gradient(circle at 50% 85%, rgba(140, 47, 21, 0.22) 0%, transparent 48%);
+    background-attachment: fixed;
+}
+
+[data-theme="tech-neon-dark"] body {
+    background-color: #121212;
+    background-image: 
+        radial-gradient(circle at 15% 15%, rgba(98, 0, 234, 0.28) 0%, transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(0, 230, 118, 0.16) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(3, 218, 198, 0.15) 0%, transparent 48%);
     background-attachment: fixed;
 }
 

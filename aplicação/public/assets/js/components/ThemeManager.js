@@ -104,6 +104,39 @@ const ThemeManager = {
             card: '#13161c',
             primary: '#00d9cf',
             accent: '#f05a28'
+        },
+        {
+            id: 'tech-neon-dark',
+            name: 'Dark Mode Tech Neon',
+            tag: 'Tech & Neon',
+            desc: 'Preto fosco (#121212) com superfícies chumbo (#1E1E1E) e acentos em Roxo Elétrico (#6200EA) e Verde Neon (#00E676)',
+            icon: 'ri-terminal-box-line',
+            bg: '#121212',
+            card: '#1e1e1e',
+            primary: '#6200ea',
+            accent: '#00e676'
+        },
+        {
+            id: 'classic-corp-light',
+            name: 'Clássico Corporativo Moderno',
+            tag: 'Cobalto & Gelo',
+            desc: 'Fundo cinza gelo (#F4F7F6), cards brancos (#FFFFFF) e Azul Cobalto (#0F52BA) com Azul Royal (#2563EB)',
+            icon: 'ri-briefcase-4-line',
+            bg: '#f4f7f6',
+            card: '#ffffff',
+            primary: '#0f52ba',
+            accent: '#2563eb'
+        },
+        {
+            id: 'warm-minimalist',
+            name: 'Minimalista Quente',
+            tag: 'Terracota & Sálvia',
+            desc: 'Fundo creme off-white (#FAFAFA), destaque em Terracota (#E07A5F) e Verde Sálvia (#81B29A) com texto Azul Noite (#3D405B)',
+            icon: 'ri-cup-line',
+            bg: '#fdfbf7',
+            card: '#ffffff',
+            primary: '#e07a5f',
+            accent: '#81b29a'
         }
     ],
 
