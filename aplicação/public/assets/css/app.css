@@ -172,48 +172,7 @@
     --glass-shadow: 0 8px 32px rgba(10, 23, 28, 0.4);
 }
 
-/* ---- 3. Flowti Clean Light (Inspirado no portal institucional flowti.com.br) ---- */
-[data-theme="flowti-light"],
-[data-theme="light"] {
-    --theme-primary: #008c77;
-    --theme-primary-hover: #038470;
-    --theme-accent: #00a8a3;
-    --theme-accent-hover: #008c87;
-
-    --vem-blue-500: #008c77;
-    --vem-blue-600: #038470;
-    --vem-blue-700: #026b5a;
-    --vem-blue-800: #214b63;
-    --vem-orange-400: #00c4bf;
-    --vem-orange-500: #00a8a3;
-    --vem-orange-600: #008c87;
-
-    --bg-primary: #f2f7f7;
-    --bg-secondary: #ffffff;
-    --bg-card: #ffffff;
-    --bg-card-hover: #edf4f4;
-    --bg-elevated: #e5efee;
-    --border-color: #d1e2e0;
-    --border-hover: #b6d1cd;
-
-    --text-primary: #162733;
-    --text-secondary: #47616f;
-    --text-muted: #68808d;
-    --text-accent: #008c77;
-
-    --status-online: #008c77;
-    --status-online-bg: #d1f4ed;
-    --status-warning: #b7791f;
-    --status-warning-bg: #ffeec8;
-    --status-offline: #dc2626;
-    --status-offline-bg: #ffc8c8;
-
-    --glass-bg: rgba(255, 255, 255, 0.88);
-    --glass-border: rgba(209, 226, 224, 0.8);
-    --glass-shadow: 0 4px 20px rgba(33, 75, 99, 0.07);
-}
-
-/* ---- 4. MV Azul Petróleo (Inspirado na cor #214B63 da MV) ---- */
+/* ---- 3. MV Azul Petróleo (Inspirado na cor #214B63 da MV) ---- */
 [data-theme="mv-petrol"],
 [data-theme="ocean"] {
     --theme-primary: #00c4bf;
@@ -337,49 +296,7 @@
     --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
-/* ---- 7. Safira Clean Light (Inspirado em id-visual/variables.css - Superfície Clara) ---- */
-[data-theme="safira-light"],
-[data-theme="cobalt-light"] {
-    --theme-primary: #0165aa;
-    --theme-primary-hover: #005288;
-    --theme-accent: #f67f1d;
-    --theme-accent-hover: #ff9a3c;
-
-    --vem-blue-500: #0178c8;
-    --vem-blue-600: #0165aa;
-    --vem-blue-700: #005288;
-    --vem-blue-800: #004979;
-    --vem-orange-400: #ff9a3c;
-    --vem-orange-500: #f67f1d;
-    --vem-orange-600: #d9650b;
-
-    --bg-primary: #eff3f8;
-    --bg-secondary: #ffffff;
-    --bg-card: #ffffff;
-    --bg-card-hover: #f5f9ff;
-    --bg-elevated: #e2eaf3;
-    --border-color: #dfe7ef;
-    --border-hover: #b6cde2;
-
-    --text-primary: #1e293b;
-    --text-secondary: #475569;
-    --text-muted: #64748b;
-    --text-accent: #0165aa;
-
-    --status-online: #10b981;
-    --status-online-bg: #d1fae5;
-    --status-warning: #f59e0b;
-    --status-warning-bg: #fef3c7;
-    --status-offline: #ef4444;
-    --status-offline-bg: #fee2e2;
-
-    --glass-bg: rgba(255, 255, 255, 0.92);
-    --glass-border: rgba(1, 101, 170, 0.16);
-    --glass-shadow: 0 4px 20px rgba(1, 101, 170, 0.08);
-    --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.06);
-}
-
-/* ---- 8. Terracota Solar (Inspirado em id-visual/guia-de-estilo.md - #E75B32 & #F67F1D) ---- */
+/* ---- 5. Terracota Solar (Inspirado em id-visual/guia-de-estilo.md - #E75B32 & #F67F1D) ---- */
 [data-theme="terracotta-sunset"],
 [data-theme="solar-terracotta"] {
     --theme-primary: #e75b32;
@@ -462,86 +379,45 @@
     --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 }
 
-/* ---- 10. Clássico Corporativo Moderno (Inspirado em guia-identidade-web.md - #F4F7F6 & #0F52BA & #2563EB) ---- */
-[data-theme="classic-corp-light"] {
-    --theme-primary: #0f52ba;
-    --theme-primary-hover: #2563eb;
-    --theme-accent: #2563eb;
-    --theme-accent-hover: #1d4ed8;
+/* ---- 7. Electric Ultramarine & Cyber Navy (Inspirado em guia-de-estilo-ultramarine.md) ---- */
+[data-theme="ultramarine-dark"] {
+    --theme-primary: #312bd9;
+    --theme-primary-hover: #109de8;
+    --theme-accent: #17e1e5;
+    --theme-accent-hover: #7f00f5;
 
-    --vem-blue-500: #0f52ba;
-    --vem-blue-600: #2563eb;
-    --vem-blue-700: #1d4ed8;
-    --vem-blue-800: #1e40af;
-    --vem-orange-400: #60a5fa;
-    --vem-orange-500: #2563eb;
-    --vem-orange-600: #1d4ed8;
+    --vem-blue-500: #312bd9;
+    --vem-blue-600: #109de8;
+    --vem-blue-700: #001b72;
+    --vem-blue-800: #001744;
+    --vem-orange-400: #17e1e5;
+    --vem-orange-500: #7f00f5;
+    --vem-orange-600: #300063;
 
-    --bg-primary: #f4f7f6;
-    --bg-secondary: #ffffff;
-    --bg-card: #ffffff;
-    --bg-card-hover: #f0f4f3;
-    --bg-elevated: #e8eee8;
-    --border-color: #e2e8f0;
-    --border-hover: #cbd5e1;
+    --bg-primary: #001744;
+    --bg-secondary: #001b72;
+    --bg-card: rgba(0, 27, 114, 0.72);
+    --bg-card-hover: rgba(0, 35, 140, 0.88);
+    --bg-elevated: #002288;
+    --border-color: rgba(23, 225, 229, 0.22);
+    --border-hover: rgba(23, 225, 229, 0.55);
 
-    --text-primary: #1f2937;
-    --text-secondary: #4b5563;
-    --text-muted: #9ca3af;
-    --text-accent: #0f52ba;
+    --text-primary: #e6f4ff;
+    --text-secondary: #a3c7e8;
+    --text-muted: #6287af;
+    --text-accent: #17e1e5;
 
-    --status-online: #10b981;
-    --status-online-bg: #d1fae5;
-    --status-warning: #f59e0b;
-    --status-warning-bg: #fef3c7;
-    --status-offline: #ef4444;
-    --status-offline-bg: #fee2e2;
+    --status-online: #17e1e5;
+    --status-online-bg: rgba(23, 225, 229, 0.16);
+    --status-warning: #ffb300;
+    --status-warning-bg: rgba(255, 179, 0, 0.16);
+    --status-offline: #ff3860;
+    --status-offline-bg: rgba(255, 56, 96, 0.16);
 
-    --glass-bg: rgba(255, 255, 255, 0.95);
-    --glass-border: rgba(15, 82, 186, 0.15);
-    --glass-shadow: 0 4px 12px rgba(15, 82, 186, 0.08);
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-}
-
-/* ---- 11. Minimalista Quente (Inspirado em guia-identidade-web.md - #FAFAFA & #E07A5F & #81B29A & #3D405B) ---- */
-[data-theme="warm-minimalist"] {
-    --theme-primary: #e07a5f;
-    --theme-primary-hover: #cb654b;
-    --theme-accent: #81b29a;
-    --theme-accent-hover: #6ea188;
-
-    --vem-blue-500: #e07a5f;
-    --vem-blue-600: #cb654b;
-    --vem-blue-700: #b5543c;
-    --vem-blue-800: #9e442f;
-    --vem-orange-400: #f2cc8f;
-    --vem-orange-500: #e07a5f;
-    --vem-orange-600: #cb654b;
-
-    --bg-primary: #fdfbf7;
-    --bg-secondary: #f4f0ea;
-    --bg-card: #ffffff;
-    --bg-card-hover: #faf6f0;
-    --bg-elevated: #ede6dc;
-    --border-color: #e5ddd0;
-    --border-hover: #d3c7b5;
-
-    --text-primary: #3d405b;
-    --text-secondary: #5e6282;
-    --text-muted: #8d92ab;
-    --text-accent: #e07a5f;
-
-    --status-online: #81b29a;
-    --status-online-bg: #e6f2ec;
-    --status-warning: #f2cc8f;
-    --status-warning-bg: #fdf6e7;
-    --status-offline: #e07a5f;
-    --status-offline-bg: #fcece8;
-
-    --glass-bg: rgba(255, 255, 255, 0.95);
-    --glass-border: rgba(224, 122, 95, 0.18);
-    --glass-shadow: 0 4px 16px rgba(61, 64, 91, 0.08);
-    --shadow-card: 0 4px 10px rgba(61, 64, 91, 0.06);
+    --glass-bg: rgba(0, 27, 114, 0.72);
+    --glass-border: rgba(23, 225, 229, 0.22);
+    --glass-shadow: 0 10px 30px rgba(0, 10, 30, 0.6);
+    --shadow-card: 0 8px 24px rgba(0, 10, 35, 0.5);
 }
 
 /* ---- Reset & Base ---- */
@@ -1378,6 +1254,15 @@ a:hover {
         radial-gradient(circle at 15% 15%, rgba(98, 0, 234, 0.28) 0%, transparent 45%),
         radial-gradient(circle at 85% 20%, rgba(0, 230, 118, 0.16) 0%, transparent 40%),
         radial-gradient(circle at 50% 85%, rgba(3, 218, 198, 0.15) 0%, transparent 48%);
+    background-attachment: fixed;
+}
+
+[data-theme="ultramarine-dark"] body {
+    background-color: #001744;
+    background-image: 
+        radial-gradient(circle at 12% 15%, rgba(127, 0, 245, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 88% 20%, rgba(23, 225, 229, 0.18) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(49, 43, 217, 0.25) 0%, transparent 50%);
     background-attachment: fixed;
 }
 

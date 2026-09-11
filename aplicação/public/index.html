@@ -27,14 +27,19 @@
     <script>
         (function() {
             var theme = localStorage.getItem('omniflowti_theme') || 'aura';
-            if (theme === 'dark' || !theme) theme = 'aura';
-            if (theme === 'light') theme = 'flowti-light';
-            if (theme === 'ocean') theme = 'mv-petrol';
-            if (theme === 'sunset') theme = 'mv-teal';
-            if (theme === 'midnight') theme = 'flowti-midnight';
-            if (theme === 'cobalt-dark') theme = 'safira-dark';
-            if (theme === 'cobalt-light') theme = 'safira-light';
-            if (theme === 'solar-terracotta') theme = 'terracotta-sunset';
+            if (!theme || theme === 'dark' || theme === 'aura' || theme === 'light' || theme === 'flowti-light' || theme === 'safira-light' || theme === 'classic-corp-light' || theme === 'warm-minimalist' || theme === 'cobalt-light') {
+                theme = 'aura';
+            } else if (theme === 'ocean') {
+                theme = 'mv-petrol';
+            } else if (theme === 'sunset') {
+                theme = 'mv-teal';
+            } else if (theme === 'midnight') {
+                theme = 'flowti-midnight';
+            } else if (theme === 'cobalt-dark') {
+                theme = 'safira-dark';
+            } else if (theme === 'solar-terracotta') {
+                theme = 'terracotta-sunset';
+            }
             document.documentElement.setAttribute('data-theme', theme);
         })();
     </script>

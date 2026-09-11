@@ -29,17 +29,6 @@ const ThemeManager = {
             accent: '#f67f1d'
         },
         {
-            id: 'safira-light',
-            name: 'Safira Clean Light',
-            tag: 'Executivo Azul & Âmbar',
-            desc: 'Superfície clara corporativa (#EFF3F8) com azul institucional (#0165AA) e detalhes âmbar (#F67F1D)',
-            icon: 'ri-sun-foggy-line',
-            bg: '#eff3f8',
-            card: '#ffffff',
-            primary: '#0165aa',
-            accent: '#f67f1d'
-        },
-        {
             id: 'terracotta-sunset',
             name: 'Terracota Solar',
             tag: 'Coral & Âmbar',
@@ -69,17 +58,6 @@ const ThemeManager = {
             icon: 'ri-hospital-line',
             bg: '#0a171c',
             card: '#152d36',
-            primary: '#008c77',
-            accent: '#00c4bf'
-        },
-        {
-            id: 'flowti-light',
-            name: 'Flowti Clean Light',
-            tag: 'Executivo Claro',
-            desc: 'Paleta luminosa e corporativa inspirada nos portais institucionais Flowti e MV',
-            icon: 'ri-sun-line',
-            bg: '#f2f7f7',
-            card: '#ffffff',
             primary: '#008c77',
             accent: '#00c4bf'
         },
@@ -117,26 +95,15 @@ const ThemeManager = {
             accent: '#00e676'
         },
         {
-            id: 'classic-corp-light',
-            name: 'Clássico Corporativo Moderno',
-            tag: 'Cobalto & Gelo',
-            desc: 'Fundo cinza gelo (#F4F7F6), cards brancos (#FFFFFF) e Azul Cobalto (#0F52BA) com Azul Royal (#2563EB)',
-            icon: 'ri-briefcase-4-line',
-            bg: '#f4f7f6',
-            card: '#ffffff',
-            primary: '#0f52ba',
-            accent: '#2563eb'
-        },
-        {
-            id: 'warm-minimalist',
-            name: 'Minimalista Quente',
-            tag: 'Terracota & Sálvia',
-            desc: 'Fundo creme off-white (#FAFAFA), destaque em Terracota (#E07A5F) e Verde Sálvia (#81B29A) com texto Azul Noite (#3D405B)',
-            icon: 'ri-cup-line',
-            bg: '#fdfbf7',
-            card: '#ffffff',
-            primary: '#e07a5f',
-            accent: '#81b29a'
+            id: 'ultramarine-dark',
+            name: 'Electric Ultramarine & Aqua',
+            tag: 'Cyber Navy & Violet',
+            desc: 'Azul Noite (#001744) com superfícies Marinho (#001B72), acentos em Ultramarino (#312BD9), Ciano Aqua (#17E1E5) e Violeta (#7F00F5)',
+            icon: 'ri-space-ship-line',
+            bg: '#001744',
+            card: '#001b72',
+            primary: '#312bd9',
+            accent: '#17e1e5'
         }
     ],
 
@@ -153,14 +120,14 @@ const ThemeManager = {
      */
     getTheme() {
         const saved = localStorage.getItem('omniflowti_theme');
-        // Aliases de transição
-        if (saved === 'dark' || !saved || saved === 'aura') return 'aura';
-        if (saved === 'light') return 'flowti-light';
+        // Aliases e fallback para temas escuros
+        if (!saved || saved === 'dark' || saved === 'aura' || saved === 'light' || saved === 'flowti-light' || saved === 'safira-light' || saved === 'classic-corp-light' || saved === 'warm-minimalist' || saved === 'cobalt-light') {
+            return 'aura';
+        }
         if (saved === 'ocean') return 'mv-petrol';
         if (saved === 'sunset') return 'mv-teal';
         if (saved === 'midnight') return 'flowti-midnight';
         if (saved === 'cobalt-dark') return 'safira-dark';
-        if (saved === 'cobalt-light') return 'safira-light';
         if (saved === 'solar-terracotta') return 'terracotta-sunset';
         return saved;
     },

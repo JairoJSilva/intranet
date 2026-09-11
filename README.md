@@ -27,15 +27,15 @@ Portal corporativo unificado desenvolvido para centralizar todos os sistemas, li
   - Alternador dinâmico de visualização: **Grade de Aplicações (Tiles)** ou **Tabela Corporativa**.
 - 🌐 **Nova Logo Oficial Flowti**:
   - Integração do vetor oficial SVG [flowti-label.svg](id-visual/flowti-label.svg) na barra lateral atuando como atalho interativo para a **Home (`#/dashboard`)** e na tela de login.
-- 🎨 **Multi-Temas Integrados (Sem dependência de nomes legados)**:
-  - **Aura Electric Dark** (Padrão Oficial)
+- 🎨 **Multi-Temas Dark Mode Integrados (Sem temas claros)**:
+  - **Aura Electric Dark** (Padrão Oficial com Glassmorphism)
+  - **Electric Ultramarine & Aqua** (Inspirado em `guia-de-estilo-ultramarine.md` — Cyber Navy & Violet)
+  - **Dark Mode Tech Neon** (Preto fosco `#121212` com Roxo Elétrico `#6200EA` e Verde Neon `#00E676`)
   - **Safira Night** (Slate Dark com Azul Safira `#0178C8` e Âmbar solar `#F67F1D`)
-  - **Safira Clean Light** (Superfície clara corporativa `#EFF3F8` com Azul `#0165AA` e Âmbar `#F67F1D`)
   - **Terracota Solar** (Gradiente quente de terracota coral `#E75B32` e laranja solar `#F67F1D`)
   - **Flowti Observability** (Monitoramento com Flowti Cyan `#00C4BF` e Coral `#F05A28`)
   - **MV Saúde & Tecnologia** (Verde Esmeralda `#008C77` e Azul Petróleo `#214B63`)
-  - **MV Azul Petróleo** (Azul clássico institucional)
-  - **Flowti Clean Light** (Executivo claro)
+  - **MV Azul Petróleo** (Azul clássico institucional `#214B63`)
   - **Midnight Observability** (Preto puro OLED para NOC)
 - 🖥️ **Correção Total de Layout e Responsividade**:
   - Correção de cálculo de largura da área principal (`calc(100% - var(--sidebar-width))`), eliminando 100% de qualquer corte de tela ou scroll horizontal indesejado.
