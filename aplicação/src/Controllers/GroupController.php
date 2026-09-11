@@ -98,4 +98,53 @@ final class GroupController
             Response::error($e->getMessage(), 404);
         }
     }
+
+    /**
+     * GET /api/groups/{id}/members
+     */
+    public function members(int $id): void
+    {
+        AuthMiddleware::handle();
+
+        try {
+            $members = $this->service->getMembers($id);
+            Response::success($members);
+        } catch (\RuntimeException $e) {
+            Response::error($e->getMessage(), 404);
+        }
+    }
+
+    /**
+     * PUT /api/groups/{id}/members/{userId}
+     */
+    public function updateMember(int $id, int $userId): void
+    {
+        $user = AuthMiddleware::handle();
+        AdminMiddleware::handle($user);
+
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        try {
+            $members = $this->service->updateMember($id, $userId, $data, $user['id']);
+            Response::success($members, 'Permissões do usuário no grupo atualizadas com sucesso.');
+        } catch (\RuntimeException $e) {
+            Response::error($e->getMessage(), 404);
+        }
+    }
+
+    /**
+     * DELETE /api/groups/{id}/members/{userId}
+     */
+    public function removeMember(int $id, int $userId): void
+    {
+        $user = AuthMiddleware::handle();
+        AdminMiddleware::handle($user);
+
+        try {
+            $this->service->removeMember($id, $userId, $user['id']);
+            Response::success(null, 'Usuário removido do grupo com sucesso.');
+        } catch (\RuntimeException $e) {
+            Response::error($e->getMessage(), 404);
+        }
+    }
 }

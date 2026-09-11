@@ -104,6 +104,47 @@ final class GroupService
         return $result;
     }
 
+    public function getMembers(int $groupId): array
+    {
+        $existing = $this->repo->findById($groupId);
+        if (!$existing) {
+            throw new \RuntimeException('Grupo não encontrado.');
+        }
+
+        return $this->repo->getMembers($groupId);
+    }
+
+    public function updateMember(int $groupId, int $userId, array $data, int $currentUserId): array
+    {
+        $existing = $this->repo->findById($groupId);
+        if (!$existing) {
+            throw new \RuntimeException('Grupo não encontrado.');
+        }
+
+        $this->repo->updateMember($groupId, $userId, $data);
+        $this->auditRepo->log($currentUserId, 'update_member_permission', 'group', $groupId, [
+            'target_user_id' => $userId,
+            'permissions'    => $data,
+        ]);
+
+        return $this->repo->getMembers($groupId);
+    }
+
+    public function removeMember(int $groupId, int $userId, int $currentUserId): bool
+    {
+        $existing = $this->repo->findById($groupId);
+        if (!$existing) {
+            throw new \RuntimeException('Grupo não encontrado.');
+        }
+
+        $result = $this->repo->removeMember($groupId, $userId);
+        $this->auditRepo->log($currentUserId, 'remove_member', 'group', $groupId, [
+            'removed_user_id' => $userId,
+        ]);
+
+        return $result;
+    }
+
     private function slugify(string $text): string
     {
         $text = mb_strtolower($text, 'UTF-8');

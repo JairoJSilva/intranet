@@ -6,10 +6,9 @@ const LoginForm = {
         return `
         <div class="login-page" id="login-page">
             <div class="login-card">
-                <div class="login-logo">
-                    <i class="ri-global-line" style="font-size: 3rem; color: var(--vem-blue-500); display: block; margin-bottom: 12px;"></i>
-                    <h1>Omniflowti</h1>
-                    <p>Portal Unificado Corporativo</p>
+                <div style="text-align: center; margin-bottom: 28px;">
+                    <img src="/assets/img/flowti-label.svg" alt="Omniflowti" style="height: 38px; width: auto; margin-bottom: 14px; filter: drop-shadow(0 0 16px rgba(171, 23, 238, 0.5));" />
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0;">Portal Corporativo Unificado</p>
                 </div>
 
                 <form id="login-form" autocomplete="off">

@@ -145,19 +145,66 @@ final class GroupRepository
     }
 
     /**
-     * Retorna membros de um grupo
+     * Retorna membros de um grupo com suas permissões específicas
      */
     public function getMembers(int $groupId): array
     {
         $stmt = $this->db->prepare(
-            "SELECT u.id, u.username, u.display_name, u.email, u.is_admin, u.is_supervisor
+            "SELECT u.id, u.username, u.display_name, u.email, u.is_admin, u.is_supervisor,
+                    ug.role, ug.can_manage_links, ug.can_manage_members
              FROM users u
              INNER JOIN user_groups ug ON ug.user_id = u.id
              WHERE ug.group_id = :group_id AND u.is_active = 1
              ORDER BY u.display_name ASC"
         );
         $stmt->execute([':group_id' => $groupId]);
-        return $stmt->fetchAll();
+        $members = $stmt->fetchAll();
+
+        foreach ($members as &$member) {
+            $member['id'] = (int)$member['id'];
+            $member['is_admin'] = (bool)$member['is_admin'];
+            $member['is_supervisor'] = (bool)$member['is_supervisor'];
+            $member['role'] = $member['role'] ?? 'member';
+            $member['can_manage_links'] = (bool)($member['can_manage_links'] ?? false);
+            $member['can_manage_members'] = (bool)($member['can_manage_members'] ?? false);
+        }
+
+        return $members;
+    }
+
+    /**
+     * Atualiza ou define permissões de um membro específico no grupo
+     */
+    public function updateMember(int $groupId, int $userId, array $data): bool
+    {
+        $role = in_array($data['role'] ?? 'member', ['member', 'supervisor', 'admin']) ? $data['role'] : 'member';
+        $canLinks = !empty($data['can_manage_links']) ? 1 : 0;
+        $canMembers = !empty($data['can_manage_members']) ? 1 : 0;
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO user_groups (user_id, group_id, role, can_manage_links, can_manage_members)
+             VALUES (:user_id, :group_id, :role, :can_manage_links, :can_manage_members)
+             ON DUPLICATE KEY UPDATE 
+                role = VALUES(role),
+                can_manage_links = VALUES(can_manage_links),
+                can_manage_members = VALUES(can_manage_members)"
+        );
+        return $stmt->execute([
+            ':user_id'            => $userId,
+            ':group_id'           => $groupId,
+            ':role'               => $role,
+            ':can_manage_links'   => $canLinks,
+            ':can_manage_members' => $canMembers,
+        ]);
+    }
+
+    /**
+     * Remove membro do grupo
+     */
+    public function removeMember(int $groupId, int $userId): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM user_groups WHERE group_id = :group_id AND user_id = :user_id");
+        return $stmt->execute([':group_id' => $groupId, ':user_id' => $userId]);
     }
 
     /**

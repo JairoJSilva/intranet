@@ -75,11 +75,14 @@ const API = {
     importCsv(csv)            { return this.request('POST', '/users/import-csv', null, { body: csv }); },
 
     // --- Groups ---
-    getGroups()               { return this.get('/groups'); },
-    getGroup(id)              { return this.get(`/groups/${id}`); },
-    createGroup(data)         { return this.post('/groups', data); },
-    updateGroup(id, data)     { return this.put(`/groups/${id}`, data); },
-    deleteGroup(id)           { return this.delete(`/groups/${id}`); },
+    getGroups()                                { return this.get('/groups'); },
+    getGroup(id)                               { return this.get(`/groups/${id}`); },
+    createGroup(data)                          { return this.post('/groups', data); },
+    updateGroup(id, data)                      { return this.put(`/groups/${id}`, data); },
+    deleteGroup(id)                            { return this.delete(`/groups/${id}`); },
+    getGroupMembers(groupId)                   { return this.get(`/groups/${groupId}/members`); },
+    updateGroupMember(groupId, userId, data)   { return this.put(`/groups/${groupId}/members/${userId}`, data); },
+    removeGroupMember(groupId, userId)         { return this.delete(`/groups/${groupId}/members/${userId}`); },
 
     // --- Panels ---
     getPanels()               { return this.get('/panels'); },

@@ -27,7 +27,7 @@ const Topbar = {
                     <i class="ri-pulse-line"></i>
                 </button>
 
-                <div class="user-menu" id="user-menu-toggle">
+                <div class="user-menu" id="user-menu-toggle" title="Clique para ver propriedades do usuário e temas" style="cursor: pointer;">
                     <div class="user-avatar">${initials}</div>
                     <div class="user-info">
                         <span class="user-name">${user?.display_name || 'Usuário'}</span>
@@ -90,6 +90,14 @@ const Topbar = {
             mobileBtn.style.display = '';
             mobileBtn.addEventListener('click', () => {
                 document.getElementById('sidebar')?.classList.toggle('mobile-open');
+            });
+        }
+
+        // Propriedades do Usuário & Temas
+        const userMenu = document.getElementById('user-menu-toggle');
+        if (userMenu) {
+            userMenu.addEventListener('click', () => {
+                ThemeManager.openUserProfileModal();
             });
         }
     }

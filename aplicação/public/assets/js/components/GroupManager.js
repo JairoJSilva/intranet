@@ -42,7 +42,7 @@ const GroupManager = {
         }
 
         grid.innerHTML = groups.map(g => `
-            <div class="card" style="border-left: 3px solid ${g.color || 'var(--vem-blue-500)'};">
+            <div class="card" style="border-left: 3px solid ${g.color || 'var(--theme-primary)'};">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div class="panel-icon" style="background: ${g.color}20; color: ${g.color};">
@@ -62,9 +62,14 @@ const GroupManager = {
                         </button>
                     </div>
                 </div>
-                <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary);">
-                    <span><i class="ri-user-line"></i> ${g.member_count || 0} membros</span>
-                    <span><i class="ri-layout-grid-line"></i> ${g.panel_count || 0} painéis</span>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-secondary);">
+                    <div style="display: flex; gap: 14px;">
+                        <span><i class="ri-user-line"></i> ${g.member_count || 0} membros</span>
+                        <span><i class="ri-layout-grid-line"></i> ${g.panel_count || 0} painéis</span>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="GroupManager.openMembersModal(${g.id}, '${g.name}')" style="font-size: 0.78rem; padding: 4px 10px;">
+                        <i class="ri-shield-user-line"></i> Membros & Permissões
+                    </button>
                 </div>
             </div>
         `).join('');
@@ -133,7 +138,7 @@ const GroupManager = {
         document.querySelectorAll('.icon-picker-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.icon-picker-btn').forEach(b => b.style.borderColor = 'var(--border-color)');
-                btn.style.borderColor = 'var(--vem-blue-500)';
+                btn.style.borderColor = 'var(--theme-primary)';
                 document.getElementById('form-group-icon').value = btn.dataset.icon;
             });
         });
@@ -204,4 +209,171 @@ const GroupManager = {
             }
         }
     },
+
+    async openMembersModal(groupId, groupName) {
+        try {
+            const [membersRes, allUsersRes] = await Promise.all([
+                API.getGroupMembers(groupId),
+                API.getUsers()
+            ]);
+
+            const members = membersRes.data || [];
+            const allUsers = allUsersRes.data || [];
+            const nonMembers = allUsers.filter(u => !members.some(m => m.id === u.id));
+
+            const renderModalContent = (currentMembers, currentNonMembers) => `
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- Adicionar novo membro -->
+                    <div class="card" style="margin: 0; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color);">
+                        <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                            <i class="ri-user-add-line" style="color: var(--theme-primary);"></i> Associar Novo Usuário a este Grupo
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                            <select class="form-input form-select" id="new-member-user-id" style="flex: 2; min-width: 160px; font-size: 0.82rem; height: 36px;">
+                                <option value="">Selecione um usuário...</option>
+                                ${currentNonMembers.map(u => `<option value="${u.id}">${u.display_name} (@${u.username})</option>`).join('')}
+                            </select>
+                            <select class="form-input form-select" id="new-member-role" style="flex: 1; min-width: 130px; font-size: 0.82rem; height: 36px;">
+                                <option value="member">Membro</option>
+                                <option value="supervisor">Supervisor</option>
+                                <option value="admin">Gestor</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" id="btn-add-member" style="height: 36px;">
+                                <i class="ri-add-line"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lista de membros atuais -->
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Membros Ativos (${currentMembers.length})</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Defina papéis e permissões individuais</span>
+                        </div>
+
+                        ${currentMembers.length === 0 ? `
+                            <div class="empty-state" style="padding: 24px;">
+                                <i class="ri-user-unfollow-line"></i>
+                                <p>Nenhum membro vinculado a este grupo no momento.</p>
+                            </div>
+                        ` : `
+                            <div style="display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; padding-right: 4px;">
+                                ${currentMembers.map(m => `
+                                    <div class="card" style="margin: 0; padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.8rem; background: var(--theme-primary);">
+                                                    ${m.display_name ? m.display_name.charAt(0).toUpperCase() : 'U'}
+                                                </div>
+                                                <div>
+                                                    <div style="font-weight: 600; font-size: 0.88rem;">${m.display_name}</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted);">${m.email}</div>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-ghost btn-sm" onclick="GroupManager.removeMemberFromGroup(${groupId}, '${groupName}', ${m.id}, '${m.display_name}')" title="Remover do Grupo" style="color: var(--status-offline); padding: 4px 8px;">
+                                                <i class="ri-user-unfollow-line"></i>
+                                            </button>
+                                        </div>
+
+                                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding-top: 8px; border-top: 1px dashed var(--border-color); font-size: 0.8rem;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <span style="color: var(--text-muted);">Papel:</span>
+                                                <select class="form-input form-select" id="member-role-${m.id}" style="padding: 2px 6px; font-size: 0.78rem; height: 28px; width: 130px;">
+                                                    <option value="member" ${m.role === 'member' ? 'selected' : ''}>Colaborador</option>
+                                                    <option value="supervisor" ${m.role === 'supervisor' ? 'selected' : ''}>Supervisor</option>
+                                                    <option value="admin" ${m.role === 'admin' ? 'selected' : ''}>Gestor</option>
+                                                </select>
+                                            </div>
+
+                                            <div style="display: flex; align-items: center; gap: 14px;">
+                                                <label class="checkbox-wrapper" style="font-size: 0.76rem;">
+                                                    <input type="checkbox" id="member-links-${m.id}" ${m.can_manage_links ? 'checked' : ''} />
+                                                    <span>Links</span>
+                                                </label>
+                                                <label class="checkbox-wrapper" style="font-size: 0.76rem;">
+                                                    <input type="checkbox" id="member-members-${m.id}" ${m.can_manage_members ? 'checked' : ''} />
+                                                    <span>Membros</span>
+                                                </label>
+                                                <button class="btn btn-secondary btn-sm" onclick="GroupManager.saveMemberPermission(${groupId}, '${groupName}', ${m.id})" style="padding: 3px 8px; font-size: 0.75rem;">
+                                                    <i class="ri-save-line"></i> Salvar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+
+            Modal.open({
+                title: `Permissões & Membros — ${groupName}`,
+                content: renderModalContent(members, nonMembers),
+                footer: `<button class="btn btn-secondary" onclick="Modal.close()">Fechar</button>`
+            });
+
+            document.getElementById('btn-add-member')?.addEventListener('click', async () => {
+                const userId = document.getElementById('new-member-user-id').value;
+                const role = document.getElementById('new-member-role').value;
+                if (!userId) {
+                    Toast.error('Selecione um usuário para adicionar.');
+                    return;
+                }
+                try {
+                    await API.updateGroupMember(groupId, userId, {
+                        role,
+                        can_manage_links: role !== 'member' ? 1 : 0,
+                        can_manage_members: role === 'admin' ? 1 : 0,
+                    });
+                    Toast.success('Membro associado com sucesso.');
+                    this.loadData();
+                    this.openMembersModal(groupId, groupName);
+                } catch (e) {
+                    Toast.error(e.message || 'Erro ao adicionar membro.');
+                }
+            });
+
+        } catch (e) {
+            Toast.error('Erro ao carregar membros do grupo.');
+        }
+    },
+
+    async saveMemberPermission(groupId, groupName, userId) {
+        const role = document.getElementById(`member-role-${userId}`)?.value || 'member';
+        const canLinks = document.getElementById(`member-links-${userId}`)?.checked ? 1 : 0;
+        const canMembers = document.getElementById(`member-members-${userId}`)?.checked ? 1 : 0;
+
+        try {
+            await API.updateGroupMember(groupId, userId, {
+                role,
+                can_manage_links: canLinks,
+                can_manage_members: canMembers
+            });
+            Toast.success('Permissões salvas com sucesso.');
+            this.loadData();
+        } catch (e) {
+            Toast.error(e.message || 'Erro ao salvar permissões.');
+        }
+    },
+
+    async removeMemberFromGroup(groupId, groupName, userId, userName) {
+        const confirmed = await Modal.confirm({
+            title: 'Remover Membro',
+            message: `Remover <strong>${userName}</strong> deste grupo? O usuário perderá o acesso aos painéis deste setor.`,
+            confirmText: 'Remover',
+            type: 'danger'
+        });
+
+        if (confirmed) {
+            try {
+                await API.removeGroupMember(groupId, userId);
+                Toast.success('Membro removido do grupo com sucesso.');
+                this.loadData();
+                this.openMembersModal(groupId, groupName);
+            } catch (e) {
+                Toast.error(e.message || 'Erro ao remover membro.');
+            }
+        }
+    }
 };

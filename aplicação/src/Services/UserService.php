@@ -73,7 +73,9 @@ final class UserService
         ]);
 
         // Sincroniza grupos (se informados)
-        if (!empty($data['group_ids'])) {
+        if (isset($data['groups'])) {
+            $this->repo->syncGroups($userId, $data['groups']);
+        } elseif (!empty($data['group_ids'])) {
             $this->repo->syncGroups($userId, $data['group_ids']);
         }
 
@@ -116,7 +118,9 @@ final class UserService
         }
 
         // Sincroniza grupos
-        if (array_key_exists('group_ids', $data)) {
+        if (array_key_exists('groups', $data)) {
+            $this->repo->syncGroups($id, $data['groups'] ?? []);
+        } elseif (array_key_exists('group_ids', $data)) {
             $this->repo->syncGroups($id, $data['group_ids'] ?? []);
         }
 

@@ -11,10 +11,11 @@ const Sidebar = {
         return `
         <aside class="sidebar ${collapsed ? 'collapsed' : ''}" id="sidebar">
             <div class="sidebar-header">
-                <i class="ri-global-line" style="font-size: 1.5rem; color: var(--vem-blue-500);"></i>
-                <span class="sidebar-brand">Omniflowti</span>
-                <button class="sidebar-toggle" id="sidebar-toggle" title="Recolher menu">
-                    <i class="ri-menu-fold-line"></i>
+                <a href="#/dashboard" class="sidebar-logo-link" title="Omniflowti — Home / Dashboard" onclick="Router.navigate('#/dashboard'); return false;">
+                    <img src="/assets/img/flowti-label.svg" alt="Omniflowti" class="sidebar-logo-img" />
+                </a>
+                <button class="sidebar-toggle" id="sidebar-toggle" title="${collapsed ? 'Expandir menu' : 'Recolher menu'}">
+                    <i class="${collapsed ? 'ri-menu-unfold-line' : 'ri-menu-fold-line'}"></i>
                 </button>
             </div>
 
@@ -27,7 +28,7 @@ const Sidebar = {
                     <span class="nav-label">Dashboard</span>
                 </div>
 
-                <div class="nav-item ${currentRoute === '#/panels' ? 'active' : ''}" 
+                <div class="nav-item ${currentRoute.startsWith('#/panels') ? 'active' : ''}" 
                      onclick="Router.navigate('#/panels')">
                     <i class="ri-layout-grid-line"></i>
                     <span class="nav-label">Painéis</span>
@@ -71,12 +72,15 @@ const Sidebar = {
         if (toggle) {
             toggle.addEventListener('click', () => {
                 const sidebar = document.getElementById('sidebar');
-                const collapsed = sidebar.classList.toggle('collapsed');
-                AppState.set('sidebarCollapsed', collapsed);
+                const isCollapsed = sidebar.classList.toggle('collapsed');
+                AppState.set('sidebarCollapsed', isCollapsed);
                 
-                // Atualiza ícone do toggle
+                // Atualiza ícone e título do toggle
                 const icon = toggle.querySelector('i');
-                icon.className = collapsed ? 'ri-menu-unfold-line' : 'ri-menu-fold-line';
+                if (icon) {
+                    icon.className = isCollapsed ? 'ri-menu-unfold-line' : 'ri-menu-fold-line';
+                }
+                toggle.title = isCollapsed ? 'Expandir menu' : 'Recolher menu';
             });
         }
     }

@@ -33,11 +33,11 @@ INSERT INTO `groups` (`name`, `slug`, `description`, `icon`, `color`) VALUES
 -- suporte → TIC (supervisor do setor)
 -- usuario → Financeiro (colaborador)
 -- ------------------------------------------------------------
-INSERT INTO `user_groups` (`user_id`, `group_id`) VALUES
-(1, 1),
-(1, 4),
-(2, 1),
-(3, 2);
+INSERT INTO `user_groups` (`user_id`, `group_id`, `role`, `can_manage_links`, `can_manage_members`) VALUES
+(1, 1, 'admin', 1, 1),
+(1, 4, 'admin', 1, 1),
+(2, 1, 'supervisor', 1, 0),
+(3, 2, 'member', 0, 0);
 
 -- ------------------------------------------------------------
 -- 4. PANELS

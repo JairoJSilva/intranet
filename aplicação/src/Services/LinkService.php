@@ -33,6 +33,13 @@ final class LinkService
 
     public function create(array $data, int $currentUserId): array
     {
+        if (!empty($data['url']) && is_string($data['url'])) {
+            $data['url'] = trim($data['url']);
+            if (!preg_match('#^[a-zA-Z][a-zA-Z0-9+\-.]*://#', $data['url'])) {
+                $data['url'] = 'https://' . $data['url'];
+            }
+        }
+
         $validator = new Validator();
         $validator->required($data, ['panel_id', 'title', 'url'])
                   ->url($data, 'url')
@@ -57,7 +64,12 @@ final class LinkService
             throw new \RuntimeException('Link não encontrado.');
         }
 
-        if (isset($data['url'])) {
+        if (isset($data['url']) && is_string($data['url'])) {
+            $data['url'] = trim($data['url']);
+            if (!preg_match('#^[a-zA-Z][a-zA-Z0-9+\-.]*://#', $data['url'])) {
+                $data['url'] = 'https://' . $data['url'];
+            }
+
             $validator = new Validator();
             $validator->url($data, 'url');
             if ($validator->fails()) {

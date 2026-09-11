@@ -25,12 +25,16 @@ final class AuthController
     {
         $data = json_decode(file_get_contents('php://input'), true) ?? [];
 
-        try {
-            $user = $this->authService->login(
-                trim($data['username'] ?? ''),
-                $data['password'] ?? ''
-            );
+        $username = trim($data['username'] ?? '');
+        $password = $data['password'] ?? '';
 
+        if ($username === '' || $password === '') {
+            Response::error('Usuário e senha são obrigatórios.', 422);
+            return;
+        }
+
+        try {
+            $user = $this->authService->login($username, $password);
             Response::success($user, 'Login realizado com sucesso.');
 
         } catch (\RuntimeException $e) {

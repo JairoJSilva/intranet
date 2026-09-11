@@ -48,13 +48,40 @@ const Router = {
             return;
         }
 
-        // Busca handler
-        const handler = this.routes[path];
+        // Busca handler direto ou por padrão dinâmico (:param)
+        let handler = this.routes[path];
+        let params = {};
+
+        if (!handler) {
+            for (const routePattern in this.routes) {
+                if (routePattern.includes(':')) {
+                    const patternParts = routePattern.split('/');
+                    const pathParts = path.split('/');
+                    if (patternParts.length === pathParts.length) {
+                        let match = true;
+                        const tempParams = {};
+                        for (let i = 0; i < patternParts.length; i++) {
+                            if (patternParts[i].startsWith(':')) {
+                                tempParams[patternParts[i].substring(1)] = pathParts[i];
+                            } else if (patternParts[i] !== pathParts[i]) {
+                                match = false;
+                                break;
+                            }
+                        }
+                        if (match) {
+                            handler = this.routes[routePattern];
+                            params = tempParams;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
         if (handler) {
             this.currentRoute = path;
             AppState.set('currentRoute', path);
-            handler();
+            handler(params);
         } else {
             // 404 — rota não encontrada, redireciona
             console.warn(`[Router] Rota não encontrada: ${path}`);

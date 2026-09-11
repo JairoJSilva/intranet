@@ -227,9 +227,11 @@ final class UserRepository
     }
 
     /**
-     * Sincroniza grupos do usuário (remove todos e reassocia)
+     * Sincroniza grupos do usuário (remove todos e reassocia com permissões específicas)
+     * Aceita tanto array simples de IDs [1, 2] quanto array de objetos com role e permissões:
+     * [['group_id' => 1, 'role' => 'supervisor', 'can_manage_links' => 1, 'can_manage_members' => 0], ...]
      */
-    public function syncGroups(int $userId, array $groupIds): void
+    public function syncGroups(int $userId, array $groupsData): void
     {
         $this->db->beginTransaction();
 
@@ -239,16 +241,34 @@ final class UserRepository
             $stmt->execute([':user_id' => $userId]);
 
             // Insere novas associações
-            if (!empty($groupIds)) {
+            if (!empty($groupsData)) {
                 $stmt = $this->db->prepare(
-                    "INSERT INTO user_groups (user_id, group_id) VALUES (:user_id, :group_id)"
+                    "INSERT INTO user_groups (user_id, group_id, role, can_manage_links, can_manage_members)
+                     VALUES (:user_id, :group_id, :role, :can_manage_links, :can_manage_members)"
                 );
 
-                foreach ($groupIds as $groupId) {
-                    $stmt->execute([
-                        ':user_id'  => $userId,
-                        ':group_id' => (int)$groupId,
-                    ]);
+                foreach ($groupsData as $item) {
+                    if (is_array($item)) {
+                        $groupId = (int)($item['group_id'] ?? $item['id'] ?? 0);
+                        $role = in_array($item['role'] ?? 'member', ['member', 'supervisor', 'admin']) ? $item['role'] : 'member';
+                        $canLinks = !empty($item['can_manage_links']) ? 1 : 0;
+                        $canMembers = !empty($item['can_manage_members']) ? 1 : 0;
+                    } else {
+                        $groupId = (int)$item;
+                        $role = 'member';
+                        $canLinks = 0;
+                        $canMembers = 0;
+                    }
+
+                    if ($groupId > 0) {
+                        $stmt->execute([
+                            ':user_id'            => $userId,
+                            ':group_id'           => $groupId,
+                            ':role'               => $role,
+                            ':can_manage_links'   => $canLinks,
+                            ':can_manage_members' => $canMembers,
+                        ]);
+                    }
                 }
             }
 
@@ -260,19 +280,29 @@ final class UserRepository
     }
 
     /**
-     * Retorna os grupos de um usuário
+     * Retorna os grupos de um usuário com seus respectivos papéis e permissões no grupo
      */
     public function getUserGroups(int $userId): array
     {
         $stmt = $this->db->prepare(
-            "SELECT g.id, g.name, g.slug, g.icon, g.color
+            "SELECT g.id, g.name, g.slug, g.icon, g.color,
+                    ug.role, ug.can_manage_links, ug.can_manage_members
              FROM `groups` g
              INNER JOIN user_groups ug ON ug.group_id = g.id
              WHERE ug.user_id = :user_id AND g.is_active = 1
              ORDER BY g.name ASC"
         );
         $stmt->execute([':user_id' => $userId]);
-        return $stmt->fetchAll();
+        $groups = $stmt->fetchAll();
+
+        foreach ($groups as &$group) {
+            $group['id'] = (int)$group['id'];
+            $group['role'] = $group['role'] ?? 'member';
+            $group['can_manage_links'] = (bool)($group['can_manage_links'] ?? false);
+            $group['can_manage_members'] = (bool)($group['can_manage_members'] ?? false);
+        }
+
+        return $groups;
     }
 
     /**

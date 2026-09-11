@@ -8,14 +8,22 @@ const App = {
      */
     init() {
         AppState.init();
+        ThemeManager.init();
 
         // Registra rotas
         Router
             .add('#/login', () => this.renderLogin())
-            .add('#/dashboard', () => this.renderPage('Dashboard', Dashboard))
-            .add('#/panels', () => this.renderPage('Painéis', Dashboard)) // Reusa Dashboard com foco em painéis
-            .add('#/users', () => this.renderPage('Usuários', UserManager))
-            .add('#/groups', () => this.renderPage('Grupos', GroupManager));
+            .add('#/dashboard', () => this.renderPage('Dashboard Operacional', Dashboard))
+            .add('#/panels', () => {
+                PanelManager.setActivePanelId(null);
+                this.renderPage('Painéis & Setores', PanelManager);
+            })
+            .add('#/panels/:id', (params) => {
+                PanelManager.setActivePanelId(params.id);
+                this.renderPage('Aplicações do Painel', PanelManager);
+            })
+            .add('#/users', () => this.renderPage('Usuários & Permissões', UserManager))
+            .add('#/groups', () => this.renderPage('Grupos & Setores', GroupManager));
 
         // Inicia router
         Router.init();

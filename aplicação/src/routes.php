@@ -28,11 +28,14 @@ return [
     'DELETE /api/users/{id}'       => [UserController::class, 'destroy'],
 
     // ---- Groups ----
-    'GET    /api/groups'       => [GroupController::class, 'index'],
-    'POST   /api/groups'       => [GroupController::class, 'store'],
-    'GET    /api/groups/{id}'  => [GroupController::class, 'show'],
-    'PUT    /api/groups/{id}'  => [GroupController::class, 'update'],
-    'DELETE /api/groups/{id}'  => [GroupController::class, 'destroy'],
+    'GET    /api/groups'                    => [GroupController::class, 'index'],
+    'POST   /api/groups'                    => [GroupController::class, 'store'],
+    'GET    /api/groups/{id}'               => [GroupController::class, 'show'],
+    'PUT    /api/groups/{id}'               => [GroupController::class, 'update'],
+    'DELETE /api/groups/{id}'               => [GroupController::class, 'destroy'],
+    'GET    /api/groups/{id}/members'       => [GroupController::class, 'members'],
+    'PUT    /api/groups/{id}/members/{userId}' => [GroupController::class, 'updateMember'],
+    'DELETE /api/groups/{id}/members/{userId}' => [GroupController::class, 'removeMember'],
 
     // ---- Panels ----
     'GET    /api/panels'       => [PanelController::class, 'index'],

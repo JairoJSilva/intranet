@@ -37,7 +37,7 @@ const UserManager = {
                 </thead>
                 <tbody id="users-tbody">
                     <tr><td colspan="8" style="text-align: center; padding: 40px;">
-                        <div class="spinner" style="margin: 0 auto; width: 24px; height: 24px; border-color: var(--border-color); border-top-color: var(--vem-blue-500);"></div>
+                        <div class="spinner" style="margin: 0 auto; width: 24px; height: 24px; border-color: var(--border-color); border-top-color: var(--theme-primary);"></div>
                     </td></tr>
                 </tbody>
             </table>
@@ -88,7 +88,17 @@ const UserManager = {
                       '<span class="badge badge-user">Colaborador</span>'}
                 </td>
                 <td>
-                    ${(u.groups || []).map(g => `<span class="multi-select-tag" style="font-size: 0.7rem; padding: 2px 8px;">${g.name}</span>`).join(' ')}
+                    ${(u.groups || []).map(g => {
+                        const roleLabel = g.role === 'admin' ? 'Gestor' : (g.role === 'supervisor' ? 'Supervisor' : 'Membro');
+                        const roleIcon = g.role === 'admin' ? 'ri-shield-star-line' : (g.role === 'supervisor' ? 'ri-user-star-line' : 'ri-user-line');
+                        const perms = [];
+                        if (g.can_manage_links) perms.push('Links');
+                        if (g.can_manage_members) perms.push('Membros');
+                        const permsText = perms.length > 0 ? ` (${perms.join(', ')})` : '';
+                        return `<span class="multi-select-tag" style="font-size: 0.72rem; padding: 2px 8px; margin: 2px;" title="Setor: ${g.name} | Papel: ${roleLabel}${permsText}">
+                            <i class="${roleIcon}"></i> ${g.name} <strong style="opacity: 0.85;">· ${roleLabel}</strong>
+                        </span>`;
+                    }).join(' ') || '<span style="color: var(--text-muted); font-size: 0.75rem;">Nenhum grupo</span>'}
                 </td>
                 <td><span style="text-transform: uppercase; font-size: 0.75rem; color: var(--text-muted);">${u.auth_provider}</span></td>
                 <td>
@@ -121,7 +131,7 @@ const UserManager = {
         const groups = AppState.get('groups') || [];
 
         Modal.open({
-            title: isEdit ? 'Editar Usuário' : 'Novo Usuário',
+            title: isEdit ? 'Editar Usuário & Permissões' : 'Novo Usuário',
             content: `
                 <div class="form-group">
                     <label class="form-label">Nome de Exibição</label>
@@ -141,7 +151,7 @@ const UserManager = {
                     <input type="password" class="form-input" id="form-password" placeholder="${isEdit ? '••••••••' : 'Mín. 8 caracteres'}" />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Perfil de Acesso</label>
+                    <label class="form-label">Perfil Geral de Acesso (Global)</label>
                     <select class="form-input form-select" id="form-role">
                         <option value="user" ${!user?.is_admin && !user?.is_supervisor ? 'selected' : ''}>Colaborador</option>
                         <option value="supervisor" ${user?.is_supervisor ? 'selected' : ''}>Supervisor</option>
@@ -149,37 +159,82 @@ const UserManager = {
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Grupos</label>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        ${groups.map(g => `
-                            <label class="checkbox-wrapper">
-                                <input type="checkbox" name="group_ids" value="${g.id}" 
-                                    ${(user?.groups || []).some(ug => ug.id == g.id) ? 'checked' : ''} />
-                                <span>${g.name}</span>
-                            </label>
-                        `).join('')}
+                    <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Grupos & Permissões por Grupo</span>
+                        <small style="color: var(--text-muted); font-weight: normal;">Defina o papel e autonomia em cada setor</small>
+                    </label>
+                    <div style="display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; padding-right: 4px;">
+                        ${groups.map(g => {
+                            const userGroup = (user?.groups || []).find(ug => ug.id == g.id);
+                            const isChecked = !!userGroup;
+                            const role = userGroup?.role || 'member';
+                            const canLinks = !!userGroup?.can_manage_links;
+                            const canMembers = !!userGroup?.can_manage_members;
+                            return `
+                            <div class="card" style="padding: 10px 12px; margin: 0; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <label class="checkbox-wrapper" style="font-weight: 500;">
+                                        <input type="checkbox" name="group_ids" value="${g.id}" id="chk-group-${g.id}"
+                                            ${isChecked ? 'checked' : ''} 
+                                            onchange="document.getElementById('group-config-${g.id}').style.display = this.checked ? 'flex' : 'none';" />
+                                        <span><i class="${g.icon || 'ri-group-line'}" style="color: ${g.color || 'var(--theme-primary)'};"></i> ${g.name}</span>
+                                    </label>
+                                </div>
+                                <div id="group-config-${g.id}" style="display: ${isChecked ? 'flex' : 'none'}; flex-direction: column; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border-color); font-size: 0.8rem;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="color: var(--text-muted); width: 110px;">Papel no Grupo:</span>
+                                        <select class="form-input form-select" id="group-role-${g.id}" style="padding: 4px 8px; font-size: 0.8rem; height: auto;">
+                                            <option value="member" ${role === 'member' ? 'selected' : ''}>Colaborador (Membro)</option>
+                                            <option value="supervisor" ${role === 'supervisor' ? 'selected' : ''}>Supervisor do Grupo</option>
+                                            <option value="admin" ${role === 'admin' ? 'selected' : ''}>Gestor do Grupo</option>
+                                        </select>
+                                    </div>
+                                    <div style="display: flex; gap: 16px; margin-left: 118px;">
+                                        <label class="checkbox-wrapper" style="font-size: 0.78rem;">
+                                            <input type="checkbox" id="group-can-links-${g.id}" ${canLinks ? 'checked' : ''} />
+                                            <span>Gerenciar Links</span>
+                                        </label>
+                                        <label class="checkbox-wrapper" style="font-size: 0.78rem;">
+                                            <input type="checkbox" id="group-can-members-${g.id}" ${canMembers ? 'checked' : ''} />
+                                            <span>Gerenciar Membros</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
                     </div>
                 </div>
             `,
             footer: `
                 <button class="btn btn-secondary" onclick="Modal.close()">Cancelar</button>
                 <button class="btn btn-primary" id="form-save-user">
-                    <i class="ri-save-line"></i> ${isEdit ? 'Salvar' : 'Criar'}
+                    <i class="ri-save-line"></i> ${isEdit ? 'Salvar Alterações' : 'Criar Usuário'}
                 </button>
             `,
         });
 
         document.getElementById('form-save-user').addEventListener('click', async () => {
             const role = document.getElementById('form-role').value;
-            const groupCheckboxes = document.querySelectorAll('input[name="group_ids"]:checked');
-            const groupIds = Array.from(groupCheckboxes).map(cb => parseInt(cb.value));
+            const groupsPayload = Array.from(document.querySelectorAll('input[name="group_ids"]:checked')).map(cb => {
+                const gId = parseInt(cb.value);
+                const roleEl = document.getElementById(`group-role-${gId}`);
+                const linksEl = document.getElementById(`group-can-links-${gId}`);
+                const membersEl = document.getElementById(`group-can-members-${gId}`);
+                return {
+                    group_id: gId,
+                    role: roleEl ? roleEl.value : 'member',
+                    can_manage_links: linksEl && linksEl.checked ? 1 : 0,
+                    can_manage_members: membersEl && membersEl.checked ? 1 : 0,
+                };
+            });
 
             const data = {
                 display_name: document.getElementById('form-display-name').value.trim(),
                 email: document.getElementById('form-email').value.trim(),
                 is_admin: role === 'admin',
                 is_supervisor: role === 'supervisor',
-                group_ids: groupIds,
+                groups: groupsPayload,
             };
 
             if (!isEdit) {

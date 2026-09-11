@@ -59,9 +59,12 @@ CREATE TABLE IF NOT EXISTS `groups` (
 -- 3. USER_GROUPS — Relação N:N entre Usuários e Grupos
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user_groups` (
-    `user_id`     INT UNSIGNED NOT NULL,
-    `group_id`    INT UNSIGNED NOT NULL,
-    `assigned_at` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `user_id`            INT UNSIGNED NOT NULL,
+    `group_id`           INT UNSIGNED NOT NULL,
+    `role`               ENUM('member', 'supervisor', 'admin') NOT NULL DEFAULT 'member',
+    `can_manage_links`   TINYINT(1)   NOT NULL DEFAULT 0,
+    `can_manage_members` TINYINT(1)   NOT NULL DEFAULT 0,
+    `assigned_at`        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (`user_id`, `group_id`),
     INDEX `idx_ug_group` (`group_id`),
