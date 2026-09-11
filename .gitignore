@@ -1,0 +1,18 @@
+# Composer dependencies & cache
+/aplicação/vendor/
+/aplicação/.phpunit.cache/
+
+# Environment local overrides
+/aplicação/.env.local
+*.env.backup
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary logs
+*.log

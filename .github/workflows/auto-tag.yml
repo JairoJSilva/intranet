@@ -1,0 +1,46 @@
+name: 🏷️ Pipeline Guardian — Auto Tag on Commit
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags-ignore:
+      - 'v*'
+    paths-ignore:
+      - 'Documentações/**'
+      - 'links-salvos'
+
+concurrency:
+  group: auto-tag-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  auto-tag:
+    name: 🏷️ SemVer Tag Generator & Pipeline Trigger
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code with History
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Configure Git User (Pipeline Guardian)
+        run: |
+          git config --global user.name "Pipeline Guardian [bot]"
+          git config --global user.email "pipeline-guardian@flowti.com.br"
+
+      - name: Generate SemVer Tag and Trigger Release Pipeline
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/pipeline-guardian.py
+          python3 scripts/pipeline-guardian.py --tag-and-trigger

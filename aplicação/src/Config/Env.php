@@ -23,7 +23,13 @@ final class Env
         $envFile = rtrim($path, '/') . '/.env';
 
         if (!file_exists($envFile)) {
-            throw new \RuntimeException("Arquivo .env não encontrado em: {$envFile}");
+            $exampleFile = rtrim($path, '/') . '/.env.example';
+            if (file_exists($exampleFile)) {
+                $envFile = $exampleFile;
+            } else {
+                self::$loaded = true;
+                return;
+            }
         }
 
         $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);

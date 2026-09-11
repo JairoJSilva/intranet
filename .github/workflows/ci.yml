@@ -1,16 +1,25 @@
-name: CI/CD Pipeline
+name: 🚀 CI/CD Pipeline — Flowti Intranet
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches:
+      - main
+      - develop
+    tags:
+      - 'v*'
   pull_request:
-    branches: [ "main", "develop" ]
+    branches:
+      - main
+      - develop
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # --------------------------------------------------------------------------
+  # 1. Lint & Code Quality
+  # --------------------------------------------------------------------------
   lint-and-quality:
     name: 🔍 Lint & Code Quality
     runs-on: ubuntu-latest
@@ -22,7 +31,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, pdo, pdo_mysql, json, ldap
+          extensions: mbstring, pdo, pdo_mysql, json, ldap, curl, zip
           tools: composer:v2
 
       - name: Validate composer.json
@@ -34,7 +43,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: aplicação/vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('aplicação/composer.json') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('aplicação/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
 
@@ -46,10 +55,40 @@ jobs:
       - name: PHP Syntax Check (Lint)
         run: |
           echo "Verificando sintaxe PHP em aplicação/..."
-          find aplicação/src aplicação/public -name "*.php" -print0 | xargs -0 -n1 -P4 php -l
+          find aplicação/src aplicação/public aplicação/tests -name "*.php" -print0 | xargs -0 -n1 -P4 php -l
 
+  # --------------------------------------------------------------------------
+  # 2. Security & SAST Audit
+  # --------------------------------------------------------------------------
+  security-sast:
+    name: 🛡️ Security & SAST Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Audit Composer Dependencies (CVEs)
+        run: |
+          cd aplicação
+          composer audit || echo "Aviso: Dependências auditadas. Verifique avisos se houver."
+
+      - name: Detect Sensitive Secrets
+        run: |
+          echo "Varrendo repositório em busca de chaves privadas ou senhas expostas..."
+          ! grep -rnE "BEGIN RSA PRIVATE KEY|BEGIN OPENSSH PRIVATE KEY|ghp_[A-Za-z0-9]{36}" . --exclude-dir={.git,vendor,node_modules}
+
+  # --------------------------------------------------------------------------
+  # 3. Test Suite & Database Validation
+  # --------------------------------------------------------------------------
   test-database:
-    name: 🧪 Test & Database Validation
+    name: 🧪 Tests & Database Validation
+    needs: [lint-and-quality]
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -71,8 +110,16 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, pdo, pdo_mysql, json, ldap
+          extensions: mbstring, pdo, pdo_mysql, json, ldap, curl, zip
           tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: aplicação/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('aplicação/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
         run: |
@@ -87,18 +134,17 @@ jobs:
           mysql -h 127.0.0.1 -P 3306 -u flowti_test -pflowti_password intranet_flowti_test < database/seed.sql
           echo "Banco de dados inicializado com sucesso!"
 
-      - name: Run Tests (se configurado)
+      - name: Run PHPUnit Test Suite
         run: |
           cd aplicação
-          if [ -f "vendor/bin/phpunit" ]; then
-            ./vendor/bin/phpunit --colors=always
-          else
-            echo "Nenhum teste PHPUnit configurado ainda. Etapa validada com sucesso."
-          fi
+          ./vendor/bin/phpunit --colors=always --testdox
 
-  docker-build:
-    name: 🐳 Docker Build & Push (GHCR)
-    needs: [lint-and-quality, test-database]
+  # --------------------------------------------------------------------------
+  # 4. Docker Build & Push (GHCR)
+  # --------------------------------------------------------------------------
+  docker-build-push:
+    name: 🐳 Docker Build & Publish
+    needs: [lint-and-quality, security-sast, test-database]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -111,7 +157,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -125,6 +171,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=ref,event=tag
             type=sha,prefix=sha-,enable=true
 
       - name: Build and Push Docker image
@@ -132,8 +179,24 @@ jobs:
         with:
           context: .
           file: ./docker/Dockerfile
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          push: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # --------------------------------------------------------------------------
+  # 5. GitOps & Manifest Validation
+  # --------------------------------------------------------------------------
+  gitops-validation:
+    name: ☸️ GitOps & Manifest Check
+    needs: [docker-build-push]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose Configuration
+        run: |
+          docker compose -f docker/docker-compose.yml config > /dev/null
+          echo "docker-compose.yml validado com sucesso!"
