@@ -14,9 +14,30 @@ final class CorsMiddleware
 {
     public static function handle(): void
     {
-        $allowedOrigin = Env::get('APP_URL', 'http://localhost:8080');
+        $appUrl = Env::get('APP_URL', 'http://localhost');
+        $httpOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-        header("Access-Control-Allow-Origin: {$allowedOrigin}");
+        $allowedOrigins = [
+            rtrim($appUrl, '/'),
+            'http://localhost',
+            'http://localhost:80',
+            'http://localhost:8080',
+            'http://127.0.0.1',
+            'http://127.0.0.1:80',
+            'http://127.0.0.1:8080',
+            'http://intranet.local',
+            'http://portalvem.local',
+        ];
+
+        if (!empty($httpOrigin) && in_array(rtrim($httpOrigin, '/'), $allowedOrigins, true)) {
+            $origin = $httpOrigin;
+        } else {
+            $proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+            $origin = !empty($httpOrigin) ? $httpOrigin : "{$proto}://{$host}";
+        }
+
+        header("Access-Control-Allow-Origin: {$origin}");
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
         header('Access-Control-Allow-Credentials: true');

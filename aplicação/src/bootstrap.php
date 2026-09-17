@@ -43,7 +43,7 @@ if (session_status() === PHP_SESSION_NONE) {
     $lifetime = \App\Config\Env::getInt('SESSION_LIFETIME', 7200);
 
     ini_set('session.cookie_httponly', '1');
-    ini_set('session.cookie_samesite', 'Strict');
+    ini_set('session.cookie_samesite', 'Lax');
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
     ini_set('session.gc_maxlifetime', (string)$lifetime);

@@ -7,7 +7,7 @@ metadata:
     app: intranet-app
     app.kubernetes.io/part-of: omniflowti
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
