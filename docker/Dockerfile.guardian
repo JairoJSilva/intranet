@@ -1,0 +1,17 @@
+FROM alpine:3.19
+
+LABEL maintainer="Flowti TIC <tic@flowti.com.br>"
+LABEL description="Pipeline Guardian — Autonomous Cluster & CI/CD Pipeline Monitoring Bot"
+
+RUN apk add --no-cache python3 curl bash
+
+WORKDIR /app
+
+COPY scripts/pipeline-guardian.py /app/pipeline-guardian.py
+
+EXPOSE 9090
+
+ENV PYTHONUNBUFFERED=1
+ENV WATCH_NAMESPACE=intranet
+
+ENTRYPOINT ["python3", "/app/pipeline-guardian.py", "--daemon"]

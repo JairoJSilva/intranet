@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: intranet
+  labels:
+    name: intranet
+    app.kubernetes.io/part-of: omniflowti

@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pipeline-guardian
+  namespace: intranet
+  labels:
+    app.kubernetes.io/name: pipeline-guardian
+    app.kubernetes.io/part-of: omniflowti
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pipeline-guardian-role
+  namespace: intranet
+  labels:
+    app.kubernetes.io/name: pipeline-guardian
+    app.kubernetes.io/part-of: omniflowti
+rules:
+  - apiGroups: ["", "apps", "batch", "networking.k8s.io"]
+    resources:
+      - pods
+      - pods/log
+      - deployments
+      - events
+      - services
+      - ingresses
+      - configmaps
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pipeline-guardian-binding
+  namespace: intranet
+  labels:
+    app.kubernetes.io/name: pipeline-guardian
+    app.kubernetes.io/part-of: omniflowti
+subjects:
+  - kind: ServiceAccount
+    name: pipeline-guardian
+    namespace: intranet
+roleRef:
+  kind: Role
+  name: pipeline-guardian-role
+  apiGroup: rbac.authorization.k8s.io
