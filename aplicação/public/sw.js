@@ -1,15 +1,15 @@
 /**
- * Portal Unificado — Service Worker (PWA)
+ * Omniflowti — Service Worker (PWA)
  * Cache de recursos estáticos e suporte à instalação offline do portal.
  */
 
-const CACHE_NAME = 'portal-v2.0.0';
+const CACHE_NAME = 'omniflowti-v1.4.1';
 const STATIC_ASSETS = [
     '/',
     '/manifest.json',
     '/assets/css/app.css',
     '/assets/img/pwa-icon.svg',
-    '/assets/img/portal-logo.svg',
+    '/assets/img/flowti-label.svg',
     '/assets/js/state.js',
     '/assets/js/api.js',
     '/assets/js/router.js',

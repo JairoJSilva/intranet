@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 """
-Script de automação para criação de Issues no GitLab — Portal Unificado
-Repositório Corporativo de Evolução de Software
+Script de automação para criação de Issues no GitLab — Omniflowti
+Repositório: git@gitlab.com:mv-corp/flowti/flowti-devops/flowti-hub.git
+Projeto ID ou Path: mv-corp/flowti/flowti-devops/flowti-hub
+
+Uso:
+  1. Criar issues localmente em markdown:
+     python3 scripts/create_gitlab_issues.py --generate-docs
+
+  2. Criar issues diretamente no GitLab via API:
+     python3 scripts/create_gitlab_issues.py --token <SEU_GITLAB_TOKEN>
+     ou exportando GITLAB_TOKEN="seu_token" e rodando:
+     python3 scripts/create_gitlab_issues.py
 """
 
 import sys
@@ -11,7 +21,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 
-PROJECT_PATH = os.environ.get("GITLAB_PROJECT_PATH", "corporativo/portal-unificado")
+PROJECT_PATH = "mv-corp/flowti/flowti-devops/flowti-hub"
 ENCODED_PROJECT = urllib.parse.quote(PROJECT_PATH, safe="")
 API_URL = f"https://gitlab.com/api/v4/projects/{ENCODED_PROJECT}/issues"
 
@@ -22,7 +32,7 @@ ISSUES = [
         "labels": ["frontend", "ui/ux", "enhancement", "priority::high"],
         "weight": 3,
         "description": """### 🎯 Objetivo & User Story
-Como operador ou administrador do Portal Unificado, quero pressionar `Ctrl + K` (ou `Cmd + K`) em qualquer tela do portal para abrir uma paleta de busca global rápida estilo *Spotlight / VS Code*, para navegar e abrir sistemas corporativos instantaneamente sem precisar tirar as mãos do teclado.
+Como operador ou administrador do Omniflowti, quero pressionar `Ctrl + K` (ou `Cmd + K`) em qualquer tela do portal para abrir uma paleta de busca global rápida estilo *Spotlight / VS Code*, para navegar e abrir sistemas corporativos instantaneamente sem precisar tirar as mãos do teclado.
 
 ---
 
@@ -34,7 +44,7 @@ Como operador ou administrador do Portal Unificado, quero pressionar `Ctrl + K` 
 - [ ] Ao dar `Enter` em um painel, redireciona o router para `#/panels/:id`.
 - [ ] Busca em tempo real com filtro por título, descrição, domínio e tags.
 - [ ] Badge colorido indicando status em tempo real (`online`, `warning`, `offline`) ao lado de cada link sugerido.
-- [ ] Design System em Glassmorphism integrado aos temas do Portal Unificado.
+- [ ] Design System em Glassmorphism integrado aos temas do Omniflowti.
 """
     },
     {
@@ -43,7 +53,7 @@ Como operador ou administrador do Portal Unificado, quero pressionar `Ctrl + K` 
         "labels": ["frontend", "pwa", "mobile/desktop", "enhancement"],
         "weight": 2,
         "description": """### 🎯 Objetivo & User Story
-Como colaborador corporativo, quero instalar o Portal Unificado como um aplicativo no meu computador (Windows, Linux ou Mac), para ter um ícone dedicado na barra de tarefas e inicialização rápida sem a moldura do navegador.
+Como colaborador corporativo, quero instalar o Omniflowti como um aplicativo no meu computador (Windows, Linux ou Mac), para ter um ícone dedicado na barra de tarefas e inicialização rápida sem a moldura do navegador.
 
 ---
 
@@ -86,7 +96,7 @@ Como operador de NOC/SOC que monitora dezenas de sistemas simultâneos, quero al
 ### 📋 Critérios de Aceite
 - [ ] Adicionar botão de alternância de densidade no cabeçalho ou Topbar: **Modo Confortável** (padrão com cards expandidos) vs. **Modo Compacto** (micro-tiles / lista densa).
 - [ ] O modo compacto reduz margens, paddings e tamanhos de fonte de forma legível e elegante.
-- [ ] Salvar a preferência do usuário no `localStorage` (`portal_density`).
+- [ ] Salvar a preferência do usuário no `localStorage` (`omniflowti_density_mode`).
 - [ ] Garantir compatibilidade visual com todos os 7 temas de cores da aplicação.
 """
     },
@@ -201,7 +211,7 @@ def generate_local_docs():
     output_dir = os.path.join(os.path.dirname(__file__), "..", "Documentações", "issues")
     os.makedirs(output_dir, exist_ok=True)
     
-    index_md = "# 📋 Catálogo de Issues de Evolução — Portal Unificado\n\n"
+    index_md = "# 📋 Catálogo de Issues de Evolução — Omniflowti\n\n"
     index_md += "| ID | Título | Labels | Estimativa |\n"
     index_md += "|:---|:---|:---|:---|\n"
 

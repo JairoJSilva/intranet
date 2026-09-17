@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Portal Unificado — API Entry Point
+ * Omniflowti — API Entry Point
  * Todas as requisições /api/* são roteadas aqui pelo .htaccess.
  * Requisições de arquivos estáticos (JS, CSS, imagens) são servidas diretamente.
  */
@@ -32,9 +32,9 @@ if ($uri !== '/' && str_ends_with($uri, '/')) {
 // 4. Se NÃO é rota de API, serve o SPA (index.html)
 // -----------------------------------------------
 if (!str_starts_with($uri, '/api/')) {
-    // Verifica se é um arquivo estático existente
+    // Verifica se é um arquivo estático existente (exceto index.php)
     $filePath = __DIR__ . $uri;
-    if ($uri !== '/' && file_exists($filePath) && !is_dir($filePath)) {
+    if ($uri !== '/' && $uri !== '/index.php' && file_exists($filePath) && !is_dir($filePath)) {
         return false; // Deixa o Apache servir o arquivo estático
     }
 
@@ -50,6 +50,16 @@ $routes = require __DIR__ . '/../src/routes.php';
 
 $matchedRoute  = null;
 $matchedParams = [];
+
+// Compatibilidade direta com endpoint legadas/estilo flowti-agent: /api/auth.php?action=login|request
+if ($uri === '/api/auth.php') {
+    $action = $_GET['action'] ?? '';
+    if ($action === 'login') {
+        $matchedRoute = [\App\Controllers\AuthController::class, 'login'];
+    } elseif ($action === 'request') {
+        $matchedRoute = [\App\Controllers\AuthController::class, 'requestAccess'];
+    }
+}
 
 foreach ($routes as $routeKey => $handler) {
     // Parse route key: "METHOD /path/{param}"
@@ -99,7 +109,7 @@ try {
         ? $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine()
         : 'Erro interno do servidor.';
 
-    error_log("[Portal Error] {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}");
+    error_log("[Omniflowti Error] {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}");
 
     \App\Helpers\Response::error($message, 500);
 }

@@ -2,14 +2,14 @@
 declare(strict_types=1);
 
 /**
- * Portal Unificado — Test Suite Automatizada (QA Engineer & Tester)
+ * Omniflowti — Test Suite Automatizada (QA Engineer & Tester)
  * Executa a pirâmide de testes de API, RBAC, Autenticação e Integridade.
- * Uso: php tests/api_test.php (ou kubectl exec -n intranet deployment/intranet-app -c intranet-app -- php tests/api_test.php)
+ * Uso: php tests/api_test.php (ou docker exec flowti-app php tests/api_test.php)
  */
 
 $baseUrl = getenv('TEST_BASE_URL') 
-    ?: (file_exists('/.dockerenv') || file_exists('/var/run/secrets/kubernetes.io') ? 'http://127.0.0.1' : 'http://localhost');
-$cookieJar = tempnam(sys_get_temp_dir(), 'portal_cookie_');
+    ?: (file_exists('/.dockerenv') ? 'http://127.0.0.1' : 'http://localhost:8080');
+$cookieJar = tempnam(sys_get_temp_dir(), 'omniflowti_cookie_');
 
 $totalTests = 0;
 $passedTests = 0;
@@ -55,7 +55,7 @@ function apiRequest(string $method, string $path, ?array $body = null, ?string $
 }
 
 echo "\n\033[1;36m============================================================\033[0m\n";
-echo "\033[1;36m🧪 Portal Unificado — Suíte de Testes Automatizados (QA Tester)\033[0m\n";
+echo "\033[1;36m🧪 Omniflowti — Suíte de Testes Automatizados (QA Tester)\033[0m\n";
 echo "\033[1;36m============================================================\033[0m\n\n";
 
 // ============================================================
@@ -77,19 +77,19 @@ assertTest('Rejeita usuário inexistente (401)', $res['code'] === 401);
 
 // 1.4 Login Admin com sucesso (200)
 $adminCookies = tempnam(sys_get_temp_dir(), 'admin_cookie_');
-$res = apiRequest('POST', '/api/auth/login', ['username' => 'admin', 'password' => 'BHU*nji9'], $adminCookies);
+$res = apiRequest('POST', '/api/auth/login', ['username' => 'admin', 'password' => 'Admin@Flowti2024'], $adminCookies);
 assertTest('Login Admin válido (200)', $res['code'] === 200 && ($res['body']['data']['username'] ?? '') === 'admin');
 assertTest('Admin possui flag is_admin = true', ($res['body']['data']['is_admin'] ?? false) === true);
 
 // 1.5 Login Suporte com sucesso (200)
 $suporteCookies = tempnam(sys_get_temp_dir(), 'suporte_cookie_');
-$res = apiRequest('POST', '/api/auth/login', ['username' => 'suporte', 'password' => 'Suporte@Portal2024'], $suporteCookies);
+$res = apiRequest('POST', '/api/auth/login', ['username' => 'suporte', 'password' => 'Suporte@Flowti2024'], $suporteCookies);
 assertTest('Login Suporte válido (200)', $res['code'] === 200 && ($res['body']['data']['username'] ?? '') === 'suporte');
 assertTest('Suporte possui flag is_supervisor = true', ($res['body']['data']['is_supervisor'] ?? false) === true);
 
 // 1.6 Login Usuário Colaborador com sucesso (200)
 $usuarioCookies = tempnam(sys_get_temp_dir(), 'usuario_cookie_');
-$res = apiRequest('POST', '/api/auth/login', ['username' => 'usuario', 'password' => 'Usuario@Portal2024'], $usuarioCookies);
+$res = apiRequest('POST', '/api/auth/login', ['username' => 'usuario', 'password' => 'Usuario@Flowti2024'], $usuarioCookies);
 assertTest('Login Colaborador válido (200)', $res['code'] === 200 && ($res['body']['data']['username'] ?? '') === 'usuario');
 assertTest('Colaborador is_admin = false e is_supervisor = false', 
     ($res['body']['data']['is_admin'] ?? true) === false && ($res['body']['data']['is_supervisor'] ?? true) === false);
@@ -143,7 +143,7 @@ assertTest('Colaborador visualiza apenas painéis do seu grupo (Financeiro)',
 echo "\n\033[1;33m[3/4] Suíte de Integridade dos Links e Pastas Cadastradas\033[0m\n";
 
 $panelTitles = array_column($adminPanels, 'title');
-assertTest('Painel "Sistemas Corporativos" existe', in_array('Sistemas Corporativos', $panelTitles, true));
+assertTest('Painel "Sistemas Flowti" existe', in_array('Sistemas Flowti', $panelTitles, true));
 assertTest('Painel "Portal-OCI" existe', in_array('Portal-OCI', $panelTitles, true));
 assertTest('Painel "Portal-Azure" existe', in_array('Portal-Azure', $panelTitles, true));
 assertTest('Painel "Portal-AWS" existe', in_array('Portal-AWS', $panelTitles, true));
@@ -158,15 +158,15 @@ foreach ($adminPanels as $p) {
     }
 }
 
-assertTest('Link "Agent-Interno" cadastrado', isset($allLinks['Agent-Interno']));
+assertTest('Link "Flowti-agent" cadastrado', isset($allLinks['Flowti-agent']));
 assertTest('Link "Cloud-Inventory" cadastrado', isset($allLinks['Cloud-Inventory']));
-assertTest('Link "OCI-Frankfurt" (OCI) cadastrado', isset($allLinks['OCI-Frankfurt']));
-assertTest('Link "OCI-SaoPaulo" (OCI) cadastrado', isset($allLinks['OCI-SaoPaulo']));
+assertTest('Link "cloudmvoracle" (OCI) cadastrado', isset($allLinks['cloudmvoracle']));
+assertTest('Link "mvcliensaas" (OCI) cadastrado', isset($allLinks['mvcliensaas']));
 assertTest('Link "Portal Azure" cadastrado', isset($allLinks['Portal Azure']));
 assertTest('Link "Portal AWS" cadastrado', isset($allLinks['Portal AWS']));
 assertTest('Link "Passbolt" cadastrado', isset($allLinks['Passbolt']));
 assertTest('Link "Keeper" cadastrado', isset($allLinks['Keeper']));
-assertTest('Link de monitoramento/cloud cadastrado (Grafana)', isset($allLinks['Grafana']));
+assertTest('Link de monitoramento/cloud cadastrado (Grafana ou Maida-GCP)', isset($allLinks['Grafana']) || isset($allLinks['Maida-GCP']));
 
 // ============================================================
 // 4. TESTE DO SISTEMA DE HEALTH CHECK
@@ -225,7 +225,7 @@ assertTest('Usuário 3 reflete can_manage_links = true no grupo', ($group1Data['
 // 5.5 Atualização de grupos via PUT /api/users/{id} com payload detalhado
 $updateUserGroupsRes = apiRequest('PUT', '/api/users/3', [
     'display_name' => 'Colaborador Teste',
-    'email' => 'usuario@portal.local',
+    'email' => 'usuario@flowti.com.br',
     'groups' => [
         ['group_id' => 2, 'role' => 'member', 'can_manage_links' => 0, 'can_manage_members' => 0]
     ]
@@ -264,8 +264,8 @@ assertTest('POST /api/links/import-csv valida conteúdo vazio (422)', $invalidCs
 
 // 6.3 Importação com sucesso de múltiplos links com delimitador ';'
 $csvSample = "titulo;url;descricao;icone\n" .
-             "CSV Teste Link Alpha;https://alpha.portal.local;Aplicação importada via teste;ri-rocket-line\n" .
-             "CSV Teste Link Beta;beta.portal.local;Segunda aplicação com auto https;ri-database-line";
+             "CSV Teste Link Alpha;https://alpha.flowti.internal;Aplicação importada via teste;ri-rocket-line\n" .
+             "CSV Teste Link Beta;beta.flowti.internal;Segunda aplicação com auto https;ri-database-line";
 
 $importRes = apiRequest('POST', '/api/links/import-csv', [
     'panel_id' => 1,
@@ -274,7 +274,7 @@ $importRes = apiRequest('POST', '/api/links/import-csv', [
 
 assertTest('POST /api/links/import-csv importa links com sucesso (201)', $importRes['code'] === 201);
 assertTest('Resposta contém total_imported = 2', ($importRes['body']['data']['total_imported'] ?? 0) === 2);
-assertTest('Auto-correção de URL adiciona https://', ($importRes['body']['data']['imported'][1]['url'] ?? '') === 'https://beta.portal.local');
+assertTest('Auto-correção de URL adiciona https://', ($importRes['body']['data']['imported'][1]['url'] ?? '') === 'https://beta.flowti.internal');
 
 // Limpeza dos links de teste criados
 if (!empty($importRes['body']['data']['imported'])) {

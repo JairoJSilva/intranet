@@ -1,17 +1,23 @@
-# 🌐 Omniflowti v2.0 — Portal Unificado Corporativo
+# 🌐 Flowti Hub — Portal Unificado Corporativo
 
-[![Version](https://img.shields.io/badge/version-2.0.0-purple.svg)](https://github.com/JairoJSilva/intranet)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/JairoJSilva/intranet)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-blue.svg)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)](https://www.mysql.com/)
 [![QA Tests](https://img.shields.io/badge/tests-52%2F52%20passed%20(100%25)-success.svg)](tests/api_test.php)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](#)
 
-Portal corporativo unificado desenvolvido para centralizar todos os sistemas, links e acessos internos da empresa em um ponto de entrada moderno, rápido e seguro. Construído com **PHP 8.2+ (Clean Architecture)**, **MySQL 8.0**, **Vanilla JS SPA** e design system corporativo **Aura Electric Dark** com **Glassmorphism** e múltiplos temas.
+Portal corporativo unificado desenvolvido para centralizar todos os sistemas, links e acessos internos da empresa em um ponto de entrada moderno, rápido e seguro. Construído com **PHP 8.2+ (Clean Architecture)**, **MySQL 8.0**, **Vanilla JS SPA** e design system corporativo de alta tecnologia alinhado ao ecossistema Flowti.
 
 ---
 
-## 🚀 Novidades da Versão 2.0 (v2.0)
+## 🚀 Novidades Recentes (v2.1 / Flowti Hub)
 
+- ⚡ **Nova Tela de Login Cyber Imersiva & Identidade Flowti Hub**:
+  - **Identidade Oficial Flowti Hub**: Novo logotipo vetorial oficial [`flowti-hub-logo.svg`](aplicação/public/assets/img/flowti-hub-logo.svg) e imagem transparente [`logo_flowti_branca.png`](aplicação/public/assets/img/logo_flowti_branca.png).
+  - **Laser Boot Sequence (`#lp-boot`)**: Linha de scanline laser azul descendo a tela, progresso procedural e inicialização de ambiente.
+  - **Wipe Panel 2D em Perspectiva (`#lp-wipe`)**: Painel translúcido em perspectiva com badge **HUB** dotado de contorno animado contínuo em neon azul/ciano via SVG trace.
+  - **Fluxo de Solicitação de Acesso (Active Directory)**: Transição fluida entre formulário de login e solicitação de acesso auditada no backend (`POST /api/auth/request`).
+  - **Success Veil Overlay (`#lp-veil`)**: Animação de sucesso com anel circular de autorização de acesso e redirecionamento suave.
 - 🎨 **Tema Padrão Aura Electric Dark com Glassmorphism**:
   - Paleta baseada em preto profundo (`#0B0A0A`) com gradientes neon elétricos violeta (`#AB17EE`, `#8129A9`, `#360F5A`).
   - Efeito translúcido com jateamento de vidro (`backdrop-filter: blur(16px)`), elevações suaves e brilho neon.

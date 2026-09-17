@@ -1,5 +1,5 @@
 /**
- * Portal Unificado — App State Manager
+ * Omniflowti — App State Manager
  * Estado global reativo armazenado em memória com persistência em sessionStorage.
  */
 const AppState = {
@@ -19,7 +19,7 @@ const AppState = {
      * Inicializa estado a partir de sessionStorage
      */
     init() {
-        const saved = sessionStorage.getItem('portal_state') || sessionStorage.getItem('omniflowti_state') || sessionStorage.getItem('flowti_state');
+        const saved = sessionStorage.getItem('omniflowti_state') || sessionStorage.getItem('flowti_state');
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
@@ -34,11 +34,11 @@ const AppState = {
      * Obtém valor do estado
      */
     get(key) {
-        return this._data[key] ?? null;
+        return this._data[key];
     },
 
     /**
-     * Define valor do estado e notifica listeners
+     * Define valor e notifica listeners
      */
     set(key, value) {
         this._data[key] = value;
@@ -47,48 +47,40 @@ const AppState = {
     },
 
     /**
-     * Define múltiplos valores de uma vez
+     * Verifica se usuário está autenticado
      */
-    setMultiple(obj) {
-        Object.assign(this._data, obj);
-        this._persist();
-        Object.keys(obj).forEach(key => this._notify(key, obj[key]));
+    isAuthenticated() {
+        return this._data.user !== null;
     },
 
     /**
-     * Helpers de conveniência
+     * Verifica se usuário é admin
      */
-    isAuthenticated() {
-        return !!this._data.user;
-    },
-
     isAdmin() {
-        return !!this._data.user?.is_admin;
+        return this._data.user?.is_admin === true;
     },
 
+    /**
+     * Verifica se usuário é supervisor (ou admin)
+     */
     isSupervisor() {
-        return !!this._data.user?.is_supervisor || this.isAdmin();
+        return this._data.user?.is_supervisor === true || this.isAdmin();
     },
 
-    canManageGroup(groupId) {
-        if (this.isAdmin()) return true;
-        const g = this._data.user?.groups?.find(grp => grp.id === groupId);
-        return g ? (g.role === 'admin' || g.role === 'supervisor') : false;
-    },
-
+    /**
+     * Retorna iniciais do nome para avatar
+     */
     getUserInitials() {
-        const name = this._data.user?.display_name || this._data.user?.username || '';
-        return name
-            .split(' ')
-            .filter(Boolean)
-            .slice(0, 2)
-            .map(part => part[0].toUpperCase())
-            .join('') || '?';
+        const name = this._data.user?.display_name || 'U';
+        return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
     },
 
+    /**
+     * Retorna label do papel do usuário
+     */
     getUserRole() {
-        if (this.isAdmin()) return 'Administrador';
-        if (this.isSupervisor()) return 'Supervisor';
+        if (this._data.user?.is_admin) return 'Administrador';
+        if (this._data.user?.is_supervisor) return 'Supervisor';
         return 'Colaborador';
     },
 
@@ -98,10 +90,9 @@ const AppState = {
      */
     getPinnedPanels() {
         const userId = this._data.user?.id || 'default';
-        const key = `portal_pinned_panels_${userId}`;
-        const legacyKey = `omniflowti_pinned_panels_${userId}`;
+        const key = `omniflowti_pinned_panels_${userId}`;
         try {
-            const raw = localStorage.getItem(key) || localStorage.getItem(legacyKey);
+            const raw = localStorage.getItem(key);
             if (raw) {
                 const list = JSON.parse(raw);
                 if (Array.isArray(list)) return list;
@@ -145,7 +136,7 @@ const AppState = {
         if (!id) return false;
 
         const userId = this._data.user?.id || 'default';
-        const key = `portal_pinned_panels_${userId}`;
+        const key = `omniflowti_pinned_panels_${userId}`;
         let pinned = this.getPinnedPanels();
         const index = pinned.findIndex(p => p.id === id);
         let isNowPinned = false;
@@ -196,7 +187,7 @@ const AppState = {
         if (!Array.isArray(panelsList) || panelsList.length === 0) return;
 
         const userId = this._data.user?.id || 'default';
-        const key = `portal_pinned_panels_${userId}`;
+        const key = `omniflowti_pinned_panels_${userId}`;
         const pinned = this.getPinnedPanels();
         if (pinned.length === 0) return;
 
@@ -239,7 +230,7 @@ const AppState = {
      */
     reorderPinnedPanels(fromIndex, toIndex) {
         const userId = this._data.user?.id || 'default';
-        const key = `portal_pinned_panels_${userId}`;
+        const key = `omniflowti_pinned_panels_${userId}`;
         const pinned = this.getPinnedPanels();
 
         if (fromIndex < 0 || fromIndex >= pinned.length || toIndex < 0 || toIndex >= pinned.length) {
@@ -270,7 +261,6 @@ const AppState = {
         this._data.groups = [];
         this._data.users = [];
         this._data.stats = null;
-        sessionStorage.removeItem('portal_state');
         sessionStorage.removeItem('omniflowti_state');
         sessionStorage.removeItem('flowti_state');
         this._notify('user', null);
@@ -298,7 +288,7 @@ const AppState = {
             const toSave = { ...this._data };
             // Não persiste dados grandes
             delete toSave.users;
-            sessionStorage.setItem('portal_state', JSON.stringify(toSave));
+            sessionStorage.setItem('omniflowti_state', JSON.stringify(toSave));
         } catch (e) {
             // sessionStorage full
         }

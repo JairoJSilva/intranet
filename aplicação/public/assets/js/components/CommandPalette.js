@@ -1,5 +1,5 @@
 /**
- * Portal Unificado — Command Palette Component (Ctrl + K / Cmd + K)
+ * Omniflowti — Command Palette Component (Ctrl + K / Cmd + K)
  * Busca universal estilo Spotlight / VS Code com navegação 100% por teclado,
  * atalhos rápidos de navegação, sistemas corporativos e painéis.
  */
@@ -46,7 +46,7 @@ const CommandPalette = {
                         <span><kbd>ESC</kbd> Fechar</span>
                     </div>
                     <span class="command-palette-brand">
-                        <i class="ri-flashlight-line"></i> Portal Quick Nav
+                        <i class="ri-flashlight-line"></i> Omniflowti Quick Nav
                     </span>
                 </div>
             </div>
@@ -251,7 +251,7 @@ const CommandPalette = {
                 handler: () => ThemeManager.openUserProfileModal()
             },
             {
-                title: 'Instalar Aplicativo Portal Unificado (PWA Desktop)',
+                title: 'Instalar Aplicativo Omniflowti (PWA Desktop)',
                 icon: 'ri-download-2-line',
                 color: 'var(--vem-blue-500)',
                 keywords: 'pwa instalar aplicativo desktop windows mac',
@@ -260,7 +260,7 @@ const CommandPalette = {
                         window.deferredPrompt.prompt();
                         window.deferredPrompt.userChoice.then(choice => {
                             if (choice.outcome === 'accepted') {
-                                Toast.success('Portal Unificado instalado com sucesso!');
+                                Toast.success('Omniflowti instalado com sucesso!');
                             }
                             window.deferredPrompt = null;
                         });

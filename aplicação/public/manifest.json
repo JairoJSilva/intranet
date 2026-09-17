@@ -1,7 +1,7 @@
 {
-  "name": "Portal Unificado Corporativo",
-  "short_name": "Portal Unificado",
-  "description": "Portal Corporativo Unificado de Aplicações e Acessos",
+  "name": "Omniflowti — Portal Unificado",
+  "short_name": "Omniflowti",
+  "description": "Portal Corporativo Unificado Flowti de Aplicações e Observabilidade",
   "start_url": "/#/dashboard",
   "scope": "/",
   "display": "standalone",
@@ -16,7 +16,7 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/img/portal-logo.svg",
+      "src": "/assets/img/flowti-label.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"

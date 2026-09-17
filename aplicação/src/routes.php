@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Portal Unificado — Router de API REST
+ * Omniflowti — Router de API REST
  * Mapeia rotas para Controllers com suporte a parâmetros dinâmicos.
  */
 
@@ -17,6 +17,7 @@ use App\Controllers\NoticeController;
 return [
     // ---- Auth ----
     'POST /api/auth/login'        => [AuthController::class, 'login'],
+    'POST /api/auth/request'      => [AuthController::class, 'requestAccess'],
     'POST /api/auth/logout'       => [AuthController::class, 'logout'],
     'GET  /api/auth/me'           => [AuthController::class, 'me'],
     'GET  /api/auth/sso/config'   => [AuthController::class, 'ssoConfig'],

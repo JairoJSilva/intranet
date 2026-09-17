@@ -1,20 +1,22 @@
 -- ============================================================
--- Portal Unificado Corporativo — Seed Data
+-- Omniflowti — Seed Data
 -- Senhas padrão (BCrypt):
---   admin   → BHU*nji9
---   suporte → Suporte@Portal2024
---   usuario → Usuario@Portal2024
+--   admin   → Admin@Flowti2024
+--   suporte → Suporte@Flowti2024
+--   usuario → Usuario@Flowti2024
+-- NOTA: Os hashes abaixo são placeholders. O bootstrap.php
+-- recria as senhas com password_hash() na primeira execução.
 -- ============================================================
 
-USE `intranet_db`;
+USE `intranet_flowti`;
 
 -- ------------------------------------------------------------
 -- 1. USERS
 -- ------------------------------------------------------------
 INSERT INTO `users` (`username`, `display_name`, `email`, `password_hash`, `auth_provider`, `is_admin`, `is_supervisor`, `is_active`) VALUES
-('admin',   'Administrador do Sistema', 'admin@portal.local',   '$2y$12$ePgV/XPT.plecIKXSEJ7tOyvhRYuhS1lpk8kInLBGBT1gA2OloEJy', 'local', 1, 0, 1),
-('suporte', 'Suporte Técnico TIC',      'suporte@portal.local', '$2y$10$yAXB5S7OAGlSh8bi8YyXjeyZYSUQvCFaszSjGy.s/1JGWIVExorPS', 'local', 0, 1, 1),
-('usuario', 'Usuário Colaborador',      'usuario@portal.local', '$2y$10$QPyAPSyZ3oNb8FS7BVbZjO3zpuXxwpFAPUtl15ZaWzNHSGO5cSsF.', 'local', 0, 0, 1);
+('admin',   'Administrador do Sistema', 'admin@flowti.com.br',   '$2y$12$placeholder.hash.will.be.regenerated.on.first.boot000', 'local', 1, 0, 1),
+('suporte', 'Suporte Técnico TIC',      'suporte@flowti.com.br', '$2y$12$placeholder.hash.will.be.regenerated.on.first.boot000', 'local', 0, 1, 1),
+('usuario', 'Usuário Colaborador',      'usuario@flowti.com.br', '$2y$12$placeholder.hash.will.be.regenerated.on.first.boot000', 'local', 0, 0, 1);
 
 -- ------------------------------------------------------------
 -- 2. GROUPS
@@ -41,7 +43,7 @@ INSERT INTO `user_groups` (`user_id`, `group_id`, `role`, `can_manage_links`, `c
 -- 4. PANELS
 -- ------------------------------------------------------------
 INSERT INTO `panels` (`title`, `description`, `icon`, `sort_order`) VALUES
-('Sistemas Corporativos',  'Aplicações e agentes internos de automação',       'ri-cpu-line',            1),
+('Sistemas Flowti',        'Aplicações e agentes internos de automação',       'ri-cpu-line',            1),
 ('Portal-OCI',            'Oracle Cloud Infrastructure — Ambientes e Tenants','ri-cloud-line',          2),
 ('Portal-Azure',          'Microsoft Azure — Portal de Gestão Cloud',        'ri-microsoft-line',      3),
 ('Portal-AWS',            'Amazon Web Services — Console de Gestão Cloud',    'ri-amazon-line',         4),
@@ -52,10 +54,10 @@ INSERT INTO `panels` (`title`, `description`, `icon`, `sort_order`) VALUES
 
 -- ------------------------------------------------------------
 -- 5. GROUP_PANELS
--- TIC (1): Sistemas Corporativos, Portal-OCI, Portal-Azure, Portal-AWS, Cofres, DevOps
+-- TIC (1): Sistemas Flowti, Portal-OCI, Portal-Azure, Portal-AWS, Cofres, DevOps
 -- Financeiro (2): Financeiro
 -- RH (3): Recursos Humanos
--- Diretoria (4): Sistemas Corporativos, Portais Cloud, DevOps, Financeiro
+-- Diretoria (4): Sistemas Flowti, Portais Cloud, DevOps, Financeiro
 -- ------------------------------------------------------------
 INSERT INTO `group_panels` (`group_id`, `panel_id`) VALUES
 (1, 1),
@@ -75,34 +77,36 @@ INSERT INTO `group_panels` (`group_id`, `panel_id`) VALUES
 
 -- ------------------------------------------------------------
 -- 6. LINKS
+-- Links reais cadastrados a partir de links-salvos
 -- ------------------------------------------------------------
 INSERT INTO `links` (`panel_id`, `title`, `url`, `description`, `icon`, `sort_order`) VALUES
--- Sistemas Corporativos
-(1, 'Agent-Interno',     'https://agent.empresa.local/index.php',                                      'Agente de monitoramento e automação interno',      'ri-robot-line',        1),
-(1, 'Cloud-Inventory',   'https://inventario.empresa.local/index.php',                                 'Inventário de recursos e infraestrutura cloud',    'ri-server-line',       2),
+-- Sistemas Flowti
+(1, 'Flowti-agent',     'https://flowti-agent-develop.flowti.com.br/index.php',                                        'Agente de monitoramento e automação Flowti',       'ri-robot-line',        1),
+(1, 'Cloud-Inventory',  'https://cloud-inventory.flowti.com.br/index.php',                                            'Inventário de recursos e infraestrutura cloud',    'ri-server-line',       2),
 
--- Portal-OCI
-(2, 'OCI-Frankfurt',     'https://cloud.oracle.com/?region=eu-frankfurt-1',                            'Oracle Cloud — Tenant Frankfurt (eu-frankfurt-1)', 'ri-cloud-line',       1),
-(2, 'OCI-SaoPaulo',      'https://cloud.oracle.com/?region=sa-saopaulo-1',                             'Oracle Cloud — Tenant São Paulo (sa-saopaulo-1)',  'ri-cloud-line',       2),
+-- Portal-OCI (Pastas Cloud)
+(2, 'cloudmvoracle',    'https://cloud.oracle.com/?tenant=cloudmvoracle&region=eu-frankfurt-1',                        'Oracle Cloud — Tenant cloudmvoracle (eu-frankfurt-1)', 'ri-cloud-line',   1),
+(2, 'mvcliensaas',      'https://www.oracle.com/cloud/sign-in.html?redirect_uri=https%3A%2F%2Fcloud.oracle.com%2F%3Fregion%3Dsa-saopaulo-1', 'Oracle Cloud — Tenant mvcliensaas (sa-saopaulo-1)', 'ri-cloud-line', 2),
 
 -- Portal-Azure
-(3, 'Portal Azure',      'https://portal.azure.com',                                                   'Console de administração Microsoft Azure',         'ri-microsoft-line',    1),
+(3, 'Portal Azure',     'https://portal.azure.com',                                                                   'Console de administração Microsoft Azure',         'ri-microsoft-line',    1),
 
 -- Portal-AWS
-(4, 'Portal AWS',        'https://console.aws.amazon.com',                                             'AWS Management Console — Acesso global',          'ri-amazon-line',       1),
+(4, 'Portal AWS',       'https://console.aws.amazon.com',                                                             'AWS Management Console — Acesso global aos serviços', 'ri-amazon-line',    1),
 
 -- Cofres de Senhas
-(5, 'Passbolt',          'https://passbolt.empresa.local/app/passwords',                               'Cofre de senhas corporativo compartilhado',        'ri-key-2-line',        1),
-(5, 'Keeper',            'https://keepersecurity.com/vault/#',                                         'Keeper Security Vault — Cofre seguro de senhas',   'ri-safe-2-line',       2),
+(5, 'Passbolt',         'https://passbolt-develop.flowti.com.br/app/passwords',                                       'Cofre de senhas corporativo compartilhado',        'ri-key-2-line',        1),
+(5, 'Keeper',           'https://keepersecurity.com/vault/#',                                                         'Keeper Security Vault — Cofre seguro de senhas',   'ri-safe-2-line',       2),
 
 -- DevOps & Monitoramento
-(6, 'Grafana',           'https://dash.empresa.local/login',                                           'Dashboards de telemetria e monitoramento',         'ri-dashboard-3-line',  1),
-(6, 'Jira-Operações',    'https://jira.empresa.local/projects/OPS',                                    'Gestão de demandas e chamados de Operações',       'ri-task-line',         2),
+(6, 'Grafana',          'https://dash.flowti.com.br/login',                                                           'Dashboards de telemetria e monitoramento',         'ri-dashboard-3-line',  1),
+(6, 'Jira-DevOps',      'https://jira.mv.com.br/projects/OPS/issues/OPS-14?filter=allopenissues',                     'Gestão de demandas e chamados de Operações',       'ri-task-line',         2),
 
 -- Financeiro
-(7, 'Sistema NFe',       'https://nfe.empresa.local',                                                  'Emissão de notas fiscais eletrônicas',             'ri-file-text-line',    1),
-(7, 'ERP Financeiro',    'https://erp.empresa.local/financeiro',                                       'Módulo financeiro do ERP',                         'ri-funds-line',        2),
+(7, 'Sistema NFe',      'https://nfe.flowti.com.br',                                                                  'Emissão de notas fiscais eletrônicas',             'ri-file-text-line',    1),
+(7, 'ERP Financeiro',   'https://erp.flowti.com.br/financeiro',                                                       'Módulo financeiro do ERP',                         'ri-funds-line',        2),
 
 -- Recursos Humanos
-(8, 'Ponto Eletrônico',  'https://ponto.empresa.local',                                                'Sistema de ponto e frequência',                    'ri-time-line',         1),
-(8, 'Portal Colaborador','https://rh.empresa.local',                                                   'Holerites, férias e benefícios',                   'ri-user-smile-line',   2);
+(8, 'Ponto Eletrônico', 'https://ponto.flowti.com.br',                                                                'Sistema de ponto e frequência',                    'ri-time-line',         1),
+(8, 'Portal do Colaborador', 'https://rh.flowti.com.br',                                                              'Holerites, férias e benefícios',                   'ri-user-smile-line',   2);
+

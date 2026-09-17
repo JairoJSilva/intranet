@@ -1,5 +1,6 @@
 /**
- * Portal Unificado — Login Form Component
+ * Flowti Hub — Login Form Component
+ * Tela clássica com Glassmorphism e novo logotipo oficial do Flowti Hub.
  */
 const LoginForm = {
     render() {
@@ -7,7 +8,7 @@ const LoginForm = {
         <div class="login-page" id="login-page">
             <div class="login-card">
                 <div style="text-align: center; margin-bottom: 28px;">
-                    <img src="/assets/img/portal-logo.svg" alt="Portal Unificado" style="height: 48px; width: auto; margin-bottom: 14px; filter: drop-shadow(0 0 16px rgba(171, 23, 238, 0.5));" />
+                    <img src="/assets/img/flowti-hub-logo.svg" alt="Flowti Hub" style="height: 40px; width: auto; margin-bottom: 14px; filter: drop-shadow(0 0 16px rgba(59, 130, 246, 0.45));" />
                     <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0;">Portal Corporativo Unificado</p>
                 </div>
 
@@ -30,7 +31,7 @@ const LoginForm = {
                             <button type="button" id="toggle-password" 
                                     style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
                                            background: none; border: none; color: var(--text-muted); 
-                                           cursor: pointer; padding: 4px;">
+                                           cursor: pointer; padding: 4px;" aria-label="Alternar visibilidade da senha">
                                 <i class="ri-eye-off-line"></i>
                             </button>
                         </div>
@@ -114,8 +115,8 @@ const LoginForm = {
 
                 // Shake animation
                 const card = document.querySelector('.login-card');
-                card.classList.add('shake');
-                setTimeout(() => card.classList.remove('shake'), 500);
+                card?.classList.add('shake');
+                setTimeout(() => card?.classList.remove('shake'), 500);
 
             } finally {
                 submitBtn.disabled = false;
@@ -159,7 +160,6 @@ const LoginForm = {
                     `;
                 }
             }).catch(err => {
-                // SSO not configured or disabled, silently keep local login
                 console.debug('SSO não ativado:', err.message);
             });
         }

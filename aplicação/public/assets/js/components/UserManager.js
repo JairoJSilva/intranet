@@ -1,5 +1,5 @@
 /**
- * Portal Unificado — User Manager Component
+ * Omniflowti — User Manager Component
  * Gestão completa de usuários (CRUD + import CSV).
  * Disponível apenas para Administradores.
  */
@@ -144,7 +144,7 @@ const UserManager = {
                 </div>` : ''}
                 <div class="form-group">
                     <label class="form-label">Email</label>
-                    <input type="email" class="form-input" id="form-email" value="${user?.email || ''}" placeholder="email@portal.local" />
+                    <input type="email" class="form-input" id="form-email" value="${user?.email || ''}" placeholder="email@flowti.com.br" />
                 </div>
                 <div class="form-group">
                     <label class="form-label">${isEdit ? 'Nova Senha (deixe vazio para manter)' : 'Senha'}</label>
@@ -303,7 +303,7 @@ const UserManager = {
                 </p>
                 <div class="form-group">
                     <textarea class="form-input" id="csv-content" rows="8" 
-                              placeholder="username,display_name,email,password,is_admin,is_supervisor,group_ids&#10;joao.silva,João Silva,joao@portal.local,Senha@123,0,0,1;2"
+                              placeholder="username,display_name,email,password,is_admin,is_supervisor,group_ids&#10;joao.silva,João Silva,joao@flowti.com.br,Senha@123,0,0,1;2"
                               style="font-family: monospace; font-size: 0.8rem;"></textarea>
                 </div>
             `,

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # 🛡️ Pipeline Guardian — Runner Script
-# Portal Unificado Corporativo
+# Intranet Flowti - Portal Unificado Corporativo
 # ==============================================================================
 set -euo pipefail
 

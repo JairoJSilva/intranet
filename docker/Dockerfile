@@ -1,8 +1,8 @@
 FROM php:8.2-apache
 
 # Informações
-LABEL maintainer="Portal Team <admin@intranet.local>"
-LABEL description="Portal Unificado Corporativo"
+LABEL maintainer="Flowti TIC <tic@flowti.com.br>"
+LABEL description="Omniflowti — Portal Unificado Corporativo"
 
 # Instala extensões PHP necessárias
 RUN apt-get update && apt-get install -y \

@@ -43,6 +43,55 @@ final class AuthController
     }
 
     /**
+     * POST /api/auth/request
+     */
+    public function requestAccess(): void
+    {
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        $adUsername = trim($data['ad_username'] ?? $data['username'] ?? '');
+        $reason     = trim($data['reason'] ?? '');
+
+        if ($adUsername === '' || $reason === '') {
+            Response::error('Usuário do Active Directory e motivo são obrigatórios.', 422);
+            return;
+        }
+
+        try {
+            $db = \App\Config\Database::getConnection();
+            $stmt = $db->prepare('
+                INSERT INTO audit_log (user_id, action, entity_type, entity_id, new_values, ip_address, user_agent)
+                VALUES (NULL, :action, :entity_type, NULL, :new_values, :ip_address, :user_agent)
+            ');
+
+            $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $userAgent = substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500);
+
+            $stmt->execute([
+                ':action'      => 'request_access',
+                ':entity_type' => 'user',
+                ':new_values'  => json_encode([
+                    'ad_username' => $adUsername,
+                    'reason'      => $reason,
+                    'status'      => 'pending',
+                    'requested_at'=> date('Y-m-d H:i:s'),
+                ], JSON_UNESCAPED_UNICODE),
+                ':ip_address'  => $ipAddress,
+                ':user_agent'  => $userAgent,
+            ]);
+
+            Response::success([
+                'ad_username' => $adUsername,
+                'status'      => 'pending',
+            ], 'Solicitação enviada com sucesso! Aguarde contato.');
+
+        } catch (\Throwable $e) {
+            error_log("[Flowti Hub Request Access Error] {$e->getMessage()}");
+            Response::error('Erro ao processar solicitação de acesso.', 500);
+        }
+    }
+
+    /**
      * POST /api/auth/logout
      */
     public function logout(): void

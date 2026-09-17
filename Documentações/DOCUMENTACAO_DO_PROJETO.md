@@ -88,7 +88,7 @@ O frontend é uma Single Page Application (SPA) construída com **Vanilla JavaSc
 - `PanelManager.js`: Gestão de painéis, suporte à visão em Cartões (Tiles) ou Tabela, e navegação para a página exclusiva de cada setor.
 - `GroupManager.js`: Gestão de setores/grupos e controle de permissões N:N de membros.
 - `UserManager.js`: Cadastro, edição e importação em lote de colaboradores (exclusivo Admin).
-- `LoginForm.js`: Tela de autenticação unificada com seleção dinâmica de provedor (Local ou LDAP/AD).
+- `LoginForm.js`: Tela de autenticação cyber-futurista com boot sequence a laser, logotipo Flowti Hub com badge HUB em neon pulsante, transição deslizante 2D para solicitação de acesso Active Directory e success veil animado.
 - `ThemeManager.js`: Alternador em tempo real entre os 9 temas dark disponíveis (persistência em `localStorage`).
 - `Modal.js` e `Toast.js`: Primitivas de interface para feedback visual imediato e diálogos modais acessíveis.
 
@@ -156,6 +156,7 @@ Todas as respostas da API seguem o envelope padrão JSON:
 | Método | Endpoint | Middleware / Acesso | Descrição |
 |:---|:---|:---|:---|
 | `POST` | `/api/auth/login` | Público | Autenticação do usuário (Local ou LDAP) |
+| `POST` | `/api/auth/request` | Público | Solicitação de acesso Active Directory (gravado em audit_log) |
 | `POST` | `/api/auth/logout` | Autenticado | Encerramento da sessão ativa |
 | `GET` | `/api/auth/me` | Autenticado | Retorna dados e permissões do usuário logado |
 | `GET` | `/api/users` | Admin | Lista todos os usuários cadastrados |

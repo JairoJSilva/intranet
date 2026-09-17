@@ -1,5 +1,5 @@
 /**
- * Portal Unificado — Dashboard Executivo & Observabilidade
+ * Omniflowti — Dashboard Executivo & Observabilidade
  * Visão operacional executiva com métricas de disponibilidade,
  * central de incidentes, sistemas críticos e resumo consolidado por setor.
  */
@@ -8,236 +8,59 @@ const Dashboard = {
     panels: [],
 
     async render() {
-        const now = new Date();
-        const hour = now.getHours();
-        const greeting = hour < 12 ? '☀️ Bom dia' : hour < 18 ? '☁️ Boa tarde' : '🌙 Boa noite';
-        const dateStr = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
-
         return `
-        <style>
-            .bento-grid {
-                display: grid;
-                grid-template-columns: repeat(12, 1fr);
-                grid-auto-rows: minmax(60px, auto);
-                gap: 14px;
-                margin-bottom: 28px;
-            }
-            .bento-cell {
-                background: var(--bg-card);
-                border: 1px solid var(--border-color);
-                border-radius: 16px;
-                padding: 20px;
-                transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-                overflow: hidden;
-                position: relative;
-            }
-            .bento-cell:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-                border-color: rgba(255, 255, 255, 0.12);
-            }
-            .bento-hero {
-                grid-column: span 8;
-                background: linear-gradient(135deg, rgba(171, 23, 238, 0.14) 0%, rgba(0, 196, 191, 0.1) 60%, transparent 100%);
-                border-color: rgba(171, 23, 238, 0.25);
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                min-height: 140px;
-            }
-            .bento-hero::before {
-                content: '';
-                position: absolute;
-                top: -40px;
-                right: -40px;
-                width: 200px;
-                height: 200px;
-                border-radius: 50%;
-                background: radial-gradient(circle, rgba(171, 23, 238, 0.12) 0%, transparent 70%);
-                pointer-events: none;
-            }
-            .bento-uptime {
-                grid-column: span 4;
-                background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(0, 196, 191, 0.08));
-                border-color: rgba(16, 185, 129, 0.3);
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-                min-height: 140px;
-            }
-            .bento-kpi {
-                grid-column: span 3;
-                min-height: 100px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-            .bento-incidents {
-                grid-column: span 12;
-            }
-            .bento-quick-label {
-                grid-column: span 12;
-                padding: 0;
-                background: transparent;
-                border: none;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-            .bento-link-card {
-                grid-column: span 3;
-                min-height: 108px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                cursor: pointer;
-                padding: 16px;
-            }
-            .bento-sectors {
-                grid-column: span 12;
-            }
-            .bento-uptime-ring {
-                width: 80px;
-                height: 80px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.4rem;
-                font-weight: 800;
-                background: conic-gradient(var(--status-online) 0%, transparent 0%);
-                position: relative;
-                margin-bottom: 8px;
-            }
-            .bento-uptime-ring-inner {
-                position: absolute;
-                width: 56px;
-                height: 56px;
-                border-radius: 50%;
-                background: var(--bg-card);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.1rem;
-                font-weight: 800;
-            }
-            .bento-kpi-value {
-                font-size: 2rem;
-                font-weight: 800;
-                line-height: 1;
-                letter-spacing: -1px;
-            }
-            .bento-kpi-label {
-                font-size: 0.75rem;
-                color: var(--text-muted);
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                margin-top: 4px;
-            }
-            .bento-kpi-icon {
-                width: 36px;
-                height: 36px;
-                border-radius: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.1rem;
-                margin-bottom: 12px;
-            }
-            .bento-link-card:hover {
-                border-color: var(--theme-primary) !important;
-                box-shadow: 0 0 0 1px var(--theme-primary), 0 8px 24px rgba(0,0,0,0.25);
-            }
-            @media (max-width: 1024px) {
-                .bento-hero { grid-column: span 12; }
-                .bento-uptime { grid-column: span 12; flex-direction: row; gap: 20px; justify-content: flex-start; }
-                .bento-kpi { grid-column: span 6; }
-                .bento-link-card { grid-column: span 6; }
-            }
-            @media (max-width: 640px) {
-                .bento-kpi { grid-column: span 12; }
-                .bento-link-card { grid-column: span 12; }
-            }
-        </style>
-
-        <!-- Header compacto -->
-        <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div class="page-header" style="margin-bottom: 24px;">
             <div>
-                <div style="font-size: 0.82rem; color: var(--text-muted); text-transform: capitalize; margin-bottom: 2px;">${dateStr}</div>
-                <h2 style="font-size: 1.6rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--text-primary), var(--theme-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                    ${greeting}, Portal Unificado
-                </h2>
+                <h3 class="page-title">Dashboard Operacional</h3>
+                <p class="page-subtitle">Disponibilidade em tempo real, métricas executivas e saúde da infraestrutura corporativa</p>
             </div>
-            <button class="btn btn-primary btn-sm" id="btn-dashboard-healthcheck" style="border-radius: 10px; padding: 8px 16px;">
-                <i class="ri-pulse-line"></i> Checar Sistemas
-            </button>
-        </div>
-
-        <!-- BENTO GRID -->
-        <div class="bento-grid">
-
-            <!-- Hero: Resumo da infraestrutura -->
-            <div class="bento-cell bento-hero">
-                <div>
-                    <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--theme-primary); font-weight: 600; margin-bottom: 6px;">Status Operacional</div>
-                    <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Infraestrutura Corporativa</div>
-                    <div style="font-size: 0.82rem; color: var(--text-muted);">Monitoramento em tempo real de disponibilidade e latência de todos os sistemas cadastrados</div>
-                </div>
-                <div id="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px;">
-                    ${this.renderSkeletons(4, 'stat')}
-                </div>
-            </div>
-
-            <!-- Uptime Global -->
-            <div class="bento-cell bento-uptime" id="bento-uptime-cell">
-                <div style="width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(var(--status-online) 360deg, var(--border-color) 0deg); display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 12px; box-shadow: 0 0 24px rgba(16, 185, 129, 0.25);">
-                    <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--bg-card); display: flex; align-items: center; justify-content: center;">
-                        <span style="font-size: 1rem; font-weight: 800; color: var(--status-online);" id="bento-uptime-pct">—</span>
-                    </div>
-                </div>
-                <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">Disponibilidade Global</div>
-                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Últimas 24h</div>
-            </div>
-
-            <!-- Incidentes (linha inteira) -->
-            <div class="bento-cell bento-incidents" id="dashboard-incidents-section" style="padding: 0; border: none; background: transparent;">
-                <div class="skeleton" style="height: 72px; border-radius: 16px;"></div>
-            </div>
-
-            <!-- Label Acesso Rápido -->
-            <div class="bento-cell bento-quick-label">
-                <div>
-                    <h4 style="font-size: 1rem; font-weight: 700; margin: 0; color: var(--text-primary);">⚡ Acesso Rápido</h4>
-                    <p style="font-size: 0.78rem; color: var(--text-muted); margin: 2px 0 0;">Sistemas prioritários com status ao vivo</p>
-                </div>
-                <button class="btn btn-ghost btn-sm" onclick="Router.navigate('#/panels')" style="color: var(--theme-primary); font-size: 0.8rem; border-radius: 8px;">
-                    Ver todos os painéis <i class="ri-arrow-right-line"></i>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-primary btn-sm" id="btn-dashboard-healthcheck">
+                    <i class="ri-pulse-line"></i> Checar Todos os Sistemas
                 </button>
             </div>
+        </div>
 
-            <!-- Grid de links rápidos (placeholder, preenchido por renderQuickAccess) -->
-            <div id="quick-access-bento-wrapper" style="grid-column: span 12; display: contents;">
-                ${this.renderSkeletons(8, 'quick')}
-            </div>
+        <!-- Cards de Métricas Principais (KPIs) -->
+        <div class="stats-grid" id="stats-grid" style="margin-bottom: 28px;">
+            ${this.renderSkeletons(4, 'stat')}
+        </div>
 
-            <!-- Visão por Setor -->
-            <div class="bento-cell bento-sectors">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                    <div>
-                        <h4 style="font-size: 1rem; font-weight: 700; margin: 0;">🗂 Visão por Setor</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 2px 0 0;">Índice de saúde e distribuição de serviços</p>
-                    </div>
-                    <button class="btn btn-secondary btn-sm" onclick="Router.navigate('#/panels')" style="font-size: 0.75rem; border-radius: 8px;">
-                        <i class="ri-layout-grid-line"></i> Explorar Painéis
-                    </button>
+        <!-- Central de Incidentes / Alertas Operacionais -->
+        <div id="dashboard-incidents-section" style="margin-bottom: 28px;">
+            <div class="skeleton" style="height: 90px; border-radius: var(--radius);"></div>
+        </div>
+
+        <!-- Acesso Rápido a Sistemas Críticos -->
+        <div style="margin-bottom: 28px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                <div>
+                    <h4 style="font-size: 1.1rem; font-weight: 600; margin: 0;">Sistemas Críticos & Acesso Rápido</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Aplicações prioritárias com monitoramento de latência ativa</p>
                 </div>
-                <div id="sectors-health-table">
-                    <div class="skeleton" style="height: 140px; border-radius: 10px;"></div>
-                </div>
+                <button class="btn btn-ghost btn-sm" onclick="Router.navigate('#/panels')" style="color: var(--theme-primary); font-size: 0.82rem;">
+                    Ver Catálogo Completo <i class="ri-arrow-right-line"></i>
+                </button>
             </div>
+            <div class="panels-grid" id="quick-access-grid" style="grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));">
+                ${this.renderSkeletons(4, 'quick')}
+            </div>
+        </div>
 
+        <!-- Distribuição de Disponibilidade por Setor / Painel -->
+        <div class="card" style="margin-bottom: 24px; padding: 20px; background: var(--bg-card); border: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                <div>
+                    <h4 style="font-size: 1.05rem; font-weight: 600; margin: 0;">Visão Geral por Setor / Painel</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Índice de saúde e distribuição de serviços monitorados</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="Router.navigate('#/panels')" style="font-size: 0.78rem;">
+                    <i class="ri-layout-grid-line"></i> Explorar Painéis
+                </button>
+            </div>
+            <div id="sectors-health-table">
+                <div class="skeleton" style="height: 140px;"></div>
+            </div>
         </div>
         `;
     },
@@ -318,43 +141,45 @@ const Dashboard = {
         const uptimeColor = uptime >= 90 ? 'var(--status-online)' :
                            uptime >= 60 ? 'var(--status-warning)' : 'var(--status-offline)';
 
-        // Atualiza o ring de uptime no bento-uptime-cell
-        const uptimePct = document.getElementById('bento-uptime-pct');
-        if (uptimePct) {
-            uptimePct.textContent = uptime + '%';
-            uptimePct.style.color = uptimeColor;
-            const ring = uptimePct.closest('[id="bento-uptime-cell"]')?.querySelector('div[style*="conic-gradient"]');
-            if (ring) {
-                const deg = Math.round((uptime / 100) * 360);
-                ring.style.background = `conic-gradient(${uptimeColor} ${deg}deg, var(--border-color) ${deg}deg)`;
-                ring.style.boxShadow = `0 0 24px ${uptimeColor}40`;
-            }
-        }
-
-        // KPIs compactos dentro do hero bento
         grid.innerHTML = `
-            <div style="background: rgba(0,196,191,0.1); border: 1px solid rgba(0,196,191,0.2); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 2px;">
-                <div style="font-size: 1.8rem; font-weight: 800; color: var(--theme-primary); line-height: 1;">${stats.total_links || 0}</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Aplicações</div>
-                <div style="font-size: 0.85rem; color: var(--theme-primary); margin-top: 4px;"><i class="ri-apps-line"></i></div>
+            <div class="stat-card" style="--stat-color: var(--theme-primary); --stat-bg: rgba(0, 196, 191, 0.12);">
+                <div>
+                    <div class="stat-value" style="color: var(--theme-primary);">${stats.total_links || 0}</div>
+                    <div class="stat-label">Aplicações Monitoradas</div>
+                </div>
+                <div class="stat-icon" style="background: rgba(0, 196, 191, 0.15); color: var(--theme-primary);">
+                    <i class="ri-apps-line"></i>
+                </div>
             </div>
 
-            <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 2px;">
-                <div style="font-size: 1.8rem; font-weight: 800; color: var(--status-online); line-height: 1;">${stats.links_online || 0}</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Online</div>
-                <div style="font-size: 0.85rem; color: var(--status-online); margin-top: 4px;"><i class="ri-check-double-line"></i></div>
+            <div class="stat-card" style="--stat-color: var(--status-online); --stat-bg: var(--status-online-bg);">
+                <div>
+                    <div class="stat-value" style="color: var(--status-online);">${stats.links_online || 0}</div>
+                    <div class="stat-label">Sistemas Online</div>
+                </div>
+                <div class="stat-icon" style="background: var(--status-online-bg); color: var(--status-online);">
+                    <i class="ri-check-double-line"></i>
+                </div>
             </div>
 
-            <div style="background: ${(stats.links_offline || 0) > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.03)'}; border: 1px solid ${(stats.links_offline || 0) > 0 ? 'rgba(239,68,68,0.3)' : 'var(--border-color)'}; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 2px;">
-                <div style="font-size: 1.8rem; font-weight: 800; color: ${(stats.links_offline || 0) > 0 ? 'var(--status-offline)' : 'var(--text-secondary)'}; line-height: 1;">${stats.links_offline || 0}</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">${(stats.links_offline || 0) > 0 ? 'Offline' : 'Sem Falhas'}</div>
-                <div style="font-size: 0.85rem; color: ${(stats.links_offline || 0) > 0 ? 'var(--status-offline)' : 'var(--text-muted)'}; margin-top: 4px;"><i class="ri-alert-line"></i></div>
+            <div class="stat-card" style="--stat-color: ${(stats.links_offline || 0) > 0 ? 'var(--status-offline)' : 'var(--text-muted)'}; --stat-bg: ${(stats.links_offline || 0) > 0 ? 'var(--status-offline-bg)' : 'rgba(255,255,255,0.03)'};">
+                <div>
+                    <div class="stat-value" style="color: ${(stats.links_offline || 0) > 0 ? 'var(--status-offline)' : 'var(--text-primary)'};">${stats.links_offline || 0}</div>
+                    <div class="stat-label">${(stats.links_offline || 0) > 0 ? 'Sistemas Indisponíveis' : 'Sem Falhas Registradas'}</div>
+                </div>
+                <div class="stat-icon" style="background: ${(stats.links_offline || 0) > 0 ? 'var(--status-offline-bg)' : 'rgba(255,255,255,0.05)'}; color: ${(stats.links_offline || 0) > 0 ? 'var(--status-offline)' : 'var(--text-muted)'};">
+                    <i class="ri-alert-line"></i>
+                </div>
             </div>
 
-            <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 2px;">
-                <div style="font-size: 1.8rem; font-weight: 800; color: ${uptimeColor}; line-height: 1;">${uptime}%</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">SLA</div>
-                <div style="font-size: 0.85rem; color: ${uptimeColor}; margin-top: 4px;"><i class="ri-speed-line"></i></div>
+            <div class="stat-card" style="--stat-color: ${uptimeColor}; --stat-bg: rgba(16, 185, 129, 0.12);">
+                <div>
+                    <div class="stat-value" style="color: ${uptimeColor};">${uptime}%</div>
+                    <div class="stat-label">Disponibilidade Global</div>
+                </div>
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: ${uptimeColor};">
+                    <i class="ri-speed-line"></i>
+                </div>
             </div>
         `;
     },
@@ -425,8 +250,8 @@ const Dashboard = {
     },
 
     renderQuickAccess(panels) {
-        const wrapper = document.getElementById('quick-access-bento-wrapper');
-        if (!wrapper) return;
+        const container = document.getElementById('quick-access-grid');
+        if (!container) return;
 
         // Pega até 8 links prioritários
         const priorityLinks = [];
@@ -439,43 +264,39 @@ const Dashboard = {
         const selected = priorityLinks.slice(0, 8);
 
         if (selected.length === 0) {
-            wrapper.innerHTML = `<div class="bento-cell" style="grid-column: span 12;"><div class="empty-state"><p>Nenhum sistema cadastrado.</p></div></div>`;
+            container.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><p>Nenhum sistema cadastrado.</p></div>`;
             return;
         }
 
-        // Renderiza como bento-cards individuais (display: contents no wrapper)
-        wrapper.innerHTML = selected.map((link, idx) => {
-            // Alterna tamanhos: primeiro card ocupa 4 colunas, demais 3, para variar visualmente
-            const span = idx === 0 ? 4 : 3;
-            const statusColor = link.health_status === 'online' ? 'var(--status-online)' :
-                               link.health_status === 'offline' ? 'var(--status-offline)' : 'var(--text-muted)';
-            return `
-            <div class="bento-cell bento-link-card"
-                 style="grid-column: span ${span}; border-left: 3px solid ${link.panelColor};"
-                 onclick="window.open('${link.url}', '_blank', 'noopener,noreferrer')"
-                 title="Acessar ${link.title}">
-                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
-                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
-                        <div style="width: 36px; height: 36px; border-radius: 10px; background: ${link.panelColor}20; color: ${link.panelColor}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.05rem;">
-                            ${this.renderIcon(link.icon, 'ri-global-line')}
+        container.innerHTML = selected.map(link => `
+            <div class="card" onclick="window.open('${link.url}', '_blank', 'noopener,noreferrer')" style="margin: 0; padding: 14px 16px; background: var(--bg-card); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid ${link.panelColor}; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;" title="Acessar ${link.title} em nova aba">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: ${link.panelColor}18; color: ${link.panelColor}; display: flex; align-items: center; justify-content: center;">
+                                ${this.renderIcon(link.icon, 'ri-global-line')}
+                            </div>
+                            <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); word-break: break-word;">
+                                ${link.title}
+                            </div>
                         </div>
-                        <div style="min-width: 0;">
-                            <div style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${link.title}</div>
-                            <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${link.panelTitle}</div>
-                        </div>
+                        <span class="health-badge ${link.health_status || 'unknown'}" style="font-size: 0.7rem; padding: 2px 6px;">
+                            <span class="health-dot"></span>
+                            ${link.health_status === 'online' ? 'Online' : (link.health_status === 'offline' ? 'Offline' : 'Status')}
+                        </span>
                     </div>
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: ${statusColor}; margin-top: 4px; flex-shrink: 0; box-shadow: 0 0 6px ${statusColor};"></div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); word-break: break-all; margin-bottom: 12px;">
+                        ${link.panelTitle} · ${link.url}
+                    </div>
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border-color); margin-top: 10px;">
-                    <span style="font-size: 0.7rem; color: var(--text-muted);">${link.response_time_ms ? link.response_time_ms + 'ms' : '—'}</span>
-                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"
-                       style="font-size: 0.72rem; color: ${link.panelColor}; font-weight: 600; display: flex; align-items: center; gap: 3px; text-decoration: none;">
-                        Abrir <i class="ri-arrow-right-up-line"></i>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border-color); font-size: 0.78rem;">
+                    <span style="color: var(--text-secondary);">${link.response_time_ms ? `${link.response_time_ms}ms` : 'Disponível'}</span>
+                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="btn btn-secondary btn-sm" style="padding: 3px 10px; font-size: 0.75rem;">
+                        Acessar <i class="ri-arrow-right-up-line"></i>
                     </a>
                 </div>
             </div>
-            `;
-        }).join('');
+        `).join('');
     },
 
     renderSectorsTable(panels) {

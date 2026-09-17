@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# 🚀 Portal Unificado — Git Sync Master (Commit + Rebase + Push)
+# 🚀 Flowti Hub — Git Sync Master (Commit + Rebase + Push)
 # Script completo e interativo para automação de fluxo Git com Rebase seguro.
 # ==============================================================================
 
@@ -22,7 +22,7 @@ WHITE='\033[1;37m'
 banner() {
   echo -e "${MAGENTA}${BOLD}"
   echo "╔══════════════════════════════════════════════════════════════════════════╗"
-  echo "║       🚀 PORTAL UNIFICADO — GIT SYNC MASTER (Commit • Rebase • Push)     ║"
+  echo "║          🚀 FLOWTI HUB — GIT SYNC MASTER (Commit • Rebase • Push)        ║"
   echo "╚══════════════════════════════════════════════════════════════════════════╝"
   echo -e "${RESET}"
 }

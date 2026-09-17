@@ -19,7 +19,7 @@
   <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
   <rect width="504" height="504" x="4" y="4" rx="108" fill="none" stroke="#00c4bf" stroke-width="2" stroke-opacity="0.3"/>
 
-  <!-- Portal Stylized Icon -->
+  <!-- Flowti / Portal Stylized Icon -->
   <g transform="translate(256, 256) scale(1.1)" filter="url(#glow)">
     <!-- Outer Ring Orbit -->
     <ellipse rx="140" ry="50" fill="none" stroke="url(#primaryGrad)" stroke-width="12" transform="rotate(-30)" stroke-dasharray="12 8" opacity="0.85"/>

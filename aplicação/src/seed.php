@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Portal Unificado Corporativo — Database Seed Script
+ * Omniflowti — Database Seed Script
  * Cria/atualiza usuários, grupos, painéis, vínculos RBAC e links reais da empresa.
  * Executar após o primeiro deploy: php src/seed.php
  */
@@ -12,7 +12,7 @@ require_once __DIR__ . '/bootstrap.php';
 use App\Config\Database;
 use App\Services\LocalAuthStrategy;
 
-echo "🌱 Portal Unificado — Inicialização de Seed & Dados Reais\n";
+echo "🌱 Omniflowti — Inicialização de Seed & Dados Reais\n";
 echo str_repeat('═', 50) . "\n\n";
 
 $db = Database::getInstance();
@@ -26,24 +26,24 @@ $users = [
     [
         'username'      => 'admin',
         'display_name'  => 'Administrador do Sistema',
-        'email'         => 'admin@portal.local',
-        'password'      => 'BHU*nji9',
+        'email'         => 'admin@flowti.com.br',
+        'password'      => 'Admin@Flowti2024',
         'is_admin'      => 1,
         'is_supervisor' => 0,
     ],
     [
         'username'      => 'suporte',
         'display_name'  => 'Suporte Técnico TIC',
-        'email'         => 'suporte@portal.local',
-        'password'      => 'Suporte@Portal2024',
+        'email'         => 'suporte@flowti.com.br',
+        'password'      => 'Suporte@Flowti2024',
         'is_admin'      => 0,
         'is_supervisor' => 1,
     ],
     [
         'username'      => 'usuario',
         'display_name'  => 'Usuário Colaborador',
-        'email'         => 'usuario@portal.local',
-        'password'      => 'Usuario@Portal2024',
+        'email'         => 'usuario@flowti.com.br',
+        'password'      => 'Usuario@Flowti2024',
         'is_admin'      => 0,
         'is_supervisor' => 0,
     ],
@@ -169,8 +169,8 @@ foreach ($userGroupMap as $username => $groupSlugs) {
 // ============================================================
 echo "\n📁 [4/5] Sincronizando Painéis (Pastas)...\n";
 $panels = [
-    'corporate_systems' => [
-        'title'       => 'Sistemas Corporativos',
+    'flowti_systems' => [
+        'title'       => 'Sistemas Flowti',
         'description' => 'Aplicações e agentes internos de automação',
         'icon'        => 'ri-cpu-line',
         'sort_order'  => 1,
@@ -249,10 +249,10 @@ foreach ($panels as $key => $p) {
 
 // Vincula painéis a grupos
 $groupPanelMap = [
-    'tic'        => ['corporate_systems', 'portal_oci', 'portal_azure', 'portal_aws', 'vaults', 'devops'],
+    'tic'        => ['flowti_systems', 'portal_oci', 'portal_azure', 'portal_aws', 'vaults', 'devops'],
     'financeiro' => ['financeiro'],
     'recursos-humanos' => ['rh'],
-    'diretoria'  => ['corporate_systems', 'portal_oci', 'portal_azure', 'portal_aws', 'devops', 'financeiro'],
+    'diretoria'  => ['flowti_systems', 'portal_oci', 'portal_azure', 'portal_aws', 'devops', 'financeiro'],
 ];
 
 foreach ($groupPanelMap as $gSlug => $pKeys) {
@@ -267,42 +267,42 @@ foreach ($groupPanelMap as $gSlug => $pKeys) {
 }
 
 // ============================================================
-// 5. LINKS REAIS (A partir de links corporativos genéricos)
+// 5. LINKS REAIS (A partir de links-salvos)
 // ============================================================
 echo "\n🔗 [5/5] Sincronizando Links Reais...\n";
 $realLinks = [
-    // Sistemas Corporativos
+    // Sistemas Flowti
     [
-        'panel_key'   => 'corporate_systems',
-        'title'       => 'Agent-Interno',
-        'url'         => 'https://agent.empresa.local/index.php',
-        'description' => 'Agente de monitoramento e automação interno',
+        'panel_key'   => 'flowti_systems',
+        'title'       => 'Flowti-agent',
+        'url'         => 'https://flowti-agent-develop.flowti.com.br/index.php',
+        'description' => 'Agente de monitoramento e automação Flowti',
         'icon'        => 'ri-robot-line',
         'sort_order'  => 1,
     ],
     [
-        'panel_key'   => 'corporate_systems',
+        'panel_key'   => 'flowti_systems',
         'title'       => 'Cloud-Inventory',
-        'url'         => 'https://inventario.empresa.local/index.php',
+        'url'         => 'https://cloud-inventory.flowti.com.br/index.php',
         'description' => 'Inventário de recursos e infraestrutura cloud',
         'icon'        => 'ri-server-line',
         'sort_order'  => 2,
     ],
 
-    // Portal-OCI
+    // Portal-OCI (Pastas Cloud)
     [
         'panel_key'   => 'portal_oci',
-        'title'       => 'OCI-Frankfurt',
-        'url'         => 'https://cloud.oracle.com/?region=eu-frankfurt-1',
-        'description' => 'Oracle Cloud — Tenant Frankfurt (eu-frankfurt-1)',
+        'title'       => 'cloudmvoracle',
+        'url'         => 'https://cloud.oracle.com/?tenant=cloudmvoracle&region=eu-frankfurt-1',
+        'description' => 'Oracle Cloud — Tenant cloudmvoracle (eu-frankfurt-1)',
         'icon'        => 'ri-cloud-line',
         'sort_order'  => 1,
     ],
     [
         'panel_key'   => 'portal_oci',
-        'title'       => 'OCI-SaoPaulo',
-        'url'         => 'https://cloud.oracle.com/?region=sa-saopaulo-1',
-        'description' => 'Oracle Cloud — Tenant São Paulo (sa-saopaulo-1)',
+        'title'       => 'mvcliensaas',
+        'url'         => 'https://www.oracle.com/cloud/sign-in.html?redirect_uri=https%3A%2F%2Fcloud.oracle.com%2F%3Fregion%3Dsa-saopaulo-1',
+        'description' => 'Oracle Cloud — Tenant mvcliensaas (sa-saopaulo-1)',
         'icon'        => 'ri-cloud-line',
         'sort_order'  => 2,
     ],
@@ -331,7 +331,7 @@ $realLinks = [
     [
         'panel_key'   => 'vaults',
         'title'       => 'Passbolt',
-        'url'         => 'https://passbolt.empresa.local/app/passwords',
+        'url'         => 'https://passbolt-develop.flowti.com.br/app/passwords',
         'description' => 'Cofre de senhas corporativo compartilhado',
         'icon'        => 'ri-key-2-line',
         'sort_order'  => 1,
@@ -349,15 +349,15 @@ $realLinks = [
     [
         'panel_key'   => 'devops',
         'title'       => 'Grafana',
-        'url'         => 'https://dash.empresa.local/login',
+        'url'         => 'https://dash.flowti.com.br/login',
         'description' => 'Dashboards de telemetria e monitoramento',
         'icon'        => 'ri-dashboard-3-line',
         'sort_order'  => 1,
     ],
     [
         'panel_key'   => 'devops',
-        'title'       => 'Jira-Operações',
-        'url'         => 'https://jira.empresa.local/projects/OPS',
+        'title'       => 'Jira-DevOps',
+        'url'         => 'https://jira.mv.com.br/projects/OPS/issues/OPS-14?filter=allopenissues',
         'description' => 'Gestão de demandas e chamados de Operações',
         'icon'        => 'ri-task-line',
         'sort_order'  => 2,
@@ -367,7 +367,7 @@ $realLinks = [
     [
         'panel_key'   => 'financeiro',
         'title'       => 'Sistema NFe',
-        'url'         => 'https://nfe.empresa.local',
+        'url'         => 'https://nfe.flowti.com.br',
         'description' => 'Emissão de notas fiscais eletrônicas',
         'icon'        => 'ri-file-text-line',
         'sort_order'  => 1,
@@ -375,7 +375,7 @@ $realLinks = [
     [
         'panel_key'   => 'financeiro',
         'title'       => 'ERP Financeiro',
-        'url'         => 'https://erp.empresa.local/financeiro',
+        'url'         => 'https://erp.flowti.com.br/financeiro',
         'description' => 'Módulo financeiro do ERP',
         'icon'        => 'ri-funds-line',
         'sort_order'  => 2,
@@ -385,15 +385,15 @@ $realLinks = [
     [
         'panel_key'   => 'rh',
         'title'       => 'Ponto Eletrônico',
-        'url'         => 'https://ponto.empresa.local',
+        'url'         => 'https://ponto.flowti.com.br',
         'description' => 'Sistema de ponto e frequência',
         'icon'        => 'ri-time-line',
         'sort_order'  => 1,
     ],
     [
         'panel_key'   => 'rh',
-        'title'       => 'Portal Colaborador',
-        'url'         => 'https://rh.empresa.local',
+        'title'       => 'Portal do Colaborador',
+        'url'         => 'https://rh.flowti.com.br',
         'description' => 'Holerites, férias e benefícios',
         'icon'        => 'ri-user-smile-line',
         'sort_order'  => 2,
@@ -404,6 +404,7 @@ foreach ($realLinks as $lnk) {
     $pid = $panelIds[$lnk['panel_key']] ?? null;
     if (!$pid) continue;
 
+    // Verifica se o link já existe pelo título e painel
     $checkLink = $db->prepare("SELECT id FROM links WHERE panel_id = :pid AND title = :title");
     $checkLink->execute([':pid' => $pid, ':title' => $lnk['title']]);
     $linkId = $checkLink->fetchColumn();
@@ -438,7 +439,7 @@ foreach ($realLinks as $lnk) {
 }
 
 echo "\n" . str_repeat('═', 50) . "\n";
-echo "🎉 Seed finalizado com sucesso no Portal Unificado!\n\n";
+echo "🎉 Seed finalizado com sucesso no Omniflowti!\n\n";
 echo "Credenciais de Acesso:\n";
 foreach ($users as $u) {
     echo "  🔑 {$u['username']} → {$u['password']} ({$u['display_name']})\n";

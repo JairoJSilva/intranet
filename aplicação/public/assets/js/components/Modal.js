@@ -1,5 +1,5 @@
 /**
- * Portal Unificado — Modal Component
+ * Omniflowti — Modal Component
  * Modal genérico reutilizável com backdrop blur e animações.
  */
 const Modal = {

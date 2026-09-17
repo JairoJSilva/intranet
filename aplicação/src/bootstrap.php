@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Portal Unificado — Bootstrap
+ * Omniflowti — Bootstrap
  * Inicializa o ambiente: autoload, .env, sessão segura.
  */
 
@@ -43,7 +43,7 @@ if (session_status() === PHP_SESSION_NONE) {
     $lifetime = \App\Config\Env::getInt('SESSION_LIFETIME', 7200);
 
     ini_set('session.cookie_httponly', '1');
-    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.cookie_samesite', 'Strict');
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
     ini_set('session.gc_maxlifetime', (string)$lifetime);
@@ -53,7 +53,7 @@ if (session_status() === PHP_SESSION_NONE) {
         ini_set('session.cookie_secure', '1');
     }
 
-    session_name('PORTAL_SESSION');
+    session_name('OMNIFLOWTI_SESSION');
     session_start();
 }
 
