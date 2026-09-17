@@ -215,7 +215,7 @@ data:
     -- 1. USERS
     -- ------------------------------------------------------------
     INSERT INTO `users` (`username`, `display_name`, `email`, `password_hash`, `auth_provider`, `is_admin`, `is_supervisor`, `is_active`) VALUES
-    ('admin',   'Administrador do Sistema', 'admin@flowti.com.br',   '$2y$10$BRolxea3SEo7tSrDcQX8XuWigUxI2FpdMlb3/pKfyUEm4C6uH/2jq', 'local', 1, 0, 1),
+    ('admin',   'Administrador do Sistema', 'admin@flowti.com.br',   '$2y$12$ePgV/XPT.plecIKXSEJ7tOyvhRYuhS1lpk8kInLBGBT1gA2OloEJy', 'local', 1, 0, 1),
     ('suporte', 'Suporte Técnico TIC',      'suporte@flowti.com.br', '$2y$10$OvdhfUiRkYF7ozp9guvqfuxEGcM3I6b2UhPo5v3rVuktQ9bMcQgDy', 'local', 0, 1, 1),
     ('usuario', 'Usuário Colaborador',      'usuario@flowti.com.br', '$2y$10$diWWNN1JgIqnyefYE1Szv.fcQYd/fsKYLZY74m6OBX4yIn.IsyvJe', 'local', 0, 0, 1);
 
