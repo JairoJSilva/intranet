@@ -1,6 +1,6 @@
 FROM alpine:3.19
 
-LABEL maintainer="Flowti TIC <tic@flowti.com.br>"
+LABEL maintainer="DevOps Team <admin@intranet.local>"
 LABEL description="Pipeline Guardian — Autonomous Cluster & CI/CD Pipeline Monitoring Bot"
 
 RUN apk add --no-cache python3 curl bash

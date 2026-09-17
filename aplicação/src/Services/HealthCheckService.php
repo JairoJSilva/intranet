@@ -52,7 +52,7 @@ final class HealthCheckService
                 CURLOPT_CONNECTTIMEOUT_MS => self::TIMEOUT_MS,
                 CURLOPT_SSL_VERIFYPEER => false,      // Aceita certificados autoassinados (intranet)
                 CURLOPT_SSL_VERIFYHOST => 0,
-                CURLOPT_USERAGENT      => 'IntranetFlowti-HealthCheck/1.0',
+                CURLOPT_USERAGENT      => 'IntranetPortal-HealthCheck/1.0',
             ]);
 
             curl_multi_add_handle($multiHandle, $ch);
@@ -138,7 +138,7 @@ final class HealthCheckService
             CURLOPT_CONNECTTIMEOUT_MS => self::TIMEOUT_MS,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_USERAGENT      => 'IntranetFlowti-HealthCheck/1.0',
+            CURLOPT_USERAGENT      => 'IntranetPortal-HealthCheck/1.0',
         ]);
 
         curl_exec($ch);

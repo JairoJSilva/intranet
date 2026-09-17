@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: portal-intranet
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: portal-intranet
+    app.kubernetes.io/part-of: intranet
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/JairoJSilva/intranet.git'
+    targetRevision: main
+    path: k8s
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: intranet
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

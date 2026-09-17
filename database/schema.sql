@@ -1,14 +1,14 @@
 -- ============================================================
--- Omniflowti — Portal Unificado Corporativo
+-- Portal Unificado Corporativo
 -- Schema DDL — MySQL 8.0+ / MariaDB 10.6+
 -- Charset: utf8mb4_unicode_ci
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS `intranet_flowti`
+CREATE DATABASE IF NOT EXISTS `intranet_db`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE `intranet_flowti`;
+USE `intranet_db`;
 
 -- ------------------------------------------------------------
 -- 1. USERS — Usuários do sistema (Local + LDAP/AD)

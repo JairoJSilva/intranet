@@ -1,5 +1,5 @@
 /**
- * Omniflowti — Topbar Component
+ * Portal Unificado — Topbar Component
  */
 const Topbar = {
     render(pageTitle = 'Dashboard') {
@@ -155,7 +155,7 @@ const Topbar = {
      * Verifica se o modo compacto está ativo
      */
     isCompactMode() {
-        return localStorage.getItem('omniflowti_density') === 'compact';
+        return (localStorage.getItem('portal_density') || localStorage.getItem('omniflowti_density')) === 'compact';
     },
 
     /**
@@ -177,7 +177,7 @@ const Topbar = {
     toggleDensityMode() {
         const isCurrentlyCompact = this.isCompactMode();
         const nextMode = isCurrentlyCompact ? 'comfortable' : 'compact';
-        localStorage.setItem('omniflowti_density', nextMode);
+        localStorage.setItem('portal_density', nextMode);
 
         if (nextMode === 'compact') {
             document.documentElement.classList.add('density-compact');

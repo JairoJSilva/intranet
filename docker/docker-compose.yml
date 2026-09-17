@@ -1,7 +1,7 @@
 version: '3.8'
 
 # ============================================
-# Omniflowti — Docker Compose
+# Portal Unificado — Docker Compose
 # Ambiente de desenvolvimento local
 # ============================================
 
@@ -11,7 +11,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    container_name: flowti-app
+    container_name: intranet-app
     ports:
       - "8080:80"
     volumes:
@@ -22,7 +22,7 @@ services:
     environment:
       - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_NAME=intranet_flowti
+      - DB_NAME=intranet_db
       - DB_USER=root
       - DB_PASS=rootpass
       - APP_ENV=development
@@ -31,18 +31,18 @@ services:
       - SESSION_LIFETIME=7200
       - LDAP_ENABLED=false
     networks:
-      - flowti-net
+      - intranet-net
     restart: unless-stopped
 
   # ---- MySQL 8.0 ----
   mysql:
     image: mysql:8.0
-    container_name: flowti-mysql
+    container_name: intranet-mysql
     ports:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: intranet_flowti
+      MYSQL_DATABASE: intranet_db
       MYSQL_CHARSET: utf8mb4
       MYSQL_COLLATION: utf8mb4_unicode_ci
     volumes:
@@ -56,13 +56,13 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - flowti-net
+      - intranet-net
     restart: unless-stopped
 
   # ---- phpMyAdmin (Dev only) ----
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: flowti-phpmyadmin
+    container_name: intranet-phpmyadmin
     ports:
       - "8081:80"
     environment:
@@ -73,7 +73,7 @@ services:
       mysql:
         condition: service_healthy
     networks:
-      - flowti-net
+      - intranet-net
     restart: unless-stopped
 
 volumes:
@@ -81,5 +81,5 @@ volumes:
     driver: local
 
 networks:
-  flowti-net:
+  intranet-net:
     driver: bridge

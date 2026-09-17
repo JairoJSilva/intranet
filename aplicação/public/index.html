@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Omniflowti — Portal Unificado Corporativo. Centralize todas as aplicações da empresa em um único ponto de acesso." />
+    <meta name="description" content="Portal Unificado Corporativo. Centralize todas as aplicações da empresa em um único ponto de acesso." />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="theme-color" content="#0B0A0A" />
 
-    <title>Omniflowti — Portal Unificado</title>
+    <title>Portal Unificado</title>
 
     <!-- Favicon & PWA -->
     <link rel="icon" type="image/svg+xml" href="/assets/img/pwa-icon.svg" />
@@ -15,7 +15,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Omniflowti" />
+    <meta name="apple-mobile-web-app-title" content="Portal Unificado" />
     <link rel="apple-touch-icon" href="/assets/img/pwa-icon.svg" />
 
     <!-- Google Fonts: Space Grotesk, Inter, Poppins, Raleway, Rubik -->
@@ -27,27 +27,29 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
 
     <!-- App Styles -->
-    <link rel="stylesheet" href="/assets/css/app.css?v=1.4.1" />
+    <link rel="stylesheet" href="/assets/css/app.css?v=2.0.0" />
 
     <!-- Theme Restore (Anti-FOUC) -->
     <script>
         (function() {
-            var theme = localStorage.getItem('omniflowti_theme') || 'aura';
+            var theme = localStorage.getItem('portal_theme') || localStorage.getItem('omniflowti_theme') || 'aura';
             if (!theme || theme === 'dark' || theme === 'aura' || theme === 'light' || theme === 'flowti-light' || theme === 'safira-light' || theme === 'classic-corp-light' || theme === 'warm-minimalist' || theme === 'cobalt-light') {
                 theme = 'aura';
             } else if (theme === 'ocean') {
                 theme = 'mv-petrol';
             } else if (theme === 'sunset') {
                 theme = 'mv-teal';
-            } else if (theme === 'midnight') {
-                theme = 'flowti-midnight';
+            } else if (theme === 'flowti-dark') {
+                theme = 'cyan-dark';
+            } else if (theme === 'midnight' || theme === 'flowti-midnight') {
+                theme = 'cyan-midnight';
             } else if (theme === 'cobalt-dark') {
                 theme = 'safira-dark';
             } else if (theme === 'solar-terracotta') {
                 theme = 'terracotta-sunset';
             }
             document.documentElement.setAttribute('data-theme', theme);
-            var density = localStorage.getItem('omniflowti_density');
+            var density = localStorage.getItem('portal_density') || localStorage.getItem('omniflowti_density');
             if (density === 'compact') {
                 document.documentElement.classList.add('density-compact');
             }
@@ -60,28 +62,28 @@
         <!-- Loading inicial -->
         <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 16px;">
             <i class="ri-global-line" style="font-size: 3rem; color: var(--theme-primary); animation: pulse-glow 2s ease-in-out infinite;"></i>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Carregando Omniflowti...</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Carregando Portal Unificado...</p>
         </div>
     </div>
 
     <!-- JavaScript Modules -->
-    <script src="/assets/js/state.js?v=1.4.1"></script>
-    <script src="/assets/js/api.js?v=1.4.1"></script>
-    <script src="/assets/js/router.js?v=1.4.1"></script>
-    <script src="/assets/js/components/Toast.js?v=1.4.1"></script>
-    <script src="/assets/js/components/Modal.js?v=1.4.1"></script>
-    <script src="/assets/js/components/ThemeManager.js?v=1.4.1"></script>
-    <script src="/assets/js/components/NotificationManager.js?v=1.4.1"></script>
-    <script src="/assets/js/components/BroadcastBanner.js?v=1.4.1"></script>
-    <script src="/assets/js/components/CommandPalette.js?v=1.4.1"></script>
-    <script src="/assets/js/components/Sidebar.js?v=1.4.1"></script>
-    <script src="/assets/js/components/Topbar.js?v=1.4.1"></script>
-    <script src="/assets/js/components/LoginForm.js?v=1.4.1"></script>
-    <script src="/assets/js/components/Dashboard.js?v=1.4.1"></script>
-    <script src="/assets/js/components/PanelManager.js?v=1.4.1"></script>
-    <script src="/assets/js/components/UserManager.js?v=1.4.1"></script>
-    <script src="/assets/js/components/GroupManager.js?v=1.4.1"></script>
-    <script src="/assets/js/app.js?v=1.4.1"></script>
+    <script src="/assets/js/state.js?v=2.0.0"></script>
+    <script src="/assets/js/api.js?v=2.0.0"></script>
+    <script src="/assets/js/router.js?v=2.0.0"></script>
+    <script src="/assets/js/components/Toast.js?v=2.0.0"></script>
+    <script src="/assets/js/components/Modal.js?v=2.0.0"></script>
+    <script src="/assets/js/components/ThemeManager.js?v=2.0.0"></script>
+    <script src="/assets/js/components/NotificationManager.js?v=2.0.0"></script>
+    <script src="/assets/js/components/BroadcastBanner.js?v=2.0.0"></script>
+    <script src="/assets/js/components/CommandPalette.js?v=2.0.0"></script>
+    <script src="/assets/js/components/Sidebar.js?v=2.0.0"></script>
+    <script src="/assets/js/components/Topbar.js?v=2.0.0"></script>
+    <script src="/assets/js/components/LoginForm.js?v=2.0.0"></script>
+    <script src="/assets/js/components/Dashboard.js?v=2.0.0"></script>
+    <script src="/assets/js/components/PanelManager.js?v=2.0.0"></script>
+    <script src="/assets/js/components/UserManager.js?v=2.0.0"></script>
+    <script src="/assets/js/components/GroupManager.js?v=2.0.0"></script>
+    <script src="/assets/js/app.js?v=2.0.0"></script>
 
     <!-- PWA Service Worker Registration & Install Prompt -->
     <script>

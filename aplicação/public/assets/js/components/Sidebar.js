@@ -1,5 +1,5 @@
 /**
- * Omniflowti — Sidebar Navigation
+ * Portal Unificado — Sidebar Navigation
  * Barra lateral com navegação principal, gestão e seção reativa de Painéis Fixados / Favoritos.
  */
 const Sidebar = {
@@ -12,8 +12,8 @@ const Sidebar = {
         return `
         <aside class="sidebar ${collapsed ? 'collapsed' : ''}" id="sidebar">
             <div class="sidebar-header">
-                <a href="#/dashboard" class="sidebar-logo-link" title="Omniflowti — Home / Dashboard" onclick="Router.navigate('#/dashboard'); return false;">
-                    <img src="/assets/img/flowti-label.svg" alt="Omniflowti" class="sidebar-logo-img" />
+                <a href="#/dashboard" class="sidebar-logo-link" title="Portal Unificado — Home / Dashboard" onclick="Router.navigate('#/dashboard'); return false;">
+                    <img src="/assets/img/portal-logo.svg" alt="Portal Unificado" class="sidebar-logo-img" />
                 </a>
                 <button class="sidebar-toggle" id="sidebar-toggle" title="${collapsed ? 'Expandir menu' : 'Recolher menu'}">
                     <i class="${collapsed ? 'ri-menu-unfold-line' : 'ri-menu-fold-line'}"></i>

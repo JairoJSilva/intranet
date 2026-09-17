@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Omniflowti — Router de API REST
+ * Portal Unificado — Router de API REST
  * Mapeia rotas para Controllers com suporte a parâmetros dinâmicos.
  */
 

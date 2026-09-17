@@ -4,4 +4,4 @@ metadata:
   name: intranet
   labels:
     name: intranet
-    app.kubernetes.io/part-of: omniflowti
+    app.kubernetes.io/part-of: intranet-portal

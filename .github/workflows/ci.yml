@@ -95,9 +95,9 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root_password
-          MYSQL_DATABASE: intranet_flowti_test
-          MYSQL_USER: flowti_test
-          MYSQL_PASSWORD: flowti_password
+          MYSQL_DATABASE: intranet_db
+          MYSQL_USER: intranet_test
+          MYSQL_PASSWORD: intranet_password
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -129,12 +129,18 @@ jobs:
       - name: Validate Database Schema & Seed
         run: |
           echo "Testando execução do schema SQL..."
-          mysql -h 127.0.0.1 -P 3306 -u flowti_test -pflowti_password intranet_flowti_test < database/schema.sql
+          mysql -h 127.0.0.1 -P 3306 -u root -proot_password < database/schema.sql
           echo "Testando execução dos seeds SQL..."
-          mysql -h 127.0.0.1 -P 3306 -u flowti_test -pflowti_password intranet_flowti_test < database/seed.sql
+          mysql -h 127.0.0.1 -P 3306 -u root -proot_password intranet_db < database/seed.sql
           echo "Banco de dados inicializado com sucesso!"
 
       - name: Run PHPUnit Test Suite
+        env:
+          APP_ENV: testing
+          DB_HOST: 127.0.0.1
+          DB_NAME: intranet_db
+          DB_USER: root
+          DB_PASS: root_password
         run: |
           cd aplicação
           ./vendor/bin/phpunit --colors=always --testdox

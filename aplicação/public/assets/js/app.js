@@ -1,5 +1,5 @@
 /**
- * Omniflowti — App Orchestrator
+ * Portal Unificado — App Orchestrator
  * Inicializa estado, registra rotas e gerencia layout.
  */
 const App = {
@@ -29,7 +29,7 @@ const App = {
         // Inicia router
         Router.init();
 
-        console.log('%c🚀 Omniflowti — Portal Unificado', 
+        console.log('%c🚀 Portal Unificado Corporativo', 
             'color: #0165aa; font-size: 14px; font-weight: bold;');
     },
 

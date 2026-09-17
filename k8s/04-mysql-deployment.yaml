@@ -5,7 +5,7 @@ metadata:
   namespace: intranet
   labels:
     app: mysql
-    app.kubernetes.io/part-of: omniflowti
+    app.kubernetes.io/part-of: intranet-portal
 spec:
   type: ClusterIP
   ports:
@@ -22,7 +22,7 @@ metadata:
   namespace: intranet
   labels:
     app: mysql
-    app.kubernetes.io/part-of: omniflowti
+    app.kubernetes.io/part-of: intranet-portal
 spec:
   replicas: 1
   strategy:
@@ -34,7 +34,7 @@ spec:
     metadata:
       labels:
         app: mysql
-        app.kubernetes.io/part-of: omniflowti
+        app.kubernetes.io/part-of: intranet-portal
     spec:
       containers:
         - name: mysql

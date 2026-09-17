@@ -1,5 +1,5 @@
 # ==============================================================================
-# 🚀 GitLab CI/CD Pipeline — Flowti Intranet (Local & Production Runner)
+# 🚀 GitLab CI/CD Pipeline — Portal Unificado (Local & Production Runner)
 # ==============================================================================
 
 stages:
@@ -17,10 +17,10 @@ default:
 
 variables:
   COMPOSER_ALLOW_SUPERUSER: "1"
-  MYSQL_DATABASE: intranet_flowti_test
+  MYSQL_DATABASE: intranet_test_db
   MYSQL_ROOT_PASSWORD: root_password
-  MYSQL_USER: flowti_test
-  MYSQL_PASSWORD: flowti_password
+  MYSQL_USER: intranet_test
+  MYSQL_PASSWORD: intranet_password
 
 cache:
   key: "${CI_COMMIT_REF_SLUG}"
@@ -67,8 +67,8 @@ test:phpunit:
     - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
     - cd aplicação && composer install --prefer-dist --no-interaction
   script:
-    - mysql -h mysql -u flowti_test -pflowti_password intranet_flowti_test < ../database/schema.sql
-    - mysql -h mysql -u flowti_test -pflowti_password intranet_flowti_test < ../database/seed.sql
+    - mysql -h mysql -u intranet_test -pintranet_password intranet_test_db < ../database/schema.sql
+    - mysql -h mysql -u intranet_test -pintranet_password intranet_test_db < ../database/seed.sql
     - ./vendor/bin/phpunit --colors=never --testdox
 
 # ------------------------------------------------------------------------------

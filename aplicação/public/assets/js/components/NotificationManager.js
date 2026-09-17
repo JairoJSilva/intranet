@@ -1,5 +1,5 @@
 /**
- * Omniflowti — NotificationManager
+ * Portal Unificado — NotificationManager
  * Gerenciador de Alertas Operacionais no Navegador com suporte à Web Notifications API nativa,
  * central de incidentes em tempo real e popover integrado na Topbar.
  */
@@ -13,7 +13,7 @@ const NotificationManager = {
      */
     init() {
         try {
-            const saved = localStorage.getItem('omniflowti_operational_alerts');
+            const saved = localStorage.getItem('portal_operational_alerts') || localStorage.getItem('omniflowti_operational_alerts');
             if (saved) {
                 this.alerts = JSON.parse(saved) || [];
             }
@@ -120,9 +120,9 @@ const NotificationManager = {
         try {
             const notif = new Notification(title, {
                 body: body,
-                icon: '/assets/img/flowti-label.svg',
-                badge: '/assets/img/flowti-label.svg',
-                tag: 'flowti-health-alert',
+                icon: '/assets/img/portal-logo.svg',
+                badge: '/assets/img/portal-logo.svg',
+                tag: 'portal-health-alert',
                 requireInteraction: false
             });
 
@@ -189,7 +189,7 @@ const NotificationManager = {
      */
     persist() {
         try {
-            localStorage.setItem('omniflowti_operational_alerts', JSON.stringify(this.alerts));
+            localStorage.setItem('portal_operational_alerts', JSON.stringify(this.alerts));
         } catch (e) {
             // localStorage full
         }

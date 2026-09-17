@@ -1,5 +1,5 @@
 /**
- * Omniflowti — Panel & Link Manager Component
+ * Portal Unificado — Panel & Link Manager Component
  * 1. Catálogo Principal (#/panels): Exibe os quadrados (cards) de cada painel/setor.
  * 2. Visualização Dedicada (#/panels/:id): Ao clicar num painel (ex: DevOps),
  *    o usuário é direcionado para a página exclusiva contendo apenas os links daquele painel.
@@ -984,12 +984,12 @@ const PanelManager = {
                 </div>
                 <div class="form-group">
                     <label class="form-label">Nome da Aplicação</label>
-                    <input type="text" class="form-input" id="form-link-title" value="${link?.title || ''}" placeholder="Ex.: Flowti Agent, Cloud Inventory, etc." />
+                    <input type="text" class="form-input" id="form-link-title" value="${link?.title || ''}" placeholder="Ex.: Agent Interno, Cloud Inventory, etc." />
                 </div>
                 <div class="form-group">
                     <label class="form-label">URL ou Domínio</label>
                     <div style="display: flex; gap: 8px;">
-                        <input type="text" class="form-input" id="form-link-url" value="${link?.url || ''}" placeholder="ex.: https://dash.flowti.com.br ou sistema.flowti.com.br" style="flex: 1;" />
+                        <input type="text" class="form-input" id="form-link-url" value="${link?.url || ''}" placeholder="ex.: https://dash.empresa.local ou sistema.empresa.local" style="flex: 1;" />
                         <button type="button" class="btn-detect-favicon" id="btn-detect-favicon" title="Detectar e baixar favicon automaticamente">
                             <i class="ri-magic-line"></i> <span>Detectar</span>
                         </button>
@@ -1280,7 +1280,7 @@ const PanelManager = {
             const blob = new Blob([templateContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'modelo_links_flowti.csv';
+            link.download = 'modelo_links_portal.csv';
             link.click();
             URL.revokeObjectURL(link.href);
         });

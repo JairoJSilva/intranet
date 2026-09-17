@@ -52,7 +52,7 @@ final class NoticeRepository
                 ':title'     => 'Janela de Manutenção Programada — Infraestrutura TIC',
                 ':message'   => 'Informamos que no próximo sábado, entre 22h00 e 02h00, realizaremos uma atualização programada nos nós centrais. Todos os serviços essenciais permanecerão em redundância.',
                 ':type'      => 'warning',
-                ':link_url'  => 'https://status.flowti.com.br',
+                ':link_url'  => 'https://status.empresa.local',
                 ':link_text' => 'Acompanhar Status',
             ]);
         }

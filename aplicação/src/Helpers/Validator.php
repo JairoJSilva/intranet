@@ -45,8 +45,8 @@ final class Validator
             if (!preg_match('#^[a-zA-Z][a-zA-Z0-9+\-.]*://#', $val)) {
                 $val = 'https://' . $val;
             }
-            if (!filter_var($val, FILTER_VALIDATE_URL) && !preg_match('#^https?://[a-zA-Z0-9_\-\.:]+(:[0-9]+)?(/.*)?$#i', $val)) {
-                $this->errors[$field] = "O campo '{$field}' deve ser uma URL válida (ex: https://sistema.flowti.com.br ou sistema.flowti.com.br).";
+            if (!filter_var($val, FILTER_VALIDATE_URL) && !preg_match('#^https?://(localhost|[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-\.]+)(:[0-9]+)?(/.*)?$#i', $val)) {
+                $this->errors[$field] = "O campo '{$field}' deve ser uma URL válida (ex: https://sistema.empresa.local ou sistema.empresa.local).";
             }
         }
         return $this;

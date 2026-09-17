@@ -5,11 +5,12 @@ metadata:
   namespace: intranet
   labels:
     app: intranet-app
-    app.kubernetes.io/part-of: omniflowti
+    app.kubernetes.io/part-of: intranet-portal
 data:
+  APP_NAME: "Portal Unificado"
   DB_HOST: "mysql"
   DB_PORT: "3306"
-  DB_NAME: "intranet_flowti"
+  DB_NAME: "intranet_db"
   APP_ENV: "production"
   APP_URL: "http://localhost"
   SESSION_LIFETIME: "7200"

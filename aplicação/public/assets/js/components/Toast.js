@@ -1,5 +1,5 @@
 /**
- * Omniflowti — Toast Notification System
+ * Portal Unificado — Toast Notification System
  * Notificações empilháveis com auto-dismiss e animações.
  */
 const Toast = {

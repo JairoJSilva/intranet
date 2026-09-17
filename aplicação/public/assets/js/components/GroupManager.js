@@ -1,5 +1,5 @@
 /**
- * Omniflowti — Group Manager Component
+ * Portal Unificado — Group Manager Component
  * Gestão de grupos/setores com associação de painéis.
  */
 const GroupManager = {

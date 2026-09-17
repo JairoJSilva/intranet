@@ -1,5 +1,5 @@
 /**
- * Omniflowti — Client-Side Hash Router
+ * Portal Unificado — Client-Side Hash Router
  * Gerencia navegação SPA via hash (#/route).
  */
 const Router = {

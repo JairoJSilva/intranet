@@ -5,7 +5,7 @@ metadata:
   namespace: intranet
   labels:
     app: intranet-app
-    app.kubernetes.io/part-of: omniflowti
+    app.kubernetes.io/part-of: intranet-portal
 spec:
   replicas: 1
   strategy:
@@ -20,11 +20,11 @@ spec:
     metadata:
       labels:
         app: intranet-app
-        app.kubernetes.io/part-of: omniflowti
+        app.kubernetes.io/part-of: intranet-portal
     spec:
       containers:
-        - name: flowti-app
-          image: flowti-app:latest
+        - name: intranet-app
+          image: intranet-app:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

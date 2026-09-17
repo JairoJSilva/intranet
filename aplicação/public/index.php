@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Omniflowti — API Entry Point
+ * Portal Unificado — API Entry Point
  * Todas as requisições /api/* são roteadas aqui pelo .htaccess.
  * Requisições de arquivos estáticos (JS, CSS, imagens) são servidas diretamente.
  */
@@ -99,7 +99,7 @@ try {
         ? $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine()
         : 'Erro interno do servidor.';
 
-    error_log("[Omniflowti Error] {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}");
+    error_log("[Portal Error] {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}");
 
     \App\Helpers\Response::error($message, 500);
 }

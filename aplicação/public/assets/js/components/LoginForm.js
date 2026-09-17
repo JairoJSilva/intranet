@@ -1,5 +1,5 @@
 /**
- * Omniflowti — Login Form Component
+ * Portal Unificado — Login Form Component
  */
 const LoginForm = {
     render() {
@@ -7,7 +7,7 @@ const LoginForm = {
         <div class="login-page" id="login-page">
             <div class="login-card">
                 <div style="text-align: center; margin-bottom: 28px;">
-                    <img src="/assets/img/flowti-label.svg" alt="Omniflowti" style="height: 38px; width: auto; margin-bottom: 14px; filter: drop-shadow(0 0 16px rgba(171, 23, 238, 0.5));" />
+                    <img src="/assets/img/portal-logo.svg" alt="Portal Unificado" style="height: 48px; width: auto; margin-bottom: 14px; filter: drop-shadow(0 0 16px rgba(171, 23, 238, 0.5));" />
                     <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0;">Portal Corporativo Unificado</p>
                 </div>
 

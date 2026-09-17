@@ -5,7 +5,7 @@ metadata:
   namespace: intranet
   labels:
     app.kubernetes.io/name: pipeline-guardian
-    app.kubernetes.io/part-of: omniflowti
+    app.kubernetes.io/part-of: intranet-portal
 spec:
   replicas: 1
   strategy:
@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: pipeline-guardian
-        app.kubernetes.io/part-of: omniflowti
+        app.kubernetes.io/part-of: intranet-portal
     spec:
       serviceAccountName: pipeline-guardian
       containers:
@@ -69,7 +69,7 @@ metadata:
   namespace: intranet
   labels:
     app.kubernetes.io/name: pipeline-guardian
-    app.kubernetes.io/part-of: omniflowti
+    app.kubernetes.io/part-of: intranet-portal
 spec:
   type: ClusterIP
   ports:

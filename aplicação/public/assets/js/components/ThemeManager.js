@@ -1,8 +1,6 @@
 /**
- * Omniflowti — Theme & User Profile Manager
- * Gerencia temas baseados na identidade visual oficial Flowti e MV:
- * - https://mv.com.br/ (Verde Esmeralda #008C77 e Azul Petróleo #214B63)
- * - https://dash.flowti.com.br/login (Flowti Cyan #00C4BF, Coral #F05A28 e Grafana Dark #111217)
+ * Portal Unificado — Theme & User Profile Manager
+ * Gerencia temas escuros profissionais para operações, NOC e corporativo.
  */
 const ThemeManager = {
     themes: [
@@ -40,10 +38,10 @@ const ThemeManager = {
             accent: '#f67f1d'
         },
         {
-            id: 'flowti-dark',
-            name: 'Flowti Observability',
-            tag: 'Flowti NOC',
-            desc: 'Tema escuro focado em monitoramento com acentos Flowti Cyan (#00C4BF) e Coral (#F05A28)',
+            id: 'cyan-dark',
+            name: 'Cyan Observability',
+            tag: 'NOC & Telemetria',
+            desc: 'Tema escuro focado em monitoramento com acentos em Ciano Neon (#00C4BF) e Coral (#F05A28)',
             icon: 'ri-dashboard-3-line',
             bg: '#111217',
             card: '#20242b',
@@ -52,9 +50,9 @@ const ThemeManager = {
         },
         {
             id: 'mv-teal',
-            name: 'MV Saúde & Tecnologia',
-            tag: 'Oficial MV',
-            desc: 'Identidade visual oficial MV baseada no Verde Esmeralda (#008C77) e Azul Petróleo (#214B63)',
+            name: 'Esmeralda & Petróleo',
+            tag: 'Saúde & Tech',
+            desc: 'Estética corporativa sóbria baseada no Verde Esmeralda (#008C77) e Azul Petróleo (#214B63)',
             icon: 'ri-hospital-line',
             bg: '#0a171c',
             card: '#152d36',
@@ -63,9 +61,9 @@ const ThemeManager = {
         },
         {
             id: 'mv-petrol',
-            name: 'MV Azul Petróleo',
-            tag: 'Corporativo MV',
-            desc: 'Tons profundos e solenes inspirados no clássico azul petróleo (#214B63) da MV',
+            name: 'Azul Petróleo Profundo',
+            tag: 'Corporativo',
+            desc: 'Tons profundos e solenes inspirados no clássico azul petróleo (#214B63)',
             icon: 'ri-shield-star-line',
             bg: '#08131a',
             card: '#142835',
@@ -73,10 +71,10 @@ const ThemeManager = {
             accent: '#4f8c81'
         },
         {
-            id: 'flowti-midnight',
+            id: 'cyan-midnight',
             name: 'Midnight Observability',
             tag: 'NOC / OLED',
-            desc: 'Preto puro para alta densidade visual inspirado nas telas de monitoramento Grafana',
+            desc: 'Preto puro para alta densidade visual e monitores em centros de operações',
             icon: 'ri-pulse-line',
             bg: '#07080b',
             card: '#13161c',
@@ -119,14 +117,15 @@ const ThemeManager = {
      * Retorna o tema atual
      */
     getTheme() {
-        const saved = localStorage.getItem('omniflowti_theme');
+        const saved = localStorage.getItem('portal_theme') || localStorage.getItem('omniflowti_theme');
         // Aliases e fallback para temas escuros
         if (!saved || saved === 'dark' || saved === 'aura' || saved === 'light' || saved === 'flowti-light' || saved === 'safira-light' || saved === 'classic-corp-light' || saved === 'warm-minimalist' || saved === 'cobalt-light') {
             return 'aura';
         }
         if (saved === 'ocean') return 'mv-petrol';
         if (saved === 'sunset') return 'mv-teal';
-        if (saved === 'midnight') return 'flowti-midnight';
+        if (saved === 'flowti-dark') return 'cyan-dark';
+        if (saved === 'midnight' || saved === 'flowti-midnight') return 'cyan-midnight';
         if (saved === 'cobalt-dark') return 'safira-dark';
         if (saved === 'solar-terracotta') return 'terracotta-sunset';
         return saved;
@@ -140,7 +139,7 @@ const ThemeManager = {
         const validTheme = found ? themeId : 'aura';
 
         document.documentElement.setAttribute('data-theme', validTheme);
-        localStorage.setItem('omniflowti_theme', validTheme);
+        localStorage.setItem('portal_theme', validTheme);
 
         // Atualiza botões ou seletores se estiverem visíveis
         document.querySelectorAll('.theme-card').forEach(card => {
@@ -195,7 +194,7 @@ const ThemeManager = {
 
         const authProviderLabel = user?.auth_provider === 'ldap' 
             ? '<i class="ri-shield-user-line" style="color: var(--theme-primary);"></i> Active Directory (LDAP)' 
-            : '<i class="ri-database-2-line" style="color: var(--theme-accent);"></i> Local (Omniflowti)';
+            : '<i class="ri-database-2-line" style="color: var(--theme-accent);"></i> Local (Portal Unificado)';
 
         const themesHtml = this.themes.map(t => {
             const isActive = t.id === currentTheme;

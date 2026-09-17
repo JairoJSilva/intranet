@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 🛡️ Pipeline Guardian — Autonomous CI/CD Pipeline, Cluster & Deployment Monitoring Bot
-Intranet Flowti — Portal Unificado Corporativo
+Portal Unificado Corporativo
 
 Capabilities:
 1. SemVer Tagging & Commit Monitoring (Commit-to-Tag).
@@ -171,7 +171,7 @@ class K8sClient:
                 "namespace": self.namespace,
                 "labels": {
                     "app.kubernetes.io/name": "pipeline-guardian",
-                    "app.kubernetes.io/part-of": "omniflowti"
+                    "app.kubernetes.io/part-of": "intranet-portal"
                 }
             },
             "data": {
@@ -379,7 +379,7 @@ def diagnose_intranet(namespace="intranet", http_url=None):
         with urllib.request.urlopen(req, timeout=5) as resp:
             status_code = resp.getcode()
             body_preview = resp.read(2048).decode("utf-8", errors="ignore")
-            has_title = "<title>Omniflowti" in body_preview
+            has_title = "<title>Portal Unificado" in body_preview
             diagnosis["http_check"] = {
                 "status": "PASS" if status_code == 200 and has_title else "WARN",
                 "code": status_code,

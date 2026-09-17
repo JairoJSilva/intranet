@@ -1,5 +1,5 @@
 /**
- * Omniflowti — Dashboard Executivo & Observabilidade
+ * Portal Unificado — Dashboard Executivo & Observabilidade
  * Visão operacional executiva com métricas de disponibilidade,
  * central de incidentes, sistemas críticos e resumo consolidado por setor.
  */

@@ -1,5 +1,5 @@
 /**
- * Omniflowti — API Client
+ * Portal Unificado — API Client
  * Wrapper Fetch com interceptors, auth, error handling e JSON auto-parse.
  */
 const API = {

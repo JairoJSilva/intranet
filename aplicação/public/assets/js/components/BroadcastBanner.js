@@ -1,5 +1,5 @@
 /**
- * Omniflowti — BroadcastBanner Component
+ * Portal Unificado — BroadcastBanner Component
  * Mural de Avisos & Manutenções Programadas (Broadcast Banner)
  * Banners dinâmicos globais com suporte a info, warning e critical,
  * persistência local de cientes e painel administrativo de gestão.
@@ -29,7 +29,7 @@ const BroadcastBanner = {
      */
     getDismissedIds() {
         try {
-            const saved = localStorage.getItem('omniflowti_dismissed_notices');
+            const saved = localStorage.getItem('portal_dismissed_notices') || localStorage.getItem('omniflowti_dismissed_notices');
             return saved ? JSON.parse(saved) : [];
         } catch (e) {
             return [];
@@ -43,7 +43,7 @@ const BroadcastBanner = {
         const dismissed = this.getDismissedIds();
         if (!dismissed.includes(id)) {
             dismissed.push(id);
-            localStorage.setItem('omniflowti_dismissed_notices', JSON.stringify(dismissed));
+            localStorage.setItem('portal_dismissed_notices', JSON.stringify(dismissed));
         }
 
         const bannerEl = document.getElementById(`broadcast-banner-${id}`);
@@ -64,6 +64,7 @@ const BroadcastBanner = {
      * Limpa dispensas locais para rever todos os avisos ativos
      */
     resetDismissed() {
+        localStorage.removeItem('portal_dismissed_notices');
         localStorage.removeItem('omniflowti_dismissed_notices');
         if (typeof Toast !== 'undefined') {
             Toast.success('Histórico de cientes redefinido. Todos os avisos ativos serão exibidos.');
@@ -308,7 +309,7 @@ const BroadcastBanner = {
                         <div class="form-group" style="margin-bottom: 0;">
                             <label class="form-label">Link Externo / Documentação (Opcional)</label>
                             <input type="url" class="form-input" id="notice-link-url" 
-                                   placeholder="https://status.flowti.com.br" 
+                                   placeholder="https://status.empresa.local" 
                                    value="${editingNotice?.link_url ? this.escapeHtml(editingNotice.link_url) : ''}" />
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">

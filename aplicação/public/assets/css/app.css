@@ -1,8 +1,6 @@
 /* ============================================================
-   Omniflowti — Identidade Visual Flowti & MV
-   Cores Oficiais: https://mv.com.br/ (#008C77, #214B63)
-   e https://dash.flowti.com.br/login (#00C4BF, #F05A28, #111217)
-   Dark Mode Nativo | Observabilidade Grafana | Glassmorphism
+   Portal Unificado — Sistema de Estilos & Temas Corporativos
+   Dark Mode Nativo | Observabilidade & NOC | Glassmorphism
    ============================================================ */
 
 /* ---- 1. Aura Cyberpunk / Electric Purple (Padrão Oficial - guia-de-estilo-aura.md) ---- */
@@ -20,8 +18,8 @@
     --theme-accent-hover: #9838c4;
 
     /* Aliases para compatibilidade */
-    --flowti-cyan: #AB17EE;
-    --flowti-orange: #8129A9;
+    --portal-cyan: #AB17EE;
+    --portal-orange: #8129A9;
     --mv-teal: #AB17EE;
     --mv-petrol: #360F5A;
     --vem-blue-500: var(--theme-primary);
@@ -87,15 +85,16 @@
     --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ---- 2. Flowti Observability Dark (Inspirado em dash.flowti.com.br) ---- */
+/* ---- 2. Cyan Observability Dark ---- */
+[data-theme="cyan-dark"],
 [data-theme="flowti-dark"] {
     --theme-primary: #00c4bf;
     --theme-primary-hover: #00a8a3;
     --theme-accent: #f05a28;
     --theme-accent-hover: #d94b1c;
 
-    --flowti-cyan: #00c4bf;
-    --flowti-orange: #f05a28;
+    --portal-cyan: #00c4bf;
+    --portal-orange: #f05a28;
     --mv-teal: #008c77;
     --mv-petrol: #214b63;
     --vem-blue-500: var(--theme-primary);
@@ -213,7 +212,8 @@
     --glass-shadow: 0 8px 32px rgba(8, 19, 26, 0.45);
 }
 
-/* ---- 5. Midnight Observability (Grafana Dark OLED - dash.flowti.com.br) ---- */
+/* ---- 5. Midnight Observability (Grafana Dark OLED) ---- */
+[data-theme="cyan-midnight"],
 [data-theme="flowti-midnight"],
 [data-theme="midnight"] {
     --theme-primary: #00d9cf;

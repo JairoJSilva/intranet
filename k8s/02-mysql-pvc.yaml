@@ -5,7 +5,7 @@ metadata:
   namespace: intranet
   labels:
     app: mysql
-    app.kubernetes.io/part-of: omniflowti
+    app.kubernetes.io/part-of: intranet-portal
 spec:
   accessModes:
     - ReadWriteOnce

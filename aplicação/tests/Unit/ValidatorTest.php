@@ -39,7 +39,7 @@ final class ValidatorTest extends TestCase
 
     public function testEmailValidation(): void
     {
-        $dataValid = ['email' => 'colab@flowti.com.br'];
+        $dataValid = ['email' => 'colab@portal.local'];
         $this->validator->email($dataValid, 'email');
         $this->assertTrue($this->validator->passes());
 
@@ -52,7 +52,7 @@ final class ValidatorTest extends TestCase
 
     public function testUrlValidation(): void
     {
-        $dataValid = ['url' => 'https://flowti.com.br'];
+        $dataValid = ['url' => 'https://empresa.local'];
         $this->validator->url($dataValid, 'url');
         $this->assertTrue($this->validator->passes());
 

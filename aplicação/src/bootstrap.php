@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Omniflowti — Bootstrap
+ * Portal Unificado — Bootstrap
  * Inicializa o ambiente: autoload, .env, sessão segura.
  */
 
@@ -53,7 +53,7 @@ if (session_status() === PHP_SESSION_NONE) {
         ini_set('session.cookie_secure', '1');
     }
 
-    session_name('OMNIFLOWTI_SESSION');
+    session_name('PORTAL_SESSION');
     session_start();
 }
 
