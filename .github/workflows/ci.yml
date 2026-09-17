@@ -81,7 +81,7 @@ jobs:
       - name: Detect Sensitive Secrets
         run: |
           echo "Varrendo repositório em busca de chaves privadas ou senhas expostas..."
-          ! grep -rnE "BEGIN RSA PRIVATE KEY|BEGIN OPENSSH PRIVATE KEY|ghp_[A-Za-z0-9]{36}" . --exclude-dir={.git,vendor,node_modules}
+          ! grep -rnE "BEGIN RSA PRIVATE KEY|BEGIN OPENSSH PRIVATE KEY|ghp_[A-Za-z0-9]{36}" . --exclude-dir={.git,.github,vendor,node_modules}
 
   # --------------------------------------------------------------------------
   # 3. Test Suite & Database Validation
