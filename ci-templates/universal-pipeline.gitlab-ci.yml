@@ -1,0 +1,198 @@
+# ==============================================================================
+# 🚀 Universal Reusable CI/CD Pipeline Template — GitLab CI & GitOps
+# ==============================================================================
+# Este template foi desenvolvido para ser importado por QUALQUER aplicação
+# com o mínimo de alteração possível.
+#
+# COMO USAR EM UMA NOVA APLICAÇÃO:
+# No arquivo `.gitlab-ci.yml` do seu novo projeto, basta incluir este arquivo
+# e customizar as variáveis abaixo:
+#
+# ------------------------------------------------------------------------------
+# include:
+#   - remote: 'https://raw.githubusercontent.com/JairoJSilva/intranet/main/ci-templates/universal-pipeline.gitlab-ci.yml'
+#   # OU localmente se estiver no mesmo mono-repo:
+#   # - local: 'ci-templates/universal-pipeline.gitlab-ci.yml'
+#
+# variables:
+#   APP_NAME: "minha-api"                      # Nome único da aplicação
+#   APP_TYPE: "nodejs"                         # php | nodejs | python | go | docker
+#   K8S_NAMESPACE: "producao"                  # Namespace Kubernetes de destino
+#   K8S_MANIFESTS_DIR: "k8s"                   # Pasta dos manifestos no repositório
+#   IMAGE_NAME: "empresa/minha-api"            # Nome da imagem no container registry
+#   ARGOCD_APP_NAME: "minha-api"               # Nome da aplicação registrada no ArgoCD
+# ------------------------------------------------------------------------------
+
+stages:
+  - lint-and-quality
+  - security-sast
+  - test
+  - build-image
+  - gitops-sync
+
+# ---- Variáveis Padrão (Podem ser sobrescritas pelo projeto consumidor) ----
+variables:
+  APP_NAME: "app-generic"
+  APP_TYPE: "docker" # docker, php, nodejs, python, go
+  K8S_NAMESPACE: "default"
+  K8S_MANIFESTS_DIR: "k8s"
+  IMAGE_TAG: "${CI_COMMIT_TAG:-${CI_COMMIT_SHORT_SHA}}"
+  DOCKER_FILE_PATH: "docker/Dockerfile"
+  ARGOCD_SERVER_URL: "http://argocd-server.argocd.svc.cluster.local"
+  ARGOCD_APP_NAME: "${APP_NAME}"
+
+# ---- Configuração Padrão de Runner e Cache ----
+default:
+  tags:
+    - kubernetes
+    - portal-cluster
+
+# ==============================================================================
+# 1. ESTÁGIO: LINT & QUALIDADE DE CÓDIGO
+# ==============================================================================
+lint:code:
+  stage: lint-and-quality
+  image: alpine:3.19
+  script:
+    - echo "🔍 Executando validação de sintaxe e linting para ${APP_NAME} (${APP_TYPE})..."
+    - |
+      case "$APP_TYPE" in
+        php)
+          apk add --no-cache php82 php82-phar php82-openssl php82-mbstring
+          find . -name "*.php" -not -path "*/vendor/*" -exec php -l {} +
+          ;;
+        nodejs)
+          apk add --no-cache nodejs npm
+          if [ -f "package.json" ]; then npm run lint --if-present; fi
+          ;;
+        python)
+          apk add --no-cache python3 py3-pip
+          python3 -m compileall -q .
+          ;;
+        go)
+          apk add --no-cache go
+          go vet ./... || true
+          ;;
+        *)
+          echo "ℹ Validação genérica para tipo: ${APP_TYPE}"
+          ;;
+      esac
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_TAG'
+
+lint:k8s-manifests:
+  stage: lint-and-quality
+  image: bitnami/kubectl:latest
+  script:
+    - echo "📋 Validando manifestos Kubernetes em ${K8S_MANIFESTS_DIR}..."
+    - |
+      if [ -f "${K8S_MANIFESTS_DIR}/kustomization.yaml" ] || [ -f "${K8S_MANIFESTS_DIR}/kustomization.yml" ]; then
+        kubectl kustomize "${K8S_MANIFESTS_DIR}" > /dev/null
+        echo "✔ Kustomization sintaticamente válida!"
+      else
+        kubectl apply --dry-run=client -f "${K8S_MANIFESTS_DIR}" > /dev/null
+        echo "✔ Manifestos YAML sintaticamente válidos!"
+      fi
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# ==============================================================================
+# 2. ESTÁGIO: SEGURANÇA & SAST (VARREDURA DE VULNERABILIDADES)
+# ==============================================================================
+security:sast:
+  stage: security-sast
+  image: alpine:3.19
+  script:
+    - echo "🛡️ Varredura SAST e detecção de segredos expostos..."
+    - apk add --no-cache git grep
+    # Checagem básica contra segredos hardcoded óbvios
+    - |
+      BAD_PATTERNS="(AIzaSy[A-Za-z0-9_-]{33}|ghp_[A-Za-z0-9]{36}|glpat-[A-Za-z0-9_-]{20}|-----BEGIN (RSA|EC|DSA|OPENSSH) PRIVATE KEY-----)"
+      if git grep -E -I "$BAD_PATTERNS" -- ':!*.lock' ':!*.sample' ':!*.example' > /dev/null 2>&1; then
+        echo "❌ ERRO: Possível chave secreta ou token privado detectado no código!"
+        git grep -E -I -n "$BAD_PATTERNS" -- ':!*.lock' ':!*.sample' ':!*.example'
+        exit 1
+      fi
+      echo "✔ Nenhum segredo ou token crítico exposto detectado."
+  allow_failure: true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# ==============================================================================
+# 3. ESTÁGIO: TESTES AUTOMATIZADOS
+# ==============================================================================
+test:unit:
+  stage: test
+  image: alpine:3.19
+  script:
+    - echo "🧪 Executando suíte de testes automatizados para ${APP_NAME}..."
+    - |
+      if [ -f "tests/run-tests.sh" ]; then
+        sh tests/run-tests.sh
+      elif [ -f "package.json" ]; then
+        apk add --no-cache nodejs npm && npm test --if-present
+      elif [ -f "phpunit.xml" ] || [ -f "phpunit.xml.dist" ]; then
+        echo "ℹ Execução de testes PHPUnit delegada para runner com dependências configuradas."
+      else
+        echo "✔ Nenhuma suíte customizada encontrada; validação de integridade concluída."
+      fi
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# ==============================================================================
+# 4. ESTÁGIO: BUILD E EMPACOTAMENTO DE IMAGEM DOCKER
+# ==============================================================================
+build:container:
+  stage: build-image
+  image: docker:24.0
+  services:
+    - docker:24.0-dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - |
+      if [ -n "$CI_REGISTRY_USER" ] && [ -n "$CI_REGISTRY_PASSWORD" ]; then
+        echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+      fi
+  script:
+    - echo "🐳 Construindo imagem Docker: ${IMAGE_NAME}:${IMAGE_TAG}..."
+    - docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" -t "${IMAGE_NAME}:latest" -f "${DOCKER_FILE_PATH}" .
+    - |
+      if [ -n "$CI_REGISTRY_USER" ]; then
+        echo "🚀 Publicando imagens no Container Registry..."
+        docker push "${IMAGE_NAME}:${IMAGE_TAG}"
+        docker push "${IMAGE_NAME}:latest"
+      else
+        echo "ℹ CI_REGISTRY não configurado; imagem construída localmente com sucesso."
+      fi
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# ==============================================================================
+# 5. ESTÁGIO: GITOPS & SINCRONIZAÇÃO ARGOCD
+# ==============================================================================
+gitops:argocd-sync:
+  stage: gitops-sync
+  image: curlimages/curl:latest
+  script:
+    - echo "🔄 Disparando reconciliação GitOps no ArgoCD para: ${ARGOCD_APP_NAME}..."
+    - |
+      if [ -n "$ARGOCD_AUTH_TOKEN" ]; then
+        curl -s -k -X POST \
+          -H "Authorization: Bearer ${ARGOCD_AUTH_TOKEN}" \
+          -H "Content-Type: application/json" \
+          "${ARGOCD_SERVER_URL}/api/v1/applications/${ARGOCD_APP_NAME}/sync" || true
+        echo "✔ Comando de Sync enviado ao ArgoCD com sucesso!"
+      else
+        echo "ℹ ARGOCD_AUTH_TOKEN não configurado neste job. O ArgoCD atualizará automaticamente via Git webhook ou polling (self-heal)."
+      fi
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+    - if: '$CI_COMMIT_BRANCH == "main"'

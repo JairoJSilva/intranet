@@ -1,0 +1,41 @@
+# ==============================================================================
+# 🎯 ArgoCD Application Template — Modelo Padrão para Novas Aplicações
+# ==============================================================================
+# Como usar para uma nova aplicação:
+# 1. Copie este arquivo ou substitua os placeholders:
+#    - {{APP_NAME}}: Nome da sua aplicação (ex: financeiro-api, crm-web)
+#    - {{REPO_URL}}: URL Git do repositório (ex: https://github.com/empresa/crm.git)
+#    - {{TARGET_BRANCH}}: Branch de deploy (geralmente: main)
+#    - {{K8S_PATH}}: Caminho da pasta de manifestos dentro do Git (ex: k8s ou deploy/k8s)
+#    - {{TARGET_NAMESPACE}}: Namespace onde os pods devem rodar (ex: financeiro, intranet)
+# 2. Aplique com:
+#    kubectl apply -f application-sua-app.yaml
+# ==============================================================================
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{APP_NAME}}"
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: "{{APP_NAME}}"
+    app.kubernetes.io/part-of: "{{TARGET_NAMESPACE}}"
+  finalizers:
+    # Garante que, caso a aplicação seja deletada do ArgoCD, os recursos criados por ela também sejam limpos
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: "{{REPO_URL}}"
+    targetRevision: "{{TARGET_BRANCH}}"
+    path: "{{K8S_PATH}}"
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: "{{TARGET_NAMESPACE}}"
+  syncPolicy:
+    automated:
+      prune: true     # Remove automaticamente recursos do cluster que foram deletados do Git
+      selfHeal: true  # Se alguém alterar manualmente um pod/deployment com kubectl, o ArgoCD restaura o estado do Git!
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
